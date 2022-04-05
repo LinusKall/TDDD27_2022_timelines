@@ -64,8 +64,24 @@ Actix-web is framework for writing webservers in Rust. It has a lot of features,
 
 #### Diesel
 
-Diesel is a framework used for writing SQL queries in Rust. This will allow us to send queries from a web server (written in Rust) to a database.
+Diesel is a framework used for writing database queries in Rust. This will allow us to send queries from a web server (written in Rust) to a database.
+
+#### Tokio-Postgres
+
+A framework used for sending SQL queries in Rust. It is made by the Tokio group, which is sponsored by AWS, Discord, Dropbox, Facebook, and others.
 
 #### Juniper
 
 Juniper is framework which makes it easier to implement GraphQL into a web server written in Rust.
+
+### Database
+
+At the moment, we are not completly sure which database we want to use. Diesel and other frameworks written in Rust easily interoperate with PostgreSQL, which we are not completly familiar with. Could be a good challenge! We are more familiar with MySQL, which does not seem to be as prevelant within the Rust community.
+
+#### PostgreSQL
+
+A scalable Object-Relational database. Known for its reliability, feature robustness, and performance.
+
+#### SQLite
+
+Probably one of the most utilized databases. Known for its simplicity and wide adoption.
