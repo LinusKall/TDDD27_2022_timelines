@@ -54,3 +54,18 @@ Webassembly often has a smaller footprint compared to JavaScript code and is som
 
 Another advantage of writing frontend applications using Yew are the inherit advantages of writing code in Rust, which comes with a lot of memory safety guarantees. Microsoft once estimated that [70% of all security bugs were memory safety issues](https://www.zdnet.com/article/microsoft-70-percent-of-all-security-bugs-are-memory-safety-issues/).
 
+### Backend
+
+For the backend, we are intrested in using the following frameworks.
+
+#### Actix-Web
+
+Actix-web is framework for writing webservers in Rust. It has a lot of features, including support for websockets, middleware, REST, static files, and more.
+
+#### Diesel
+
+Diesel is a framework used for writing SQL queries in Rust. This will allow us to send queries from a web server (written in Rust) to a database.
+
+#### Juniper
+
+Juniper is framework which makes it easier to implement GraphQL into a web server written in Rust.
