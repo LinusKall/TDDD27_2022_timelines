@@ -6,10 +6,6 @@ A simple calendar application
 
 This project aims to create a task manager/calendar webpage similar to google calendar and google tasks. The main functions of the tool should be that every user can create timelines for different categories of tasks, color code these timelines as well as schedule their tasks. Ultimately we would also like to implement a database of tasks that will work as suggestions on tasks to add to the user's timeline.
 
-## Trello
-
-[Link to project board](https://trello.com/b/FjO2jiAu/project-task-manager).
-
 ## Functional Specification
 
 Here we describe the high-level functionality we would like to implement for the different parts in the stack.
