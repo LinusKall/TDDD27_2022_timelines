@@ -10,4 +10,6 @@ author = ["Edvin Kjell <edvkj374@studentliu.se>", "Linus Käll <linka231@student
 serde = { version = "1.0.136", features = ["derive"] }
 
 [features]
+client = []
+server = []
 
