@@ -1,0 +1,10 @@
+[package]
+name = "frontend-yew"
+version = "0.1.0"
+edition = "2021"
+author = ["Edvin Kjell <edvkj374@studentliu.se>", "Linus Käll <linka231@studentliu.se>", "Sebastian Frisenfelt <sebfr298@studentliu.se>"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+yew = "0.19.0"

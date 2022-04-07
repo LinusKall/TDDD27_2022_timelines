@@ -1,0 +1,12 @@
+[package]
+name = "backend-actix"
+version = "0.1.0"
+edition = "2021"
+author = ["Edvin Kjell <edvkj374@studentliu.se>", "Linus Käll <linka231@studentliu.se>", "Sebastian Frisenfelt <sebfr298@studentliu.se>"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+actix-web = "4.0.0"
+diesel = "1.4.8"
+juniper = "0.15.9"
