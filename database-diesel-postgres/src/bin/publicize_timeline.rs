@@ -1,16 +1,19 @@
 extern crate database_diesel_postgres as db;
 extern crate diesel;
 
-use self::diesel::prelude::*;
 use self::db::establish_connection;
 use self::db::timelines::*;
+use self::diesel::prelude::*;
 use std::env::args;
 
 fn main() {
-    use db::schema::timelines::dsl::{timelines, public};
+    use db::schema::timelines::dsl::{public, timelines};
 
-    let id = args().nth(1).expect("`publicize_timeline` requires a timeline ID")
-        .parse::<i32>().expect("Invalid ID");
+    let id = args()
+        .nth(1)
+        .expect("`publicize_timeline` requires a timeline ID")
+        .parse::<i32>()
+        .expect("Invalid ID");
     let connection = establish_connection();
 
     let timeline = diesel::update(timelines.find(id))

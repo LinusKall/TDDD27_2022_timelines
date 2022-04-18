@@ -2,8 +2,8 @@ extern crate database_diesel_postgres as db;
 extern crate diesel;
 
 use self::db::*;
-use self::timelines::*;
 use self::diesel::prelude::*;
+use self::timelines::*;
 
 fn main() {
     use db::schema::timelines::dsl::*;

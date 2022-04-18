@@ -46,9 +46,4 @@ joinable!(events -> timelines (timeline_id));
 joinable!(timelines_users -> timelines (timeline_id));
 joinable!(timelines_users -> users (user_id));
 
-allow_tables_to_appear_in_same_query!(
-    events,
-    timelines,
-    timelines_users,
-    users,
-);
+allow_tables_to_appear_in_same_query!(events, timelines, timelines_users, users,);

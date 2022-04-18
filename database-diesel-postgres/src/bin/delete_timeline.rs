@@ -1,8 +1,8 @@
 extern crate database_diesel_postgres as db;
 extern crate diesel;
 
-use self::diesel::prelude::*;
 use self::db::*;
+use self::diesel::prelude::*;
 use std::env::args;
 
 fn main() {
