@@ -4,6 +4,7 @@ extern crate diesel;
 extern crate dotenv;
 
 pub mod db_types;
+pub mod events;
 pub mod schema;
 pub mod timelines;
 pub mod users;
