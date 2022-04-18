@@ -1,10 +1,12 @@
+extern crate argon2;
 #[macro_use]
 extern crate diesel;
 extern crate dotenv;
 
 pub mod schema;
-pub mod models;
-pub mod database_types;
+pub mod timelines;
+pub mod users;
+pub mod db_types;
 
 use diesel::prelude::*;
 use diesel::pg::PgConnection;
