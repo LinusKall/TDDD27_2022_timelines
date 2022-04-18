@@ -1,7 +1,6 @@
 -- Your SQL goes here
 
 -- enum type for describing relation between a timeline and a user.
-DROP TYPE IF EXISTS user_role;
 CREATE TYPE user_role AS ENUM ('owner', 'moderator', 'subscriber');
 
 -- TODO: Add color.
