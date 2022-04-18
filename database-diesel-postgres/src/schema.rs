@@ -15,6 +15,7 @@ table! {
         title -> Text,
         created_at -> Timestamp,
         updated_at -> Timestamp,
+        public -> Bool,
     }
 }
 
@@ -23,7 +24,7 @@ table! {
         id -> Int4,
         timeline_id -> Int4,
         user_id -> Int4,
-        relation -> crate::database_types::UserRole,
+        relation -> crate::db_types::UserRole,
         created_at -> Timestamp,
         updated_at -> Timestamp,
     }
