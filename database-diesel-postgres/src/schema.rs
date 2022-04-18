@@ -6,6 +6,7 @@ table! {
         body -> Nullable<Text>,
         created_at -> Timestamp,
         updated_at -> Timestamp,
+        done -> Nullable<Bool>,
     }
 }
 

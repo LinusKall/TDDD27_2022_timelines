@@ -1,3 +1,8 @@
+/*use chrono::naive::NaiveDateTime;
+use super::schema::users;
+use super::diesel::prelude::*;
+use super::diesel::pg::PgConnection;*/
+
 #[derive(Queryable)]
 pub struct User {
     pub id: i32,
