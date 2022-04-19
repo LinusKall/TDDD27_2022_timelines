@@ -18,7 +18,7 @@ argon2 = "0.4.0"
 chrono = "0.4.19"
 
 # The ORM used for sending queries to Postgres
-diesel = { version = "1.4.7", features = ["postgres", "chrono"] }
+diesel = { version = "1.4.8", features = ["postgres", "chrono"] }
 diesel-derive-enum = { version = "1.1.2", features = ["postgres"] }
 
 # get directory specific environmental variables.
