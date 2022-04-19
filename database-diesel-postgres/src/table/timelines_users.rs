@@ -42,5 +42,5 @@ pub fn add_user_to_timeline<'a>(
     diesel::insert_into(timelines_users::table)
         .values(&new_timeline_user)
         .get_result(conn)
-        .expect("Error saving new event")
+        .expect("Error adding user to timeline")
 }

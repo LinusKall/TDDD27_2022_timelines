@@ -77,5 +77,5 @@ pub fn create_task<'a>(
     diesel::insert_into(events::table)
         .values(&new_task)
         .get_result(conn)
-        .expect("Error saving new event")
+        .expect("Error saving new task")
 }
