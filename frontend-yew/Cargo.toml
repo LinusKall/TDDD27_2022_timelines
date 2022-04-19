@@ -8,3 +8,4 @@ author = ["Edvin Kjell <edvkj374@studentliu.se>", "Linus Käll <linka231@student
 
 [dependencies]
 yew = "0.19.0"
+web-sys = "0.3.57"
