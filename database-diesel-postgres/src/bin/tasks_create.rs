@@ -4,7 +4,7 @@ extern crate diesel;
 use chrono::NaiveDateTime;
 
 use self::db::establish_connection;
-use self::db::events::*;
+use self::db::table::events::*;
 use std::io::{stdin, Read};
 
 fn main() {
@@ -35,7 +35,8 @@ fn main() {
     println!("Type the end time with the format: YYYY-mm-dd HH:MM");
     let mut end_time = String::new();
     stdin().read_to_string(&mut end_time).unwrap();
-    let end_time = NaiveDateTime::parse_from_str(end_time.trim(), "%Y-%m-%d %H:%M").expect("Could not parse the end time");
+    let end_time = NaiveDateTime::parse_from_str(end_time.trim(), "%Y-%m-%d %H:%M")
+        .expect("Could not parse the end time");
 
     let event = create_task(&connection, id, title, body, end_time);
 

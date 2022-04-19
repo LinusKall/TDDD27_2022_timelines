@@ -2,7 +2,7 @@ extern crate database_diesel_postgres as db;
 extern crate diesel;
 
 use self::db::establish_connection;
-use self::db::timelines::*;
+use self::db::table::timelines::*;
 use self::diesel::prelude::*;
 use std::env::args;
 

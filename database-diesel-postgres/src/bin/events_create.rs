@@ -2,9 +2,9 @@ extern crate database_diesel_postgres as db;
 extern crate diesel;
 
 use self::db::establish_connection;
-use self::db::events::*;
-use std::io::{stdin, Read};
+use self::db::table::events::*;
 use chrono::naive::NaiveDateTime;
+use std::io::{stdin, Read};
 
 fn main() {
     let connection = establish_connection();
@@ -34,13 +34,14 @@ fn main() {
     println!("Type the start time with the format: YYYY-mm-dd HH:MM");
     let mut start_time = String::new();
     stdin().read_to_string(&mut start_time).unwrap();
-    let start_time = NaiveDateTime::parse_from_str(start_time.trim(), "%Y-%m-%d %H:%M").expect("Could not parse the start time");
+    let start_time = NaiveDateTime::parse_from_str(start_time.trim(), "%Y-%m-%d %H:%M")
+        .expect("Could not parse the start time");
 
     println!("Type the end time with the format: YYYY-mm-dd HH:MM");
     let mut end_time = String::new();
     stdin().read_to_string(&mut end_time).unwrap();
-    let end_time = NaiveDateTime::parse_from_str(end_time.trim(), "%Y-%m-%d %H:%M").expect("Could not parse the end time");
-
+    let end_time = NaiveDateTime::parse_from_str(end_time.trim(), "%Y-%m-%d %H:%M")
+        .expect("Could not parse the end time");
 
     let event = create_event(&connection, id, title, body, Some(start_time), end_time);
 
