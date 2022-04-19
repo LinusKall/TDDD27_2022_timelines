@@ -1,14 +1,14 @@
-//use diesel_derive_enum::DbEnum;
+// use diesel_derive_enum::DbEnum;
 use crate::diesel::pg::PgConnection;
 use crate::diesel::prelude::*;
-use crate::models::Clearance;
+use crate::models::enums::*;
 use crate::schema::timelines_users;
 use chrono::naive::NaiveDateTime;
 
-#[derive(Queryable)]
+#[derive(Debug, Queryable)]
 #[diesel(belongs_to(Timeline))]
 #[diesel(belongs_to(User))]
-struct TimelinesUsers {
+pub struct TimelinesUsers {
     pub timeline_id: i32,
     pub user_id: i32,
     pub relation: Clearance,
@@ -17,12 +17,12 @@ struct TimelinesUsers {
     pub updated_at: NaiveDateTime,
 }
 
-#[derive(Insertable)]
+#[derive(Debug, Insertable)]
 #[table_name = "timelines_users"]
-struct NewTimelineUser<'a> {
+pub struct NewTimelineUser<'a> {
     pub timeline_id: i32,
     pub user_id: i32,
-    pub relation: Clearance,
+    pub relation: &'a Clearance,
     pub color: &'a str,
 }
 
@@ -30,7 +30,7 @@ pub fn add_user_to_timeline<'a>(
     conn: &PgConnection,
     timeline_id: i32,
     user_id: i32,
-    relation: Clearance,
+    relation: &'a Clearance,
     color: &'a str,
 ) -> TimelinesUsers {
     let new_timeline_user = NewTimelineUser {

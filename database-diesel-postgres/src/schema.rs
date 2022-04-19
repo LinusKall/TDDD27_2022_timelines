@@ -1,6 +1,6 @@
 table! {
     use diesel::sql_types::*;
-    use crate::models::*;
+    use crate::models::enums::*;
 
     events (id) {
         id -> Int4,
@@ -17,7 +17,7 @@ table! {
 
 table! {
     use diesel::sql_types::*;
-    use crate::models::*;
+    use crate::models::enums::*;
 
     sub_events (id) {
         id -> Int4,
@@ -31,7 +31,7 @@ table! {
 
 table! {
     use diesel::sql_types::*;
-    use crate::models::*;
+    use crate::models::enums::*;
 
     timelines (id) {
         id -> Int4,
@@ -44,12 +44,12 @@ table! {
 
 table! {
     use diesel::sql_types::*;
-    use crate::models::*;
+    use crate::models::enums::*;
 
     timelines_users (timeline_id, user_id) {
         timeline_id -> Int4,
         user_id -> Int4,
-        relation -> Clearance,
+        relation -> ClearanceMapping,
         color -> Text,
         created_at -> Timestamp,
         updated_at -> Timestamp,
@@ -58,7 +58,7 @@ table! {
 
 table! {
     use diesel::sql_types::*;
-    use crate::models::*;
+    use crate::models::enums::*;
 
     users (id) {
         id -> Int4,
