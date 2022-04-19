@@ -9,6 +9,7 @@ CREATE TABLE timelines_users (
     timeline_id SERIAL NOT NULL REFERENCES timelines (id),
     user_id SERIAL NOT NULL REFERENCES users (id),
     relation user_role NOT NULL,
+    color TEXT NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

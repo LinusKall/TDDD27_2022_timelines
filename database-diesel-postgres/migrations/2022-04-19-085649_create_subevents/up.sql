@@ -1,13 +1,9 @@
 -- Your SQL goes here
-
-CREATE TABLE events (
+CREATE TABLE sub_events (
     id SERIAL PRIMARY KEY,
-    timeline_id SERIAL NOT NULL REFERENCES timelines (id),
+    event_id SERIAL NOT NULL REFERENCES events (id),
     title TEXT NOT NULL,
-    body TEXT,
     done BOOLEAN DEFAULT NULL,
-    start_time TIMESTAMP DEFAULT NULL,
-    end_time TIMESTAMP NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

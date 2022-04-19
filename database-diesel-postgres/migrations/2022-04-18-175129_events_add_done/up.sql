@@ -1,2 +1,0 @@
--- Your SQL goes here
-ALTER TABLE events ADD COLUMN done BOOLEAN DEFAULT NULL;
