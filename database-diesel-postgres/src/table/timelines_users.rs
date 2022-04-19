@@ -1,4 +1,3 @@
-// use diesel_derive_enum::DbEnum;
 use crate::diesel::pg::PgConnection;
 use crate::diesel::prelude::*;
 use crate::models::enums::*;
