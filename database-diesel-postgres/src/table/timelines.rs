@@ -1,6 +1,6 @@
-use super::diesel::pg::PgConnection;
-use super::diesel::prelude::*;
-use super::schema::timelines;
+use crate::diesel::pg::PgConnection;
+use crate::diesel::prelude::*;
+use crate::schema::timelines;
 use chrono::naive::NaiveDateTime;
 
 #[derive(Queryable)]
