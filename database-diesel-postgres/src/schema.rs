@@ -1,4 +1,7 @@
 table! {
+    use diesel::sql_types::*;
+    use crate::models::*;
+
     events (id) {
         id -> Int4,
         timeline_id -> Int4,
@@ -13,6 +16,9 @@ table! {
 }
 
 table! {
+    use diesel::sql_types::*;
+    use crate::models::*;
+
     sub_events (id) {
         id -> Int4,
         event_id -> Int4,
@@ -24,6 +30,9 @@ table! {
 }
 
 table! {
+    use diesel::sql_types::*;
+    use crate::models::*;
+
     timelines (id) {
         id -> Int4,
         title -> Text,
@@ -34,11 +43,13 @@ table! {
 }
 
 table! {
-    timelines_users (id) {
-        id -> Int4,
+    use diesel::sql_types::*;
+    use crate::models::*;
+
+    timelines_users (timeline_id, user_id) {
         timeline_id -> Int4,
         user_id -> Int4,
-        relation -> crate::db_types::UserRole,
+        relation -> Clearance,
         color -> Text,
         created_at -> Timestamp,
         updated_at -> Timestamp,
@@ -46,6 +57,9 @@ table! {
 }
 
 table! {
+    use diesel::sql_types::*;
+    use crate::models::*;
+
     users (id) {
         id -> Int4,
         username -> Text,
@@ -61,4 +75,10 @@ joinable!(sub_events -> events (event_id));
 joinable!(timelines_users -> timelines (timeline_id));
 joinable!(timelines_users -> users (user_id));
 
-allow_tables_to_appear_in_same_query!(events, sub_events, timelines, timelines_users, users,);
+allow_tables_to_appear_in_same_query!(
+    events,
+    sub_events,
+    timelines,
+    timelines_users,
+    users,
+);
