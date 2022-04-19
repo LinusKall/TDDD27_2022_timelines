@@ -1,6 +1,6 @@
-mod task_list_component;
-use task_list_component::*;
+mod app;
+use app::*;
 
 fn main() {
-    yew::start_app::<TaskListComponent>();
+    yew::start_app::<App>();
 }

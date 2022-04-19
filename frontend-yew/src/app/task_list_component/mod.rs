@@ -26,11 +26,15 @@ impl Component for TaskListComponent {
 
     fn view(&self, ctx: &Context<Self>) -> Html {
         let onkeypress = ctx.link().batch_callback(|e: KeyboardEvent| {
-            if e.key() == "Enter" {
+            if e.key() == "Enter"{
                 let input: InputElement = e.target_unchecked_into();
-                let value = input.value();
-                input.set_value("");
-                Some(Self::Message::AddTask(value))
+                if input.value() != "" {
+                    let value = input.value();
+                    input.set_value("");
+                    Some(Self::Message::AddTask(value))
+                } else {
+                    None
+                }
             } else {
                 None
             }
