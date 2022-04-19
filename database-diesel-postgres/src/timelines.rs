@@ -7,9 +7,9 @@ use chrono::naive::NaiveDateTime;
 pub struct Timeline {
     pub id: i32,
     pub title: String,
+    pub public: bool,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
-    pub public: bool,
 }
 
 #[derive(Insertable)]

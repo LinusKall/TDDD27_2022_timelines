@@ -6,11 +6,14 @@ use self::db::events::*;
 use self::diesel::prelude::*;
 use std::env::args;
 
-
 fn main() {
     use db::schema::events::dsl::*;
 
-    let tl_id: i32 = args().nth(1).expect("Expected a timeline ID as an argument.").parse().unwrap();
+    let tl_id: i32 = args()
+        .nth(1)
+        .expect("Expected a timeline ID as an argument.")
+        .parse()
+        .unwrap();
 
     let connection = establish_connection();
     let results = events
