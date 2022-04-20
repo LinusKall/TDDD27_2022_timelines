@@ -1,5 +1,5 @@
 [package]
-name = "frontend-yew"
+name = "frontend_yew"
 version = "0.1.0"
 edition = "2021"
 author = ["Edvin Kjell <edvkj374@studentliu.se>", "Linus Käll <linka231@studentliu.se>", "Sebastian Frisenfelt <sebfr298@studentliu.se>"]
@@ -7,4 +7,5 @@ author = ["Edvin Kjell <edvkj374@studentliu.se>", "Linus Käll <linka231@student
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+#### MVC ####
 yew = "0.19.0"

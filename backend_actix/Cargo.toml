@@ -1,0 +1,35 @@
+[package]
+name = "backend_actix"
+version = "0.1.0"
+edition = "2021"
+author = ["Edvin Kjell <edvkj374@studentliu.se>", "Linus Käll <linka231@studentliu.se>", "Sebastian Frisenfelt <sebfr298@studentliu.se>"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+#### Web server ####
+actix-web = "4.0.0"
+
+
+#### ORM ####
+diesel = "1.4.8"
+
+
+#### GraphQL ####
+juniper = "0.15.9"
+
+
+#### Crypt ####
+
+## Used for OsRng
+rand_core = { version = "0.6.3", features = ["std"] }
+
+## Used for hasing and verifying passwords
+## https://crates.io/crates/argon2
+argon2 = "0.4.0"
+
+
+#### Time ####
+
+## Better types for time
+chrono = "0.4.19"

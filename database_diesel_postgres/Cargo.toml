@@ -1,0 +1,26 @@
+[package]
+name = "database_diesel_postgres"
+version = "0.1.0"
+authors = ["Edvin Kjell <edvkj374@studentliu.se>", "Linus Käll <linka231@studentliu.se>", "Sebastian Frisenfelt <sebfr298@studentliu.se>"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+#### ORM ####
+
+## The ORM used for sending queries to Postgres
+diesel = { version = "1.4.8", features = ["postgres", "chrono"] }
+diesel-derive-enum = { version = "1.1.2", features = ["postgres"] }
+
+
+#### Time ####
+
+## Better types for time
+chrono = "0.4.19"
+
+
+#### Env ####
+
+## Get directory specific environmental variables.
+dotenv = "0.15.0"
