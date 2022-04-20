@@ -1,5 +1,6 @@
 use yew::prelude::*;
 use web_sys::HtmlInputElement as InputElement;
+use super::task_list_component::TaskListComponent;
 
 pub struct ListSelector {
     timelines: Vec<String>
@@ -7,7 +8,7 @@ pub struct ListSelector {
 
 pub enum Msg {
     AddList(String),
-    OpenList
+    OpenList(String),
 }
 
 impl Component for ListSelector {
@@ -21,7 +22,7 @@ impl Component for ListSelector {
     fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
             Msg::AddList(list) => {self.timelines.push(list); true},
-            Msg::OpenList => {false}
+            Msg::OpenList(list) => {false}
         }
     }
 
@@ -47,7 +48,7 @@ impl Component for ListSelector {
                     placeholder="Add a new timeline"
                     {onkeypress}
                 />
-                {for self.timelines.iter().map(|list| html! {<button>{list}</button>})}
+                {for self.timelines.iter().map(|list| html! {<button onclick={ctx.link().callback(|_| Msg::OpenList)}>{list}</button>})}
             </div>
         }
     }

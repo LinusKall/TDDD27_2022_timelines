@@ -41,6 +41,7 @@ impl Component for TaskListComponent {
         });
         html! {
             <div class="task_list">
+                <h2>{"Timeline_name"}</h2> // Swap this with variable passed down by parent
                 <input
                     type="new_todo"
                     placeholder="What needs to be done?"
