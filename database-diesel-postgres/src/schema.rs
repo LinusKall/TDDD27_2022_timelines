@@ -49,7 +49,7 @@ table! {
     timelines_users (timeline_id, user_id) {
         timeline_id -> Int4,
         user_id -> Int4,
-        relation -> ClearanceMapping,
+        relation -> Clearance_mapping,
         color -> Text,
         created_at -> Timestamp,
         updated_at -> Timestamp,
@@ -75,4 +75,10 @@ joinable!(sub_events -> events (event_id));
 joinable!(timelines_users -> timelines (timeline_id));
 joinable!(timelines_users -> users (user_id));
 
-allow_tables_to_appear_in_same_query!(events, sub_events, timelines, timelines_users, users,);
+allow_tables_to_appear_in_same_query!(
+    events,
+    sub_events,
+    timelines,
+    timelines_users,
+    users,
+);
