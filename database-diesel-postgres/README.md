@@ -47,7 +47,8 @@ Second, here is an example of how the corresponding enum should look in Rust:
  * 
  * PgType is the name of the enum exactly as it is defined in the SQL.
  * 
- * DieselType is the name of the type that the Diesel Cli will autmatically generate from the definition in the SQL.
+ * DieselType is the name of the type that the Diesel Cli will autmatically generate
+ * from the definition in the SQL.
  */
 #[derive(Debug, DbEnum)]
 #[DbValueStyle = "SCREAMING_SNAKE_CASE"]
