@@ -17,7 +17,7 @@ Most of the guides from the following are also useful: [https://diesel.rs/guides
 
 # NOTICE: When making enums
 
-To make the enum experience less painless use these two rules:
+To make the enum experience less painless, use these two rules:
 
 First, here is an example of how you should define your enum in SQL:
 
