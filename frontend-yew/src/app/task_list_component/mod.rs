@@ -2,11 +2,13 @@ use yew::prelude::*;
 use web_sys::HtmlInputElement as InputElement;
 use yew::Callback;
 
+use super::Timeline;
+
 #[function_component(TaskListComponent)]
 pub fn task_list_component() -> Html {
     let tasks = use_state(|| Vec::new());
+    let timeline_context = use_context::<Timeline>();
     let tasks_clone = tasks.clone();
-    let title = use_state(|| "Test".to_owned());
     let onkeypress = Callback::from(move |e: KeyboardEvent| {
         if e.key() == "Enter"{
             let tasks = tasks_clone.clone();
@@ -24,7 +26,7 @@ pub fn task_list_component() -> Html {
     });
     html! {
         <div class="task_list">
-            <h2>{&*title}</h2> 
+            <h2>{timeline_context.unwrap_or_default().name}</h2> 
             <input
                 type="new_todo"
                 placeholder="What needs to be done?"
