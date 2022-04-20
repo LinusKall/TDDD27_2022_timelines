@@ -1,4 +1,3 @@
-extern crate argon2;
 #[macro_use]
 extern crate diesel;
 extern crate dotenv;
