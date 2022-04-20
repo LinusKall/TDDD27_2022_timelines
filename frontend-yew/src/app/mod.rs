@@ -10,7 +10,7 @@ use list_selector_component::*;
 pub fn app() -> Html {
     html! {
         <div>
-            <ListSelector/>
+            <ListSelectorComponent/>
             <TaskListComponent/>
         </div>
     }
