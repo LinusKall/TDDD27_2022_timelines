@@ -3,6 +3,7 @@ pub mod list_selector_component;
 
 use std::ops::Deref;
 
+use gloo::console::log;
 use yew::prelude::*;
 use task_list_component::*;
 use list_selector_component::*;
@@ -18,11 +19,14 @@ pub struct Timeline {
 #[function_component(App)]
 pub fn app() -> Html {
     let timeline_state = use_state(Timeline::default);
-    let timeline_state_clone = timeline_state.clone();
-    let timeline_switch = Callback::from(move |name: String| {
-        let mut timeline = timeline_state_clone.deref().clone();
-        timeline.name = name;
-    });
+    let timeline_switch = {
+        let timeline_state = timeline_state.clone();
+        Callback::from(move |name: String| {
+            let mut timeline = timeline_state.deref().clone();
+            timeline.name = name;
+            timeline_state.set(timeline);
+        })
+    };
     html! {
         <ContextProvider<Timeline> context={timeline_state.deref().clone()}>
             <ListSelectorComponent chosen_timeline={timeline_switch}/>

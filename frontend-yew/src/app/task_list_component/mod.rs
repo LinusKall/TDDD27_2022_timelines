@@ -1,3 +1,4 @@
+use gloo::console::log;
 use yew::prelude::*;
 use web_sys::HtmlInputElement as InputElement;
 use yew::Callback;
