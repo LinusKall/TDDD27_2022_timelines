@@ -1,7 +1,8 @@
 #[macro_use]
 extern crate diesel;
-extern crate dotenv;
+extern crate dotenvy;
 
+pub mod api;
 pub mod models;
 #[allow(unused_imports)]
 pub mod schema;
@@ -9,7 +10,7 @@ pub mod table;
 
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
-use dotenv::dotenv;
+use dotenvy::dotenv;
 use std::env;
 
 pub fn establish_connection() -> PgConnection {

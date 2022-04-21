@@ -1,0 +1,19 @@
+schema {
+  query: Query
+}
+
+type Timeline {
+  id: Int!
+  title: String!
+  public: Boolean!
+  createdAt: NaiveDateTime!
+  updatedAt: NaiveDateTime!
+}
+
+type Query {
+  apiVersion: String!
+  timelines: [Timeline!]!
+}
+
+# NaiveDateTime
+scalar NaiveDateTime
