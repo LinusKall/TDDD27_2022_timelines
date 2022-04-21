@@ -1,8 +1,8 @@
-mod calender_component;
-use calender_component::*;
+mod calender;
+use calender::*;
 use yew::prelude::*;
-mod color_picker_function;
-use color_picker_function::*;
+mod color_picker;
+use color_picker::*;
 
 
 #[derive(Debug, PartialEq, Clone, Default)]
