@@ -1,4 +1,4 @@
-use gloo::console::log;
+// use gloo::console::log;
 use yew::prelude::*;
 use web_sys::HtmlInputElement as InputElement;
 use yew::Callback;
@@ -33,9 +33,18 @@ pub fn task_list() -> Html {
                 placeholder="What needs to be done?"
                 {onkeypress}
             />
-            <ul class="item_list">
-                {for (*tasks).iter().map(|task| html! {<li>{task}</li>})}
-            </ul>
+            <div class="item_list">
+                { 
+                    for (*tasks).iter().map(|task| 
+                        html! {
+                            <div styles="display: block;">
+                                <input type="checkbox" id={task.clone()} name={task.clone()}/>
+                                <label for={task.clone()}>{task}</label>
+                            </div>
+                        }
+                    )
+                }
+            </div>
         </div>
     }
 }

@@ -3,7 +3,7 @@ pub mod list_selector;
 
 use std::ops::Deref;
 
-use gloo::console::log;
+// use gloo::console::log;
 use yew::prelude::*;
 use task_list::*;
 use list_selector::*;
@@ -29,8 +29,10 @@ pub fn app() -> Html {
     };
     html! {
         <ContextProvider<Timeline> context={timeline_state.deref().clone()}>
+        <div class="list_view">
             <ListSelector chosen_timeline={timeline_switch}/>
             <TaskList/>
+        </div>
         </ContextProvider<Timeline>>
     }
 }

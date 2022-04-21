@@ -2,7 +2,7 @@ use wasm_bindgen::JsCast;
 use yew::prelude::*;
 use web_sys::HtmlInputElement as InputElement;
 use web_sys::HtmlButtonElement;
-use super::Timeline;
+// use super::Timeline;
 
 #[derive(Debug, Clone, Properties, PartialEq)]
 pub struct Props {
@@ -13,7 +13,7 @@ pub struct Props {
 pub fn list_selector(props: &Props) -> Html {
     let timelines = use_state(|| vec!["List1".to_owned(), "List2".to_owned(), "List3".to_owned()]);
     let timelines_clone = timelines.clone();
-    let timeline_context = use_context::<Timeline>();
+    // let timeline_context = use_context::<Timeline>();
     let onkeypress = Callback::from(move |e: KeyboardEvent| {
         if e.key() == "Enter"{
             let timelines = timelines_clone.clone();
@@ -43,7 +43,16 @@ pub fn list_selector(props: &Props) -> Html {
                 placeholder="Add a new timeline"
                 {onkeypress}
             />
-            {for (*timelines).clone().iter().map(|list| html! {<button onclick={onclick.clone()} name={(*list).clone()}>{list}</button>})}
+            <div class="available_timelines">
+                {
+                    for (*timelines)
+                        .clone()
+                        .iter()
+                        .map(|timeline| html! {
+                            <button onclick={onclick.clone()} name={(*timeline).clone()}>{timeline}</button>
+                        })
+                }
+            </div>
         </div>
     }
 }
