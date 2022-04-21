@@ -1,12 +1,12 @@
-pub mod task_list_component;
-pub mod list_selector_component;
+pub mod task_list;
+pub mod list_selector;
 
 use std::ops::Deref;
 
 use gloo::console::log;
 use yew::prelude::*;
-use task_list_component::*;
-use list_selector_component::*;
+use task_list::*;
+use list_selector::*;
 use yew::ContextProvider;
 
 #[derive(Debug, PartialEq, Clone, Default)]
@@ -29,8 +29,8 @@ pub fn app() -> Html {
     };
     html! {
         <ContextProvider<Timeline> context={timeline_state.deref().clone()}>
-            <ListSelectorComponent chosen_timeline={timeline_switch}/>
-            <TaskListComponent/>
+            <ListSelector chosen_timeline={timeline_switch}/>
+            <TaskList/>
         </ContextProvider<Timeline>>
     }
 }

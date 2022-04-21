@@ -9,8 +9,8 @@ pub struct Props {
     pub chosen_timeline: Callback<String>,
 }
 
-#[function_component(ListSelectorComponent)]
-pub fn list_selector_component(props: &Props) -> Html {
+#[function_component(ListSelector)]
+pub fn list_selector(props: &Props) -> Html {
     let timelines = use_state(|| vec!["List1".to_owned(), "List2".to_owned(), "List3".to_owned()]);
     let timelines_clone = timelines.clone();
     let timeline_context = use_context::<Timeline>();
