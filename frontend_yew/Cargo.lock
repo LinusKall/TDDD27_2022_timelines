@@ -68,7 +68,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "frontend-yew"
+name = "frontend_yew"
 version = "0.1.0"
 dependencies = [
  "gloo 0.7.0",
