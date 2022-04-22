@@ -1,12 +1,13 @@
 use reqwasm::http::Request;
-use yew::prelude::*;
 use yew::functional::UseStateHandle;
+use yew::prelude::*;
 
 // https://yew.rs/docs/tutorial#fetching-data-using-external-rest-api
 
 pub fn read_request(string_handle: &UseStateHandle<String>) {
     let resp = (*string_handle).clone();
-        use_effect_with_deps(move |_| {
+    use_effect_with_deps(
+        move |_| {
             let resp = resp.clone();
             wasm_bindgen_futures::spawn_local(async move {
                 let fetched: String = Request::get("/test")
@@ -19,14 +20,15 @@ pub fn read_request(string_handle: &UseStateHandle<String>) {
                 resp.set(fetched);
             });
             || ()
-        }, ());
+        },
+        (),
+    );
 }
-
 
 #[function_component(App)]
 pub fn app() -> Html {
     let resp = use_state_eq(|| String::from("Hello world!"));
-    
+
     read_request(&resp);
 
     html! {
@@ -34,5 +36,4 @@ pub fn app() -> Html {
             { &(*resp) }
         </div>
     }
-    
 }
