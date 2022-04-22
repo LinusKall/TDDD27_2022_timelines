@@ -19,6 +19,8 @@ pub struct Timeline {
 #[function_component(App)]
 pub fn app() -> Html {
     let timeline_state = use_state(Timeline::default);
+    // TODO: Read users data into timeline_state.
+
     let timeline_switch = {
         let timeline_state = timeline_state.clone();
         Callback::from(move |name: String| {
@@ -27,10 +29,11 @@ pub fn app() -> Html {
             timeline_state.set(timeline);
         })
     };
+
     html! {
         <ContextProvider<Timeline> context={timeline_state.deref().clone()}>
         <div class="list_view">
-            <ListSelector chosen_timeline={timeline_switch}/>
+            <ListSelector current_timeline={timeline_switch}/>
             <TaskList/>
         </div>
         </ContextProvider<Timeline>>
