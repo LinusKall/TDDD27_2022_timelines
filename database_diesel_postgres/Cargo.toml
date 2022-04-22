@@ -16,7 +16,8 @@ chrono = "0.4.19"
 
 #### GraphQL ####
 juniper = "0.15.9"
-cynic = { version = "1.0.0" }
+graphql_api = { path = "../graphql_api" }
+
 
 #### Env ####
 dotenvy = "0.15.1"

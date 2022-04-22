@@ -1,4 +1,4 @@
-pub mod query;
+use graphql_api as query;
 use diesel::prelude::*;
 use juniper::{graphql_object, FieldResult, EmptyMutation, EmptySubscription, RootNode, FieldError};
 use crate::schema::*;
