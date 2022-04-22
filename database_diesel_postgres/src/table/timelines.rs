@@ -4,8 +4,8 @@ use crate::diesel::prelude::*;
 use crate::schema::timelines;
 use chrono::naive::NaiveDateTime;
 
-#[derive(Queryable)]
-#[derive(GraphQLObject)]
+#[derive(GraphQLObject, Clone, Queryable, Identifiable)]
+#[table_name = "timelines"]
 pub struct Timeline {
     pub id: i32,
     pub title: String,

@@ -1,11 +1,13 @@
 use crate::diesel::pg::PgConnection;
 use crate::diesel::prelude::*;
 use crate::schema::sub_events;
+use crate::table::events::Event;
 use chrono::naive::NaiveDateTime;
 
 
-#[derive(Queryable)]
-#[diesel(belongs_to(Event))]
+#[derive(Queryable, Identifiable, Associations)]
+#[belongs_to(Event)]
+#[table_name = "sub_events"]
 pub struct SubEvent {
     pub id: i32,
     pub event_id: i32,
