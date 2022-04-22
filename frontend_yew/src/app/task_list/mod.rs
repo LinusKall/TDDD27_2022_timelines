@@ -1,8 +1,8 @@
 // use gloo::console::log;
-use yew::prelude::*;
-use web_sys::HtmlInputElement as InputElement;
-use yew::Callback;
 use super::Timeline;
+use web_sys::HtmlInputElement as InputElement;
+use yew::prelude::*;
+use yew::Callback;
 
 #[function_component(TaskList)]
 pub fn task_list() -> Html {
@@ -13,7 +13,7 @@ pub fn task_list() -> Html {
     let onkeypress = {
         let tasks = tasks.clone();
         Callback::from(move |e: KeyboardEvent| {
-            if e.key() == "Enter"{
+            if e.key() == "Enter" {
                 let mut tasklist = (*tasks).clone();
                 let input: InputElement = e.target_unchecked_into();
                 if input.value() != "" {
@@ -21,7 +21,7 @@ pub fn task_list() -> Html {
                     input.set_value("");
                     tasklist.push(value.to_owned());
                     tasks.set(tasklist);
-                } else { 
+                } else {
                 }
             } else {
             }
@@ -30,7 +30,7 @@ pub fn task_list() -> Html {
 
     html! {
         <div class="task_list">
-            <h2>{timeline_context.unwrap_or_default().name}</h2> 
+            <h2>{timeline_context.unwrap_or_default().name}</h2>
 
             <input
                 type="new_todo"
@@ -39,8 +39,8 @@ pub fn task_list() -> Html {
             />
 
             <div class="item_list">
-                { 
-                    for (*tasks).iter().map(|task| 
+                {
+                    for (*tasks).iter().map(|task|
                         html! {
                             <div styles="display: block;">
                                 <input type="checkbox" class={"checkbox"} id={task.clone()} name={task.clone()}/>

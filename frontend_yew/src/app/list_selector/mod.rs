@@ -1,7 +1,7 @@
 use wasm_bindgen::JsCast;
-use yew::prelude::*;
-use web_sys::HtmlInputElement as InputElement;
 use web_sys::HtmlButtonElement;
+use web_sys::HtmlInputElement as InputElement;
+use yew::prelude::*;
 // use super::Timeline;
 
 #[derive(Debug, Clone, Properties, PartialEq)]
@@ -14,11 +14,11 @@ pub fn list_selector(props: &Props) -> Html {
     let timelines = use_state(|| Vec::new());
     // let timeline_context = use_context::<Timeline>();
     // TODO: Read users timelines into timelines.
-    
+
     let onkeypress = {
         let timelines = timelines.clone();
         Callback::from(move |e: KeyboardEvent| {
-            if e.key() == "Enter"{
+            if e.key() == "Enter" {
                 let mut timeline_list = (*timelines).clone();
                 let input: InputElement = e.target_unchecked_into();
                 if input.value() != "" {
@@ -26,7 +26,7 @@ pub fn list_selector(props: &Props) -> Html {
                     input.set_value("");
                     timeline_list.push(value);
                     timelines.set(timeline_list);
-                } else { 
+                } else {
                 }
             } else {
             }

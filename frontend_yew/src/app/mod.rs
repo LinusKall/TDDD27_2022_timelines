@@ -1,12 +1,12 @@
-pub mod task_list;
 pub mod list_selector;
+pub mod task_list;
 
 use std::ops::Deref;
 
 // use gloo::console::log;
-use yew::prelude::*;
-use task_list::*;
 use list_selector::*;
+use task_list::*;
+use yew::prelude::*;
 use yew::ContextProvider;
 
 #[derive(Debug, PartialEq, Clone, Default)]
