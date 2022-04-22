@@ -1,0 +1,22 @@
+[package]
+name = "database_diesel_postgres"
+version = "0.1.0"
+authors = ["Edvin Kjell <edvkj374@studentliu.se>", "Linus Käll <linka231@studentliu.se>", "Sebastian Frisenfelt <sebfr298@studentliu.se>"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+#### ORM ####
+diesel = { version = "1.4.8", features = ["postgres", "chrono", "r2d2"] }
+diesel-derive-enum = { version = "1.1.2", features = ["postgres"] } # https://kitsu.me/posts/2020_05_24_custom_types_in_diesel
+
+#### Time ####
+chrono = "0.4.19"
+
+#### GraphQL ####
+juniper = "0.15.9"
+cynic = { version = "1.0.0" }
+
+#### Env ####
+dotenvy = "0.15.1"

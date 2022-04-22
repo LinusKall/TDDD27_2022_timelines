@@ -1,0 +1,84 @@
+body {
+    margin: 1em;
+
+    .list_view {
+        display: grid;
+        grid-template-areas:
+            "list_selector list";
+        grid-template-columns: 1fr 2fr;
+        grid-template-rows: 1fr;
+
+        .list_selector {
+            grid-area: list_selector;
+            background-color: coral;
+            font-size: 20px;
+            display: grid;
+            grid-template-areas:
+                "timeline_creator"
+                "available_timelines";
+            grid-template-columns: 1fr;
+            grid-template-rows: 30px auto;
+
+            input {
+                font-size: 20px;
+                text-align: center;
+                grid-area: timeline_creator;
+            }
+
+            .available_timelines {
+                grid-area: available_timelines;
+
+                button {
+                    display: block;
+                }
+            }
+        }
+
+        .task_list {
+            grid-area: list;
+            background-color: coral;
+            font-size: 20px;
+            display: grid;
+            grid-template-areas:
+                "title"
+                "input"
+                "list";
+            grid-template-columns: 1fr;
+            grid-template-rows: 50px 30px auto;
+
+            h2 {
+                margin-top: 0.5rem;
+                text-align: center;
+                grid-area: title;
+            }
+
+            input {
+                font-size: 20px;
+                text-align: center;
+                grid-area: input;
+            }
+
+            ul {
+                grid-area: list;
+                padding: 3px;
+
+                li {
+                    background-color: white;
+                    margin: 2px 10px;
+                    padding: 3px;
+                    list-style: none;
+
+                    &::before {
+                        content: "";
+                        display: inline-block;
+                        height: 5px;
+                        width: 5px;
+                        background-color: white;
+                        border: 4px solid green;
+                        margin: 0 10px -0.5px 10px;
+                    }
+                }
+            }
+        }
+    }
+}

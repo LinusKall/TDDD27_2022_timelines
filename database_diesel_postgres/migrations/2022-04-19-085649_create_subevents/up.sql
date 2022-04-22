@@ -1,0 +1,9 @@
+-- Your SQL goes here
+CREATE TABLE sub_events (
+    id SERIAL PRIMARY KEY,
+    event_id SERIAL NOT NULL REFERENCES events (id),
+    title TEXT NOT NULL,
+    done BOOLEAN DEFAULT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
