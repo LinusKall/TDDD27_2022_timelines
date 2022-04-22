@@ -1,4 +1,4 @@
-mod database;
+use db::api::*;
 
 use actix_cors::Cors;
 use actix_files as fs;
@@ -8,7 +8,6 @@ use actix_web::{
     web::{self, Data},
     get, Responder, App, Error, HttpResponse, HttpServer,
 };
-use database::*;
 use juniper_actix::{graphiql_handler, graphql_handler, playground_handler};
 
 async fn graphiql_route() -> Result<HttpResponse, Error> {
@@ -37,7 +36,7 @@ async fn test() -> impl Responder {
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
-            .app_data(Data::new(database::schema()))
+            .app_data(Data::new(schema()))
             .wrap(
                 Cors::default()
                     .allow_any_origin()
