@@ -13,11 +13,11 @@ fn main() {
         .load::<Event>(&connection)
         .expect("Error loading posts");
 
-    println!("Displaying {} events", results.len());
+    println!("Displaying {} tasks", results.len());
     for event in results {
         match event.done {
-            Some(_) => {},
-            None => println!("{:?}", event),
+            Some(_) => println!("{:?}", event),
+            None => {},
         }
     }
 }
