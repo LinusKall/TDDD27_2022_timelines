@@ -85,7 +85,7 @@ impl Database {
                             timeline_id: timeline.id,
                             title: event.title.clone(), 
                             body: event.body.clone(),
-                            start_time: event.start_time.unwrap(),
+                            start_time: event.start_time,
                             end_time: event.end_time,
                         });
                     }

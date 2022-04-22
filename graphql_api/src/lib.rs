@@ -23,7 +23,7 @@ pub struct Event {
     pub timeline_id: i32,
     pub title: String,
     pub body: Option<String>,
-    pub start_time: NaiveDateTime,
+    pub start_time: Option<NaiveDateTime>,
     pub end_time: NaiveDateTime,
 }
 
