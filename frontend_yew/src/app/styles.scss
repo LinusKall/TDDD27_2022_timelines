@@ -4,8 +4,8 @@ body {
     .list_view {
         display: grid;
         grid-template-areas:
-            "list_selector list";
-        grid-template-columns: 1fr 2fr;
+            "list_selector list info";
+        grid-template-columns: 1fr 2fr 1fr;
         grid-template-rows: 1fr;
 
         .list_selector {
@@ -64,6 +64,20 @@ body {
 
             .checkbox {
                 font-size: 20px;
+            }
+        }
+
+        .task_info {
+            grid-area: info;
+            grid-template-areas:
+                "title";
+            grid-template-columns: 1fr;
+            grid-template-rows: 50px;
+
+            h2 {
+                grid-area: title;
+                text-align: center;
+                cursor: default;
             }
         }
     }

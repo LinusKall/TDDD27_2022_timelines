@@ -1,11 +1,17 @@
 // use gloo::console::log;
+use super::task::Task;
 use super::Timeline;
 use web_sys::HtmlInputElement as InputElement;
 use yew::prelude::*;
 use yew::Callback;
 
+#[derive(Debug, Properties, PartialEq)]
+pub struct Props {
+    pub task_update: Callback<String>,
+}
+
 #[function_component(TaskList)]
-pub fn task_list() -> Html {
+pub fn task_list(props: &Props) -> Html {
     let tasks = use_state(|| Vec::new());
     let timeline_context = use_context::<Timeline>();
     // TODO: Read from context into tasks here.
@@ -28,6 +34,13 @@ pub fn task_list() -> Html {
         })
     };
 
+    let task_switch = {
+        let message = props.task_update.clone();
+        Callback::from(move |name: String| {
+            message.emit(name);
+        })
+    };
+
     html! {
         <div class="task_list">
             <h2>{timeline_context.unwrap_or_default().name}</h2>
@@ -42,10 +55,7 @@ pub fn task_list() -> Html {
                 {
                     for (*tasks).iter().map(|task|
                         html! {
-                            <div styles="display: block;">
-                                <input type="checkbox" class={"checkbox"} id={task.clone()} name={task.clone()}/>
-                                <label for={task.clone()}>{task}</label>
-                            </div>
+                            <Task title={task.clone()} get_task_name={task_switch.clone()}/>
                         }
                     )
                 }
