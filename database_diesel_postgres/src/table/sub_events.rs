@@ -5,7 +5,7 @@ use crate::table::events::Event;
 use chrono::naive::NaiveDateTime;
 
 
-#[derive(Queryable, Identifiable, Associations)]
+#[derive(Debug, Queryable, Identifiable, Associations)]
 #[belongs_to(Event)]
 #[table_name = "sub_events"]
 pub struct SubEvent {
@@ -32,7 +32,7 @@ pub struct NewSubTask<'a> {
     pub done: Option<bool>,
 }
 
-pub fn create_event<'a>(
+pub fn create_sub_event<'a>(
     conn: &PgConnection,
     event_id: i32,
     title: &'a str,
@@ -48,7 +48,7 @@ pub fn create_event<'a>(
         .expect("Error saving new sub event")
 }
 
-pub fn create_task<'a>(
+pub fn create_sub_task<'a>(
     conn: &PgConnection,
     event_id: i32,
     title: &'a str,

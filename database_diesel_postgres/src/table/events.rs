@@ -4,7 +4,7 @@ use crate::schema::events;
 use crate::table::timelines::Timeline;
 use chrono::naive::NaiveDateTime;
 
-#[derive(Queryable, Identifiable, Associations)]
+#[derive(Debug, Queryable, Identifiable, Associations)]
 #[belongs_to(Timeline)]
 #[table_name = "events"]
 pub struct Event {
