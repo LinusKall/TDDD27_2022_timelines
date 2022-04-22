@@ -7,6 +7,9 @@ author = ["Edvin Kjell <edvkj374@studentliu.se>", "Linus Käll <linka231@student
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+#### Database ####
+db = { package = "database_diesel_postgres", path = "../database_diesel_postgres" }
+
 #### MVC ####
 yew = { version = "0.19.3" }
 
