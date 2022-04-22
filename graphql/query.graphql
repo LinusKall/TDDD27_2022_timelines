@@ -1,6 +1,0 @@
-query Query {
-    apiVersion,
-    timelines {
-        title
-    }
-}

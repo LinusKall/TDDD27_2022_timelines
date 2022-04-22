@@ -2,14 +2,17 @@ use graphql_client::{GraphQLQuery, Response};
 use wasm_bindgen_futures::spawn_local;
 use yew::functional::UseStateHandle;
 use yew::prelude::*;
+// use graphql_api::Userdata;
 
 #[derive(GraphQLQuery)]
 #[graphql(
     schema_path = "../graphql_api/schema.graphql",
-    query_path = "../graphql_api/apiVersion.graphql",
+    query_path = "../graphql_api/userdata.graphql",
     response_derives = "Debug"
 )]
 struct Query;
+
+// continue here: https://github.com/graphql-rust/graphql-client/tree/main/examples/github
 
 pub fn full_request(string_handle: &UseStateHandle<String>) {
     let handle = (*string_handle).clone();
@@ -29,7 +32,7 @@ pub fn full_request(string_handle: &UseStateHandle<String>) {
 
                 let response_body: Response<query::ResponseData> =
                     res.json().await.expect("Could not parse response");
-                handle.set(format!("{:#?}", response_body));
+                handle.set(format!("{:?}", response_body));
             });
             || ()
         },

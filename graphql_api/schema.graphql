@@ -1,0 +1,45 @@
+type Event {
+  id: Int!
+  timelineId: Int!
+  title: String!
+  body: String
+  startTime: NaiveDateTime!
+  endTime: NaiveDateTime!
+}
+
+type Userdata {
+  id: Int!
+  timelines: [Timeline!]!
+}
+
+type Task {
+  id: Int!
+  timelineId: Int!
+  title: String!
+  body: String
+  done: Boolean!
+  endTime: NaiveDateTime!
+  subTasks: [SubTask!]!
+}
+
+type Timeline {
+  id: Int!
+  color: String!
+  events: [Event!]!
+  tasks: [Task!]!
+}
+
+# NaiveDateTime
+scalar NaiveDateTime
+
+type Query {
+  apiVersion: String!
+  userdata(id: Int!, hashedPassword: String!): Userdata!
+}
+
+type SubTask {
+  id: Int!
+  taskId: Int!
+  title: String!
+  done: Boolean!
+}
