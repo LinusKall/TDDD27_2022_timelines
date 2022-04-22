@@ -1,10 +1,12 @@
 use crate::diesel::pg::PgConnection;
 use crate::diesel::prelude::*;
 use crate::schema::events;
+use crate::table::timelines::Timeline;
 use chrono::naive::NaiveDateTime;
 
-#[derive(Queryable)]
-#[diesel(belongs_to(Timeline))]
+#[derive(Queryable, Identifiable, Associations)]
+#[belongs_to(Timeline)]
+#[table_name = "events"]
 pub struct Event {
     pub id: i32,
     pub timeline_id: i32,

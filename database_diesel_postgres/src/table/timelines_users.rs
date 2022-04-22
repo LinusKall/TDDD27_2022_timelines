@@ -2,12 +2,16 @@ use crate::diesel::pg::PgConnection;
 use crate::diesel::prelude::*;
 use crate::models::enums::*;
 use crate::schema::timelines_users;
+use crate::table::timelines::Timeline;
+use crate::table::users::User;
 use chrono::naive::NaiveDateTime;
 
-#[derive(Debug, Queryable)]
-#[diesel(belongs_to(Timeline))]
-#[diesel(belongs_to(User))]
+#[derive(Debug, Clone, Identifiable, Queryable, Associations)]
+#[belongs_to(Timeline)]
+#[belongs_to(User)]
+#[table_name = "timelines_users"]
 pub struct TimelinesUsers {
+    pub id : i32,
     pub timeline_id: i32,
     pub user_id: i32,
     pub relation: Clearance,

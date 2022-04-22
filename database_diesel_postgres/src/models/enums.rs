@@ -12,7 +12,7 @@ use diesel_derive_enum::DbEnum;
  * 
  * DieselType is the name of the type that the Diesel Cli will autmatically generate from the definition in the SQL.
  */
-#[derive(Debug, DbEnum)]
+#[derive(Debug, Clone, DbEnum)]
 #[DbValueStyle = "SCREAMING_SNAKE_CASE"]
 #[PgType = "clearance_mapping"]
 #[DieselType = "Clearance_mapping"]

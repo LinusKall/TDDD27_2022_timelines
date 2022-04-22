@@ -46,7 +46,8 @@ table! {
     use diesel::sql_types::*;
     use crate::models::enums::*;
 
-    timelines_users (timeline_id, user_id) {
+    timelines_users (id) {
+        id -> Int4,
         timeline_id -> Int4,
         user_id -> Int4,
         relation -> Clearance_mapping,
