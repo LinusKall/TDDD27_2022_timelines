@@ -2,6 +2,7 @@ use graphql_client::{GraphQLQuery, Response};
 use wasm_bindgen_futures::spawn_local;
 use yew::functional::UseStateHandle;
 use yew::prelude::*;
+use weblog::console_log;
 // use graphql_api::Userdata;
 
 #[derive(GraphQLQuery)]
@@ -32,7 +33,9 @@ pub fn full_request(string_handle: &UseStateHandle<String>) {
 
                 let response_body: Response<query::ResponseData> =
                     res.json().await.expect("Could not parse response");
-                handle.set(format!("{:?}", response_body));
+                let data = response_body.data.unwrap();
+                console_log!(format!("{:#?}", &data));
+                handle.set(format!("{:?}", &data));
             });
             || ()
         },

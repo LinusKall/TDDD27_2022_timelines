@@ -1,6 +1,6 @@
 query Query {
     apiVersion
-    userdata(id: 4, hashedPassword: "password") {
+    userdata(id: 3, hashedPassword: "password") {
         id
         timelines {
             id
@@ -8,10 +8,18 @@ query Query {
             events {
                 id
                 timelineId
+                title
             }
             tasks {
+                title
                 id
                 timelineId
+                done
+                subTasks {
+                    id
+                    title
+                    done
+                }
             }
         }
     }
