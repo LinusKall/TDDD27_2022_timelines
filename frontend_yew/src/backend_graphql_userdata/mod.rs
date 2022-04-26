@@ -1,8 +1,8 @@
 use graphql_client::{GraphQLQuery, Response};
 use wasm_bindgen_futures::spawn_local;
+use weblog::console_log;
 use yew::functional::UseStateHandle;
 use yew::prelude::*;
-use weblog::console_log;
 // use graphql_api::Userdata;
 
 #[derive(GraphQLQuery)]
@@ -50,7 +50,7 @@ pub fn app() -> Html {
     full_request(&resp);
 
     html! {
-        <div styles="background-color: red;">
+        <div>
             { &(*resp) }
         </div>
     }

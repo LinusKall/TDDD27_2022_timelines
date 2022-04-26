@@ -27,7 +27,7 @@ fn main() {
         &connection,
         timeline.id,
         "party!",
-        Some("västerås!"),
+        Some("yeah!"),
         Some(NaiveDate::from_ymd(2022, 4, 30).and_hms(16, 0, 0)),
         NaiveDate::from_ymd(2022, 4, 30).and_hms(23, 0, 0),
     );
@@ -35,7 +35,7 @@ fn main() {
         &connection,
         timeline.id,
         "prepare!",
-        Some("västerås!"),
+        Some("yeah!"),
         NaiveDate::from_ymd(2022, 4, 28).and_hms(20, 0, 0),
     );
     let sub_task = table::sub_events::create_sub_task(&connection, task.id, "pack clothes!");
