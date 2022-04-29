@@ -17,6 +17,8 @@ async fn test() -> impl Responder {
     HttpResponse::Ok().body("Hello from backend!")
 }
 
+// https://github.com/lucperkins/rust-graphql-juniper-actix-diesel-postgres
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenvy::dotenv().ok();
