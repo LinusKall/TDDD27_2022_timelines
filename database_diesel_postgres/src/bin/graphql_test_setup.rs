@@ -28,17 +28,17 @@ fn main() {
         timeline.id,
         "party!",
         Some("yeah!"),
-        Some(NaiveDate::from_ymd(2022, 4, 30).and_hms(16, 0, 0)),
+        NaiveDate::from_ymd(2022, 4, 30).and_hms(16, 0, 0),
         NaiveDate::from_ymd(2022, 4, 30).and_hms(23, 0, 0),
     );
-    let task = table::events::create_task(
+    let task = table::tasks::create_task(
         &connection,
         timeline.id,
         "prepare!",
         Some("yeah!"),
         NaiveDate::from_ymd(2022, 4, 28).and_hms(20, 0, 0),
     );
-    let sub_task = table::sub_events::create_sub_task(&connection, task.id, "pack clothes!");
+    let sub_task = table::sub_tasks::create_sub_task(&connection, task.id, "pack clothes!");
 
     println!("Created user: {:#?}", user);
     println!("Created timeline: {:#?}", timeline);
@@ -49,8 +49,8 @@ fn main() {
 }
 
 fn delete_sub_events(connection: &PgConnection) {
-    use crate::db::schema::sub_events::dsl::*;
-    let num_deleted = diesel::delete(sub_events)
+    use crate::db::schema::sub_tasks::dsl::*;
+    let num_deleted = diesel::delete(sub_tasks)
         .execute(connection)
         .expect("Error deleting sub_events");
     println!("Deleted {} sub-events.", num_deleted);

@@ -15,9 +15,6 @@ fn main() {
 
     println!("Displaying {} events", results.len());
     for event in results {
-        match event.done {
-            Some(_) => {},
-            None => println!("{:?}", event),
-        }
+        println!("{:?}", event);
     }
 }

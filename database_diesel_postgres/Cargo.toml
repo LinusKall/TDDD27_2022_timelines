@@ -18,6 +18,11 @@ chrono = "0.4.19"
 juniper = "0.15.9"
 graphql_api = { path = "../graphql_api" }
 
-
 #### Env ####
 dotenvy = "0.15.1"
+
+#### Web Server ####
+actix-web = "4.0.0"
+
+#### Thread Pool ####
+r2d2 = "0.8.9"

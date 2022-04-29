@@ -408,8 +408,10 @@ dependencies = [
  "cynic",
  "database_diesel_postgres",
  "diesel",
+ "dotenvy",
  "juniper",
  "juniper_actix",
+ "r2d2",
  "rand_core 0.6.3",
 ]
 
@@ -708,12 +710,14 @@ dependencies = [
 name = "database_diesel_postgres"
 version = "0.1.0"
 dependencies = [
+ "actix-web",
  "chrono",
  "diesel",
  "diesel-derive-enum",
  "dotenvy",
  "graphql_api",
  "juniper",
+ "r2d2",
 ]
 
 [[package]]

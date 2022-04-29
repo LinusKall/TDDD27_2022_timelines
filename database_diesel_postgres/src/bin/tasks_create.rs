@@ -4,7 +4,7 @@ extern crate diesel;
 use chrono::NaiveDateTime;
 
 use self::db::establish_connection;
-use self::db::table::events::*;
+use self::db::table::tasks::*;
 use std::io::{stdin, Read};
 
 fn main() {

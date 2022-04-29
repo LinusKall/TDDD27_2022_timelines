@@ -7,8 +7,7 @@ table! {
         timeline_id -> Int4,
         title -> Text,
         body -> Nullable<Text>,
-        done -> Nullable<Bool>,
-        start_time -> Nullable<Timestamp>,
+        start_time -> Timestamp,
         end_time -> Timestamp,
         created_at -> Timestamp,
         updated_at -> Timestamp,
@@ -19,11 +18,27 @@ table! {
     use diesel::sql_types::*;
     use crate::models::enums::*;
 
-    sub_events (id) {
+    sub_tasks (id) {
         id -> Int4,
-        event_id -> Int4,
+        task_id -> Int4,
         title -> Text,
-        done -> Nullable<Bool>,
+        done -> Bool,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
+    }
+}
+
+table! {
+    use diesel::sql_types::*;
+    use crate::models::enums::*;
+
+    tasks (id) {
+        id -> Int4,
+        timeline_id -> Int4,
+        title -> Text,
+        body -> Nullable<Text>,
+        done -> Bool,
+        end_time -> Timestamp,
         created_at -> Timestamp,
         updated_at -> Timestamp,
     }
@@ -72,13 +87,15 @@ table! {
 }
 
 joinable!(events -> timelines (timeline_id));
-joinable!(sub_events -> events (event_id));
+joinable!(sub_tasks -> tasks (task_id));
+joinable!(tasks -> timelines (timeline_id));
 joinable!(timelines_users -> timelines (timeline_id));
 joinable!(timelines_users -> users (user_id));
 
 allow_tables_to_appear_in_same_query!(
     events,
-    sub_events,
+    sub_tasks,
+    tasks,
     timelines,
     timelines_users,
     users,

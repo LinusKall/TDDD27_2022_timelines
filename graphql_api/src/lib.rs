@@ -6,7 +6,17 @@ use serde::Deserialize;
 #[derive(GraphQLObject, Deserialize)]
 pub struct Userdata {
     pub id: i32,
-    pub timelines: Vec<Timeline>,   
+    pub timelines: Vec<Timeline>,
+}
+
+#[derive(GraphQLObject, Deserialize)]
+pub struct User {
+    pub id: i32,
+    pub username: String,
+    pub email: String,
+    pub hashed_password: String,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
 }
 
 #[derive(GraphQLObject, Deserialize)]
@@ -23,7 +33,7 @@ pub struct Event {
     pub timeline_id: i32,
     pub title: String,
     pub body: Option<String>,
-    pub start_time: Option<NaiveDateTime>,
+    pub start_time: NaiveDateTime,
     pub end_time: NaiveDateTime,
 }
 
