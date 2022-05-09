@@ -1,13 +1,25 @@
 use chrono::naive::NaiveDateTime;
 use juniper::GraphQLObject;
+// use graphql_client::{GraphQLQuery, Response};
+use serde::Deserialize;
 
-#[derive(GraphQLObject)]
+#[derive(GraphQLObject, Deserialize)]
 pub struct Userdata {
     pub id: i32,
-    pub timelines: Vec<Timeline>,   
+    pub timelines: Vec<Timeline>,
 }
 
-#[derive(GraphQLObject)]
+#[derive(GraphQLObject, Deserialize)]
+pub struct User {
+    pub id: i32,
+    pub username: String,
+    pub email: String,
+    pub hashed_password: String,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
+}
+
+#[derive(GraphQLObject, Deserialize)]
 pub struct Timeline {
     pub id: i32,
     pub color: String,
@@ -15,7 +27,7 @@ pub struct Timeline {
     pub tasks: Vec<Task>,
 }
 
-#[derive(GraphQLObject)]
+#[derive(GraphQLObject, Deserialize)]
 pub struct Event {
     pub id: i32,
     pub timeline_id: i32,
@@ -25,7 +37,7 @@ pub struct Event {
     pub end_time: NaiveDateTime,
 }
 
-#[derive(GraphQLObject)]
+#[derive(GraphQLObject, Deserialize)]
 pub struct Task {
     pub id: i32,
     pub timeline_id: i32,
@@ -36,7 +48,7 @@ pub struct Task {
     pub sub_tasks: Vec<SubTask>,
 }
 
-#[derive(GraphQLObject)]
+#[derive(GraphQLObject, Deserialize)]
 pub struct SubTask {
     pub id: i32,
     pub task_id: i32,

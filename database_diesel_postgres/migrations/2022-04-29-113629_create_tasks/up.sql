@@ -1,9 +1,12 @@
 -- Your SQL goes here
-CREATE TABLE sub_events (
+
+CREATE TABLE tasks (
     id SERIAL PRIMARY KEY,
-    event_id SERIAL NOT NULL REFERENCES events (id),
+    timeline_id SERIAL NOT NULL REFERENCES timelines (id),
     title TEXT NOT NULL,
-    done BOOLEAN DEFAULT NULL,
+    body TEXT,
+    done BOOLEAN NOT NULL DEFAULT false,
+    end_time TIMESTAMP NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

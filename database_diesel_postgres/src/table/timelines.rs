@@ -1,10 +1,9 @@
-use juniper::GraphQLObject;
 use crate::diesel::pg::PgConnection;
 use crate::diesel::prelude::*;
 use crate::schema::timelines;
 use chrono::naive::NaiveDateTime;
 
-#[derive(GraphQLObject, Clone, Queryable, Identifiable)]
+#[derive(Debug, Clone, Queryable, Identifiable)]
 #[table_name = "timelines"]
 pub struct Timeline {
     pub id: i32,

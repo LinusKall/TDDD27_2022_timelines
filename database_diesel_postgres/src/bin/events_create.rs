@@ -43,7 +43,7 @@ fn main() {
     let end_time = NaiveDateTime::parse_from_str(end_time.trim(), "%Y-%m-%d %H:%M")
         .expect("Could not parse the end time");
 
-    let event = create_event(&connection, id, title, body, Some(start_time), end_time);
+    let event = create_event(&connection, id, title, body, start_time, end_time);
 
     println!("\nSaved event {:?} with id {:?}", title, event.id);
 }

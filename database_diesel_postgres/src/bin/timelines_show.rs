@@ -10,13 +10,11 @@ fn main() {
 
     let connection = establish_connection();
     let results = timelines
-        //.filter(public.eq(true))
-        //.limit(5)
         .load::<Timeline>(&connection)
         .expect("Error loading posts");
 
     println!("Displaying {} timelines", results.len());
     for timeline in results {
-        println!("{}: {}", timeline.id, timeline.title);
+        println!("{:?}", timeline);
     }
 }

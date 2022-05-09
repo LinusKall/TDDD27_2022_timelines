@@ -1,42 +1,34 @@
-use db::api::*;
+mod graphql;
 
 use actix_cors::Cors;
 use actix_files as fs;
 use actix_web::{
+    get,
     http::header,
     middleware,
     web::{self, Data},
-    get, Responder, App, Error, HttpResponse, HttpServer,
+    App, HttpResponse, HttpServer, Responder,
 };
-use juniper_actix::{graphiql_handler, graphql_handler, playground_handler};
-
-async fn graphiql_route() -> Result<HttpResponse, Error> {
-    graphiql_handler("/graphql", None).await
-}
-
-async fn playground_route() -> Result<HttpResponse, Error> {
-    playground_handler("/graphql", None).await
-}
-
-async fn graphql_route(
-    req: actix_web::HttpRequest,
-    payload: actix_web::web::Payload,
-    schema: web::Data<Schema>,
-) -> Result<HttpResponse, Error> {
-    let context = Database::new();
-    graphql_handler(&schema, &context, req, payload).await
-}
+use db::api::{schema, Database};
+use graphql::*;
 
 #[get("/test")]
 async fn test() -> impl Responder {
     HttpResponse::Ok().body("Hello from backend!")
 }
 
+// https://github.com/lucperkins/rust-graphql-juniper-actix-diesel-postgres
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| {
+    dotenvy::dotenv().ok();
+
+    let db_context = Database::new();
+
+    HttpServer::new(move || {
         App::new()
             .app_data(Data::new(schema()))
+            .app_data(Data::new(db_context.clone()))
             .wrap(
                 Cors::default()
                     .allow_any_origin()

@@ -37,3 +37,11 @@ argon2 = "0.4.0"
 
 #### Time ####
 chrono = "0.4.19"
+
+
+#### Env ####
+dotenvy = "0.15.1"
+
+
+#### Thread Pool ####
+r2d2 = "0.8.9"

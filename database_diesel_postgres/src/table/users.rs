@@ -3,7 +3,7 @@ use crate::diesel::prelude::*;
 use crate::schema::users;
 use chrono::naive::NaiveDateTime;
 
-#[derive(Queryable, Identifiable)]
+#[derive(Debug, Queryable, Identifiable)]
 #[table_name = "users"]
 pub struct User {
     pub id: i32,
