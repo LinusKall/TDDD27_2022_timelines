@@ -5,9 +5,11 @@ pub mod task;
 pub mod task_info;
 pub mod task_list;
 pub mod login;
+pub mod signup;
 
 use list_view::*;
 use login::*;
+use signup::*;
 
 //------------------------------------Routing-------------
 use yew_router::prelude::*;
@@ -16,6 +18,8 @@ use yew_router::prelude::*;
 pub enum Route {
     #[at("/login")]
     Login,
+    #[at("/signup")]
+    Signup,
     #[at("/listview")]
     ListView,
     #[at("/timelines")]
@@ -26,7 +30,6 @@ pub enum Route {
     #[at("/404")]
     NotFound,
 }
-
 
 // History function compoonent
 #[function_component(Secure)]
@@ -45,6 +48,7 @@ fn secure() -> Html {
 fn switch(routes: &Route) -> Html {
     match routes {
         Route::Login => html! {<Login/>},
+        Route::Signup => html! {<Signup/>},
         Route::ListView => html! {<ListView/>},
         Route::Home => html! { <h1>{ "Home" }</h1> },
         Route::Secure => html! {
@@ -53,7 +57,6 @@ fn switch(routes: &Route) -> Html {
         Route::NotFound => html! { <h1>{ "404" }</h1> },
     }
 }
-
 
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -64,6 +67,7 @@ pub type User = Rc<UserInner>;
 pub struct UserInner {
     pub username: RefCell<String>,
     pub password: RefCell<String>,
+    pub email:    RefCell<String>,
 }
 
 //------------------------------------Routing-------------
@@ -75,6 +79,7 @@ pub fn app() -> Html {
         Rc::new(UserInner {
             username: RefCell::new("initial".into()),
             password: RefCell::new("initial".into()),
+            email:    RefCell::new("initial".into()),
         })
     });
 
