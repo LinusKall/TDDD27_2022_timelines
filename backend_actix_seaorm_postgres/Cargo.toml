@@ -1,0 +1,43 @@
+[package]
+name = "backend_actix_seaorm_postgres"
+version = "0.1.0"
+edition = "2021"
+
+[workspace]
+members = [".", "entity", "migration"]
+
+[dependencies]
+#### Web server ####
+actix-web = "4.0.0"
+actix-files = "0.6.0"
+actix-cors = "0.6.1"
+
+
+#### GraphQL ####
+async-graphql-actix-web = "3.0.38"
+
+
+#### Crypt ####
+
+## Used for OsRng
+rand_core = { version = "0.6.3", features = ["std"] }
+
+## Used for hasing and verifying passwords https://crates.io/crates/argon2
+argon2 = "0.4.0"
+
+
+#### Time ####
+chrono = "0.4.19"
+
+
+#### Env ####
+dotenvy = "0.15.1"
+
+
+#### ORM ####
+entity = { path = "entity" }
+migration = { path = "migration" }
+[dependencies.sea-orm]
+version = "0.8.0"
+features = [ "sqlx-postgres", "sqlx-chrono", "runtime-actix-native-tls", "macros" ]
+
