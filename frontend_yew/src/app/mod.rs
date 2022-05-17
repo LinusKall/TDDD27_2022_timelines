@@ -16,6 +16,8 @@ use yew_router::prelude::*;
 pub enum Route {
     #[at("/login")]
     Login,
+    #[at("/listview")]
+    ListView,
     #[at("/timelines")]
     Home,
     #[at("/secure")]
@@ -25,6 +27,8 @@ pub enum Route {
     NotFound,
 }
 
+
+// History function compoonent
 #[function_component(Secure)]
 fn secure() -> Html {
     let history = use_history().unwrap();
@@ -40,7 +44,8 @@ fn secure() -> Html {
 
 fn switch(routes: &Route) -> Html {
     match routes {
-        Route::Login => html! {<Login />},
+        Route::Login => html! {<Login/>},
+        Route::ListView => html! {<ListView/>},
         Route::Home => html! { <h1>{ "Home" }</h1> },
         Route::Secure => html! {
             <Secure />
@@ -58,11 +63,10 @@ pub type User = Rc<UserInner>;
 #[derive(Debug, PartialEq)]
 pub struct UserInner {
     pub username: RefCell<String>,
+    pub password: RefCell<String>,
 }
 
 //------------------------------------Routing-------------
-
-
 
 #[function_component(App)]
 pub fn app() -> Html {
@@ -70,6 +74,7 @@ pub fn app() -> Html {
     let ctx = use_state(|| {
         Rc::new(UserInner {
             username: RefCell::new("initial".into()),
+            password: RefCell::new("initial".into()),
         })
     });
 
@@ -77,7 +82,6 @@ pub fn app() -> Html {
         <ContextProvider<User> context={(*ctx).clone()}>
         <BrowserRouter>
             <Switch<Route> render={Switch::render(switch)} />
-            <Login/>
         </BrowserRouter>
         </ContextProvider<User>>
     }
