@@ -9,6 +9,8 @@ use crate::User;
 // Consolelog
 use weblog::*;
 
+use regex::Regex;
+
 #[function_component(Signup)]
 pub fn signup() -> Html { 
     let username = use_state(String::default);
@@ -16,11 +18,14 @@ pub fn signup() -> Html {
     let email    = use_state(String::default);
     let valid_email = use_state(bool::default);
     let user = use_context::<User>().expect("No context found.");
+    
+    let validate = Regex::new(r"^[^ ]+@[^ ]+\.[a-z]{2,6}$").unwrap();
 
     let oninput = {
         let current_username = username.clone();
         let current_password = password.clone();
-        let current_email    = email.clone(); // TODO: Actually check that pattern is correct
+        let current_email    = email.clone();
+        let current_valid_email = valid_email.clone();
 
         Callback::from(move |e: InputEvent| {
             let input: HtmlInputElement = e.target_unchecked_into();
@@ -31,9 +36,11 @@ pub fn signup() -> Html {
                 current_password.set(input.value());
                 console_log!("Password: ", input.value());
             } else if input.name() == "email" {
-                if input.value().contains("@") && input.value().contains(".") {
-                    valid_email.set(true);
-                    console_log!("valid", *valid_email);
+                if validate.is_match(&input.value()) {
+                    current_valid_email.set(true);
+                    console_log!("valid", input.value());
+                } else {
+                    current_valid_email.set(false);
                 }
                 current_email.set(input.value());
             } else {
@@ -50,16 +57,18 @@ pub fn signup() -> Html {
 
     html! {
         <>
-            <div>
-                <input name="username" oninput = {oninput.clone()} placeholder="Username"/>
-            </div>
-            <div>
-                <input name="password" oninput = {oninput.clone()} type="password" placeholder="Password"/>
-            </div>
-            <div>
-                <input name="email" {oninput} type="email" id="email" placeholder="Email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+.[a-z]{2,4}$"/>
-            </div>
-            <Link<Route> to={Route::ListView}> <button onclick = {onclick.clone()} disabled={username.len()<4 || password.len()<8 || !email.contains(".") || !email.contains("@")  }>{"Create account"}</button></Link<Route>>
+            <form>
+                <div>
+                    <input name="username" oninput = {oninput.clone()} placeholder="Username"/>
+                </div>
+                <div>
+                    <input name="password" oninput = {oninput.clone()} type="password" placeholder="Password"/>
+                </div>
+                <div>
+                    <input name="email" {oninput} type="email" id="email" placeholder="Email"/>
+                </div>
+                <Link<Route> to={Route::ListView}> <button onclick = {onclick.clone()} disabled={username.len()<4 || password.len()<8 || !*valid_email}>{"Create account"}</button></Link<Route>>
+            </form>
         </>
     }
 }
