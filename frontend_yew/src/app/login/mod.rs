@@ -6,17 +6,30 @@ use yew_router::prelude::*;
 use crate::Route;
 use crate::User;
 
+// Consolelog
+use weblog::*;
+
 #[function_component(Login)]
 pub fn login() -> Html { 
     let username = use_state(|| String::new());
+    let password = use_state(|| String::new());
     let user = use_context::<User>().expect("No context found.");
 
     let oninput = {
         let current_username = username.clone();
+        let current_password = password.clone();
 
         Callback::from(move |e: InputEvent| {
             let input: HtmlInputElement = e.target_unchecked_into();
-            current_username.set(input.value());
+            if input.name() == "username" {
+                current_username.set(input.value());
+                console_log!("Username: ", input.value());
+            } else if input.name() == "password" {
+                current_password.set(input.value());
+                console_log!("Password: ", input.value());
+            } else {
+                console_error!("Should be impossible to get here");
+            }
         })
     };
 
@@ -27,13 +40,26 @@ pub fn login() -> Html {
     };
 
     html! {
-        <div class="bg-gray-800 flex w-screen">
-            <div class="container mx-auto flex flex-col justify-center items-center	">
-                <form class="m-4 flex">
-                    <input {oninput} class="rounded-l-lg p-4 border-t mr-0 border-b border-l text-gray-800 border-gray-200 bg-white" placeholder="Username"/>
-                    <Link<Route> to={Route::Home}> <button {onclick} disabled={username.len()<1} class="px-8 rounded-r-lg bg-violet-600	  text-white font-bold p-4 uppercase border-violet-600 border-t border-b border-r" >{"Go home!"}</button></Link<Route>>
-                </form>
+        <>
+            <div>
+                <input name="username" oninput = {oninput.clone()} placeholder="Username"/>
             </div>
-        </div>
+            <div>
+                <input name="password" {oninput} type="password" placeholder="Password"/>
+            </div>
+            <Link<Route> to={Route::ListView}> <button onclick = {onclick.clone()} disabled={username.len()<4 || password.len()<8}>{"Log in"}</button></Link<Route>>
+            <Link<Route> to={Route::ListView}> <button {onclick}>{"Sign up"}</button></Link<Route>>
+        </>
     }
 }
+
+/* <div>
+    <label for="username">{"Username:"}</label>
+    <input type="text" id="username" name="username">
+</div>
+
+<div>
+    <label for="pass">{"Password (8 characters minimum):"}</label>
+    <input type="password" id="pass" name="password" minlength="8" required>
+</div>
+<input type="submit" value="Sign in"> */
