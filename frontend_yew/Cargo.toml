@@ -32,3 +32,6 @@ weblog = { version = "0.3.0" }
 
 #### Routing ####
 yew-router = "0.16"
+
+#### Regex ####
+regex = "1"
