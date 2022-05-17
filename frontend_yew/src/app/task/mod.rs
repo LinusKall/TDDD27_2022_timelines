@@ -1,10 +1,11 @@
 use wasm_bindgen::JsCast;
 use web_sys::HtmlButtonElement;
 use yew::prelude::*;
+use graphql_api as gql;
 
 #[derive(Debug, Properties, PartialEq)]
 pub struct Props {
-    pub title: String,
+    pub task: gql::Task,
     pub get_task_name: Callback<String>,
 }
 
