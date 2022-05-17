@@ -15,7 +15,7 @@ yew = { version = "0.19.3" }
 gloo = "0.7.0"
 wasm-bindgen = "0.2.80"
 reqwasm = "0.5"
-reqwest = { version = "0.11.10", features = ["json"] }
+# reqwest = { version = "0.11.10", features = [ "json" ] }
 web-sys = { version = "0.3.57", features = ["HtmlInputElement", "HtmlButtonElement"] }
 
 #### DeSerilaizing ####
@@ -26,11 +26,16 @@ serde_json = { version = "1.0" }
 wasm-bindgen-futures = "0.4"
 
 #### GraphQL ####
-graphql_client = { version = "0.10.0" }
 graphql_api = { path = "../graphql_api" }
+cynic = { version = "1.0.0", features = [ "surf-wasm-client" ] }
+surf = { version = "2.3.2", default-features = false, features = [ "wasm-client" ] }
 
 #### logging ####
 weblog = { version = "0.3.0" }
 
 #### Time ####
 chrono = { version = "0.4.19", features = ["wasmbind"] }
+
+
+[dev-dependencies]
+insta = "1.14.0"

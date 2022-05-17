@@ -1,19 +1,31 @@
-use graphql_client::{GraphQLQuery, Response};
+use cynic::{http::SurfExt, impl_scalar, QueryBuilder};
 use wasm_bindgen_futures::spawn_local;
 use weblog::console_log;
 use yew::functional::UseStateHandle;
 use yew::prelude::*;
-// use graphql_api::Userdata;
 
-#[derive(GraphQLQuery)]
-#[graphql(
-    schema_path = "../graphql_api/schema.graphql",
-    query_path = "../graphql_api/userdata.graphql",
-    response_derives = "Debug"
-)]
-struct Query;
+mod schema {
+    cynic::use_schema!("graphql/schema.graphql");
+}
 
-// continue here: https://github.com/graphql-rust/graphql-client/tree/main/examples/github
+type DateTime = chrono::DateTime<chrono::Utc>;
+impl_scalar!(DateTime, schema::DateTime);
+
+#[derive(cynic::QueryFragment, Debug)]
+#[cynic(schema_path = "graphql/schema.graphql", graphql_type = "Model")]
+struct Timeline {
+    id: i32,
+    title: String,
+    public: bool,
+    created_at: DateTime,
+    updated_at: DateTime,
+}
+
+#[derive(cynic::QueryFragment, Debug)]
+#[cynic(schema_path = "graphql/schema.graphql", graphql_type = "Query")]
+struct Query {
+    get_timelines: Vec<Timeline>,
+}
 
 pub fn full_request(string_handle: &UseStateHandle<String>) {
     let handle = (*string_handle).clone();
@@ -21,19 +33,14 @@ pub fn full_request(string_handle: &UseStateHandle<String>) {
         move |_| {
             let handle = handle.clone();
             spawn_local(async move {
-                let request_body = Query::build_query(query::Variables {});
+                let operation = Query::build(());
 
-                let client = reqwest::Client::new();
-                let res = client
-                    .post("http://localhost/graphql")
-                    .json(&request_body)
-                    .send()
+                let res = surf::post("http://localhost/api/graphql")
+                    .run_graphql(operation)
                     .await
                     .expect("Could not send request");
 
-                let response_body: Response<query::ResponseData> =
-                    res.json().await.expect("Could not parse response");
-                let data = response_body.data.unwrap();
+                let data: Query = res.data.unwrap();
                 console_log!(format!("{:#?}", &data));
                 handle.set(format!("{:?}", &data));
             });

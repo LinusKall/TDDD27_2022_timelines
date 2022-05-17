@@ -1,0 +1,32 @@
+input CreateTimelineInput {
+  title: String!
+  public: Boolean!
+}
+
+# Implement the DateTime<Utc> scalar
+#
+# The input/output is a string in RFC3339 format.
+scalar DateTime
+
+type DeleteResult {
+  success: Boolean!
+  rowsAffected: Int!
+}
+
+type Model {
+  id: Int!
+  title: String!
+  public: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Mutation {
+  createTimeline(input: CreateTimelineInput!): Model!
+  deleteTimeline(id: Int!): DeleteResult!
+}
+
+type Query {
+  getTimelines: [Model!]!
+  getTimelineById(id: Int!): Model
+}
