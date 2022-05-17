@@ -7,7 +7,7 @@ use yew::Callback;
 
 #[derive(Debug, Properties, PartialEq)]
 pub struct Props {
-    pub task_update: Callback<String>,
+    pub task_update: Callback<i32>,
 }
 
 #[function_component(TaskList)]
@@ -36,14 +36,14 @@ pub fn task_list(props: &Props) -> Html {
 
     let task_switch = {
         let message = props.task_update.clone();
-        Callback::from(move |task: gql::Task| {
-            message.emit(task);
+        Callback::from(move |taskid: i32| {
+            message.emit(taskid);
         })
     };
 
     html! {
         <div class="task_list">
-            <h2>{timeline_context.unwrap_or_default().name}</h2>
+            <h2>{timeline_context.unwrap_or_default().title}</h2>
 
             <input
                 type="new_todo"
@@ -55,7 +55,7 @@ pub fn task_list(props: &Props) -> Html {
                 {
                     for (*tasks).iter().map(|task|
                         html! {
-                            <Task title={task.clone()} get_task_name={task_switch.clone()}/>
+                            <Task id={"1"} title={task.clone()} get_task_name={task_switch.clone()}/>
                         }
                     )
                 }

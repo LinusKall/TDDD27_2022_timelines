@@ -1,4 +1,4 @@
-use graphql_api as gql;
+//use graphql_api::*;
 use wasm_bindgen::JsCast;
 use web_sys::HtmlButtonElement;
 use web_sys::HtmlInputElement as InputElement;
@@ -26,7 +26,7 @@ pub fn list_selector(props: &Props) -> Html {
                 if input.value() != "" {
                     let value = input.value();
                     input.set_value("");
-                    timeline_list.push(value);
+                    timeline_list.push(value.clone());
                     timelines.set(timeline_list);
                     added_timeline.emit(value);
                 } else {

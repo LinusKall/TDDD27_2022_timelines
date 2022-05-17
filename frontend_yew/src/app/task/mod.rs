@@ -1,12 +1,12 @@
 use wasm_bindgen::JsCast;
 use web_sys::HtmlButtonElement;
 use yew::prelude::*;
-use graphql_api as gql;
 
 #[derive(Debug, Properties, PartialEq)]
 pub struct Props {
-    pub task: gql::Task,
-    pub get_task_name: Callback<String>,
+    pub title: String,
+    pub id: String,
+    pub get_task_name: Callback<i32>,
 }
 
 #[function_component(Task)]
@@ -16,8 +16,8 @@ pub fn task(props: &Props) -> Html {
         Callback::from(move |e: MouseEvent| {
             let target = e.target().unwrap();
             let input = target.unchecked_into::<HtmlButtonElement>();
-            let value = input.name();
-            get_task_name.emit(value);
+            let value = input.id();
+            get_task_name.emit(value.parse().unwrap());
         })
     };
 
@@ -30,7 +30,7 @@ pub fn task(props: &Props) -> Html {
                 name={props.title.clone()}
             />
             <label for={props.title.clone()}></label>
-            <button name={props.title.clone()} onclick={onclick.clone()}>{props.title.clone()}</button>
+            <button id={props.id.clone()} name={props.title.clone()} onclick={onclick.clone()}>{props.title.clone()}</button>
         </div>
     }
 }

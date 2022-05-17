@@ -18,7 +18,7 @@ pub fn list_view() -> Html {
         Callback::from(move |name: String| {
             let mut timeline = timeline_state.deref().clone();
             timeline.title = name;
-            timeline_state.set(*timeline);
+            timeline_state.set(timeline);
         })
     };
     let timeline_add = {
@@ -28,30 +28,36 @@ pub fn list_view() -> Html {
             let mut timeline = Timeline::default();
             timeline.title = timelinename;
             ud.timelines.push(timeline);
-            user_data.set(*ud);
+            user_data.set(ud);
             // TODO: Set correct new id to timeline
         })
     };
     let task_switch = {
+        let highlited_task = highlited_task.clone();
         let timeline_state = timeline_state.clone();
-        Callback::from(move |task: Task| {
-            let mut timeline = timeline_state.deref().clone();
-            let mut task = Task::default();
-            tasks.title = taskname; 
-            timeline.tasks.push(task);
-            ud.timelines.push(timeline);
-            timeline_state.set(*timeline);
+        Callback::from(move |taskid: i32| {
+            let mut task = highlited_task.deref().clone();
+            let timeline = timeline_state.deref().clone();
+            for t in timeline.tasks.iter() {
+                if t.id == taskid {
+                    task.title = t.title.clone();
+                    break;
+                }
+            }
+            highlited_task.set(task);
         })
     };
 
     html! {
-        <ContextProvider<gql::Timeline> context={timeline_state.deref().clone()}>
         <div class="list_view">
-            <ListSelector current_timeline={timeline_switch} added_timeline={timeline_add}/>
-            <TaskList task_update={task_switch}/>
-            <TaskInfo/>
+            <ContextProvider<Timeline> context={timeline_state.deref().clone()}>
+                <ListSelector current_timeline={timeline_switch} added_timeline={timeline_add}/>
+                <TaskList task_update={task_switch}/>
+            </ContextProvider<Timeline>>
+            <ContextProvider<Task> context={highlited_task.deref().clone()}>
+                <TaskInfo/>
+            </ContextProvider<Task>>
         </div>
-        </ContextProvider<gql::Timeline>>
     }
 }
 
