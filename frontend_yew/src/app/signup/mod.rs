@@ -3,8 +3,8 @@ use yew::functional::*;
 use yew::prelude::*;
 use yew_router::prelude::*;
 
-use crate::Route;
-use crate::User;
+use super::Route;
+use super::User;
 
 // Consolelog
 use weblog::*;
@@ -12,19 +12,19 @@ use weblog::*;
 use regex::Regex;
 
 #[function_component(Signup)]
-pub fn signup() -> Html { 
+pub fn signup() -> Html {
     let username = use_state(String::default);
     let password = use_state(String::default);
-    let email    = use_state(String::default);
+    let email = use_state(String::default);
     let valid_email = use_state(bool::default);
     let user = use_context::<User>().expect("No context found.");
-    
+
     let validate = Regex::new(r"^[^ ]+@[^ ]+\.[a-z]{2,6}$").unwrap();
 
     let oninput = {
         let current_username = username.clone();
         let current_password = password.clone();
-        let current_email    = email.clone();
+        let current_email = email.clone();
         let current_valid_email = valid_email.clone();
 
         Callback::from(move |e: InputEvent| {

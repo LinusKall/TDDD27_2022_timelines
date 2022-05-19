@@ -3,14 +3,14 @@ use yew::functional::*;
 use yew::prelude::*;
 use yew_router::prelude::*;
 
-use crate::Route;
-use crate::User;
+use super::Route;
+use super::User;
 
 // Consolelog
 use weblog::*;
 
 #[function_component(Login)]
-pub fn login() -> Html { 
+pub fn login() -> Html {
     let username = use_state(|| String::new());
     let password = use_state(|| String::new());
     let user = use_context::<User>().expect("No context found.");
