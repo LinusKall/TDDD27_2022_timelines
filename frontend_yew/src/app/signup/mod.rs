@@ -31,14 +31,11 @@ pub fn signup() -> Html {
             let input: HtmlInputElement = e.target_unchecked_into();
             if input.name() == "username" {
                 current_username.set(input.value());
-                console_log!("Username: ", input.value());
             } else if input.name() == "password" {
                 current_password.set(input.value());
-                console_log!("Password: ", input.value());
             } else if input.name() == "email" {
                 if validate.is_match(&input.value()) {
                     current_valid_email.set(true);
-                    console_log!("valid", input.value());
                 } else {
                     current_valid_email.set(false);
                 }
