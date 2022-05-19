@@ -19,8 +19,8 @@ impl MigrationTrait for Migration {
             task_id SERIAL NOT NULL REFERENCES tasks (id),
             title TEXT NOT NULL,
             done BOOLEAN NOT NULL DEFAULT false,
-            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+            created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
         );"#;
         let stmt = Statement::from_string(manager.get_database_backend(), sql.to_owned());
         manager.get_connection().execute(stmt).await.map(|_| ())

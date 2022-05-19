@@ -21,8 +21,8 @@ impl MigrationTrait for Migration {
             body TEXT,
             start_time TIMESTAMP NOT NULL,
             end_time TIMESTAMP NOT NULL,
-            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+            created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
         );"#;
         let stmt = Statement::from_string(manager.get_database_backend(), sql.to_owned());
         manager.get_connection().execute(stmt).await.map(|_| ())
