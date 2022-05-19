@@ -36,6 +36,11 @@ weblog = { version = "0.3.0" }
 #### Time ####
 chrono = { version = "0.4.19", features = ["wasmbind"] }
 
+#### Routing ####
+yew-router = "0.16"
+
+#### Regex ####
+regex = "1"
 
 [dev-dependencies]
 insta = "1.14.0"
