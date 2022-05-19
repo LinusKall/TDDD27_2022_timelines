@@ -1,4 +1,3 @@
-use yew::prelude::*;
 pub mod list_selector;
 pub mod list_view;
 pub mod login;
@@ -7,23 +6,25 @@ pub mod task;
 pub mod task_info;
 pub mod task_list;
 
+use yew::prelude::*;
+use yew_router::prelude::*;
+
 use list_view::*;
 use login::*;
 use signup::*;
 
+use weblog::*;
+
 //------------------------------------Routing-------------
-use yew_router::prelude::*;
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum Route {
     #[at("/")]
+    ListView,
+    #[at("/login")]
     Login,
     #[at("/signup")]
     Signup,
-    #[at("/listview")]
-    ListView,
-    #[at("/timelines")]
-    Home,
     #[at("/secure")]
     Secure,
     #[not_found]
@@ -36,7 +37,7 @@ pub enum Route {
 fn secure() -> Html {
     let history = use_history().unwrap();
 
-    let onclick = Callback::once(move |_| history.push(Route::Home));
+    let onclick = Callback::once(move |_| history.push(Route::Login));
     html! {
         <div>
             <h1>{ "Secure" }</h1>
@@ -50,7 +51,6 @@ fn switch(routes: &Route) -> Html {
         Route::Login => html! {<Login/>},
         Route::Signup => html! {<Signup/>},
         Route::ListView => html! {<ListView/>},
-        Route::Home => html! { <h1>{ "Home" }</h1> },
         Route::Secure => html! {
             <Secure />
         },
@@ -84,9 +84,9 @@ pub fn app() -> Html {
 
     html! {
         <ContextProvider<User> context={(*ctx).clone()}>
-        <BrowserRouter>
-            <Switch<Route> render={Switch::render(switch)} />
-        </BrowserRouter>
+            <BrowserRouter>
+                <Switch<Route> render={Switch::render(switch)} />
+            </BrowserRouter>
         </ContextProvider<User>>
     }
 }

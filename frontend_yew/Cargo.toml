@@ -10,7 +10,7 @@ author = ["Edvin Kjell <edvkj374@studentliu.se>", "Linus Käll <linka231@student
 
 #### MVC ####
 yew = { version = "0.19.3" }
-
+gloo-storage = "0.2.1"
 #### Web Api ####
 gloo = "0.7.0"
 wasm-bindgen = "0.2.80"

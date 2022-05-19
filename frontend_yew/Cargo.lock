@@ -670,6 +670,7 @@ dependencies = [
  "chrono",
  "cynic",
  "gloo 0.7.0",
+ "gloo-storage",
  "graphql_api",
  "insta",
  "regex",

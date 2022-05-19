@@ -3,8 +3,13 @@ use super::task_info::*;
 use super::task_list::*;
 use std::ops::Deref;
 // use db::api::*;
+use crate::app::Route;
+use gloo::storage::LocalStorage;
+use gloo_storage::Storage;
+use weblog::*;
 use yew::prelude::*;
 use yew::ContextProvider;
+use yew_router::prelude::*;
 
 #[derive(Debug, PartialEq, Clone, Default)]
 pub struct Timeline {
@@ -18,6 +23,17 @@ pub struct Timeline {
 pub fn list_view() -> Html {
     let timeline_state = use_state(Timeline::default);
     // TODO: Read users data into timeline_state.
+
+    LocalStorage::set("timelines_user_id", 1_i32).unwrap();
+
+    let user: i32 = match LocalStorage::get("timelines_user_id") {
+        Ok(user_id) => user_id,
+        _ => {
+            return html! {
+                <Redirect<Route> to={Route::Login} />
+            }
+        }
+    };
 
     let timeline_switch = {
         let timeline_state = timeline_state.clone();
