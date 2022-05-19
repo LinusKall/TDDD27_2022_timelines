@@ -1,7 +1,7 @@
 use async_graphql::{Context, Object, Result};
 use entity::async_graphql::{self, InputObject, SimpleObject};
 use entity::timelines;
-use sea_orm::{ActiveModelTrait, Set, EntityTrait};
+use sea_orm::{ActiveModelTrait, EntityTrait, Set};
 
 use crate::db::Database;
 
@@ -15,7 +15,7 @@ pub struct CreateTimelineInput {
 }
 
 #[derive(SimpleObject)]
-pub struct DeleteResult {
+pub struct DeleteTimelineResult {
     pub success: bool,
     pub rows_affected: u64,
 }
@@ -41,7 +41,11 @@ impl TimelinesMutation {
         Ok(timeline.insert(db.get_connection()).await?)
     }
 
-    pub async fn delete_timeline(&self, ctx: &Context<'_>, id: i32) -> Result<DeleteResult> {
+    pub async fn delete_timeline(
+        &self,
+        ctx: &Context<'_>,
+        id: i32,
+    ) -> Result<DeleteTimelineResult> {
         let db = ctx.data::<Database>().unwrap();
 
         let res = timelines::Entity::delete_by_id(id)
@@ -49,7 +53,7 @@ impl TimelinesMutation {
             .await?;
 
         if res.rows_affected <= 1 {
-            Ok(DeleteResult {
+            Ok(DeleteTimelineResult {
                 success: true,
                 rows_affected: res.rows_affected,
             })

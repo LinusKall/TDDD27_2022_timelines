@@ -1,10 +1,9 @@
 use async_graphql::{Context, Object, Result};
 use entity::async_graphql::{self, InputObject, SimpleObject};
 use entity::users;
-use sea_orm::{ActiveModelTrait, Set, EntityTrait};
+use sea_orm::{ActiveModelTrait, EntityTrait, Set};
 
 use crate::db::Database;
-
 
 #[derive(InputObject)]
 pub struct CreateUserInput {
@@ -14,7 +13,7 @@ pub struct CreateUserInput {
 }
 
 #[derive(SimpleObject)]
-pub struct DeleteResult {
+pub struct DeleteUserResult {
     pub success: bool,
     pub rows_affected: u64,
 }
@@ -41,7 +40,7 @@ impl UsersMutation {
         Ok(user.insert(db.get_connection()).await?)
     }
 
-    pub async fn delete_user(&self, ctx: &Context<'_>, id: i32) -> Result<DeleteResult> {
+    pub async fn delete_user(&self, ctx: &Context<'_>, id: i32) -> Result<DeleteUserResult> {
         let db = ctx.data::<Database>().unwrap();
 
         let res = users::Entity::delete_by_id(id)
@@ -49,7 +48,7 @@ impl UsersMutation {
             .await?;
 
         if res.rows_affected <= 1 {
-            Ok(DeleteResult {
+            Ok(DeleteUserResult {
                 success: true,
                 rows_affected: res.rows_affected,
             })
