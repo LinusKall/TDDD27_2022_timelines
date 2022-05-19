@@ -3,17 +3,43 @@ input CreateTimelineInput {
   public: Boolean!
 }
 
+input CreateUserInput {
+  username: String!
+  email: String!
+  hashedPassword: String!
+}
+
 # Implement the DateTime<Utc> scalar
 #
 # The input/output is a string in RFC3339 format.
 scalar DateTime
 
-type DeleteResult {
+type DeleteTimelineResult {
   success: Boolean!
   rowsAffected: Int!
 }
 
-type Model {
+type DeleteUserResult {
+  success: Boolean!
+  rowsAffected: Int!
+}
+
+type Mutation {
+  createUser(input: CreateUserInput!): User!
+  deleteUser(id: Int!): DeleteUserResult!
+  createTimeline(input: CreateTimelineInput!): Timeline!
+  deleteTimeline(id: Int!): DeleteTimelineResult!
+}
+
+type Query {
+  getUsers: [User!]!
+  getUserById(id: Int!): User
+  getUserId(username: String!, password: String!): Int
+  getTimelines: [Timeline!]!
+  getTimelineById(id: Int!): Timeline
+}
+
+type Timeline {
   id: Int!
   title: String!
   public: Boolean!
@@ -21,12 +47,11 @@ type Model {
   updatedAt: DateTime!
 }
 
-type Mutation {
-  createTimeline(input: CreateTimelineInput!): Model!
-  deleteTimeline(id: Int!): DeleteResult!
-}
-
-type Query {
-  getTimelines: [Model!]!
-  getTimelineById(id: Int!): Model
+type User {
+  id: Int!
+  username: String!
+  email: String!
+  hashedPassword: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
