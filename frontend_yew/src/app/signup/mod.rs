@@ -38,7 +38,6 @@ pub fn signup() -> Html {
             } else if input.name() == "email" {
                 if validate.is_match(&input.value()) {
                     current_valid_email.set(true);
-                    console_log!("valid", input.value());
                 } else {
                     current_valid_email.set(false);
                 }
@@ -57,18 +56,16 @@ pub fn signup() -> Html {
 
     html! {
         <>
-            <form>
-                <div>
-                    <input name="username" oninput = {oninput.clone()} placeholder="Username"/>
-                </div>
-                <div>
-                    <input name="password" oninput = {oninput.clone()} type="password" placeholder="Password"/>
-                </div>
-                <div>
-                    <input name="email" {oninput} type="email" id="email" placeholder="Email"/>
-                </div>
-                <Link<Route> to={Route::ListView}> <button onclick = {onclick.clone()} disabled={username.len()<4 || password.len()<8 || !*valid_email}>{"Create account"}</button></Link<Route>>
-            </form>
+            <div>
+                <input name="username" oninput = {oninput.clone()} placeholder="Username"/>
+            </div>
+            <div>
+                <input name="password" oninput = {oninput.clone()} type="password" placeholder="Password"/>
+            </div>
+            <div>
+                <input name="email" {oninput} type="email" id="email" placeholder="Email"/>
+            </div>
+            <Link<Route> to={Route::ListView}> <button onclick = {onclick.clone()} disabled={username.len()<4 || password.len()<8 || !*valid_email}>{"Create account"}</button></Link<Route>>
         </>
     }
 }
