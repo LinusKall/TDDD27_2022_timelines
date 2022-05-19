@@ -8,7 +8,7 @@ mod schema {
     cynic::use_schema!("graphql/schema.graphql");
 }
 
-type DateTime = chrono::DateTime<chrono::Utc>;
+type DateTime = chrono::naive::NaiveDateTime;
 impl_scalar!(DateTime, schema::DateTime);
 
 #[derive(cynic::QueryFragment, Debug)]
