@@ -1,11 +1,11 @@
 use yew::prelude::*;
 pub mod list_selector;
 pub mod list_view;
+pub mod login;
+pub mod signup;
 pub mod task;
 pub mod task_info;
 pub mod task_list;
-pub mod login;
-pub mod signup;
 
 use list_view::*;
 use login::*;
@@ -16,7 +16,7 @@ use yew_router::prelude::*;
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum Route {
-    #[at("/login")]
+    #[at("/")]
     Login,
     #[at("/signup")]
     Signup,
@@ -67,19 +67,18 @@ pub type User = Rc<UserInner>;
 pub struct UserInner {
     pub username: RefCell<String>,
     pub password: RefCell<String>,
-    pub email:    RefCell<String>,
+    pub email: RefCell<String>,
 }
 
 //------------------------------------Routing-------------
 
 #[function_component(App)]
 pub fn app() -> Html {
-
     let ctx = use_state(|| {
         Rc::new(UserInner {
             username: RefCell::new("initial".into()),
             password: RefCell::new("initial".into()),
-            email:    RefCell::new("initial".into()),
+            email: RefCell::new("initial".into()),
         })
     });
 
