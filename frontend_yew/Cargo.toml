@@ -10,12 +10,12 @@ author = ["Edvin Kjell <edvkj374@studentliu.se>", "Linus Käll <linka231@student
 
 #### MVC ####
 yew = { version = "0.19.3" }
-gloo-storage = "0.2.1"
+
 #### Web Api ####
+gloo-storage = "0.2.1"
 gloo = "0.7.0"
 wasm-bindgen = "0.2.80"
 reqwasm = "0.5"
-# reqwest = { version = "0.11.10", features = [ "json" ] }
 web-sys = { version = "0.3.57", features = ["HtmlInputElement", "HtmlButtonElement"] }
 
 #### DeSerilaizing ####
@@ -38,6 +38,9 @@ chrono = { version = "0.4.19", features = ["wasmbind"] }
 
 #### Routing ####
 yew-router = "0.16"
+
+#### Yew Hooks ####
+yew-hooks = { version = "0.1.56" }
 
 #### Regex ####
 regex = "1"
