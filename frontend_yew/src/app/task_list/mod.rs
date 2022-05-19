@@ -7,6 +7,7 @@ use yew::Callback;
 
 #[derive(Debug, Properties, PartialEq)]
 pub struct Props {
+    pub add_task: Callback<String>,
     pub task_update: Callback<i32>,
 }
 
@@ -18,6 +19,7 @@ pub fn task_list(props: &Props) -> Html {
 
     let onkeypress = {
         let tasks = tasks.clone();
+        let add_task = props.add_task.clone();
         Callback::from(move |e: KeyboardEvent| {
             if e.key() == "Enter" {
                 let mut tasklist = (*tasks).clone();
@@ -27,6 +29,7 @@ pub fn task_list(props: &Props) -> Html {
                     input.set_value("");
                     tasklist.push(value.to_owned());
                     tasks.set(tasklist);
+                    add_task.emit(value.to_owned());
                 } else {
                 }
             } else {

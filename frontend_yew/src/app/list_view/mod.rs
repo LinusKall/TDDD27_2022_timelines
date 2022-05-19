@@ -32,6 +32,18 @@ pub fn list_view() -> Html {
             // TODO: Set correct new id to timeline
         })
     };
+    let task_add = {
+        let timeline_state = timeline_state.clone();
+        Callback::from(move |taskname: String| {
+            let mut timeline = timeline_state.deref().clone();
+            let mut task = Task::default();
+            task.title = taskname;
+            task.id = 1;
+            timeline.tasks.push(task);
+            timeline_state.set(timeline);
+            // TODO: Set correct new id to task
+        })
+    };
     let task_switch = {
         let highlited_task = highlited_task.clone();
         let timeline_state = timeline_state.clone();
@@ -41,10 +53,10 @@ pub fn list_view() -> Html {
             for t in timeline.tasks.iter() {
                 if t.id == taskid {
                     task.title = t.title.clone();
+                    highlited_task.set(task);
                     break;
                 }
             }
-            highlited_task.set(task);
         })
     };
 
@@ -52,7 +64,7 @@ pub fn list_view() -> Html {
         <div class="list_view">
             <ContextProvider<Timeline> context={timeline_state.deref().clone()}>
                 <ListSelector current_timeline={timeline_switch} added_timeline={timeline_add}/>
-                <TaskList task_update={task_switch}/>
+                <TaskList task_update={task_switch} add_task={task_add}/>
             </ContextProvider<Timeline>>
             <ContextProvider<Task> context={highlited_task.deref().clone()}>
                 <TaskInfo/>

@@ -17,7 +17,7 @@ pub fn task(props: &Props) -> Html {
             let target = e.target().unwrap();
             let input = target.unchecked_into::<HtmlButtonElement>();
             let value = input.id();
-            get_task_name.emit(value.parse().unwrap());
+            get_task_name.emit(value.trim().parse::<i32>().unwrap());
         })
     };
 
