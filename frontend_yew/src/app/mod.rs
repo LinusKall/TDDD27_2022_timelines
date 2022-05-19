@@ -6,6 +6,8 @@ pub mod task;
 pub mod task_info;
 pub mod task_list;
 
+use std::cell::RefCell;
+use std::rc::Rc;
 use yew::prelude::*;
 use yew_router::prelude::*;
 
@@ -13,7 +15,18 @@ use list_view::*;
 use login::*;
 use signup::*;
 
-use weblog::*;
+#[function_component(App)]
+pub fn app() -> Html {
+    let ctx = use_state(|| Rc::new(RefCell::new(None)));
+
+    html! {
+        <ContextProvider<UserId> context={(*ctx).clone()}>
+            <BrowserRouter>
+                <Switch<Route> render={Switch::render(switch)} />
+            </BrowserRouter>
+        </ContextProvider<UserId>>
+    }
+}
 
 //------------------------------------Routing-------------
 
@@ -25,25 +38,9 @@ pub enum Route {
     Login,
     #[at("/signup")]
     Signup,
-    #[at("/secure")]
-    Secure,
     #[not_found]
     #[at("/404")]
     NotFound,
-}
-
-// History function compoonent
-#[function_component(Secure)]
-fn secure() -> Html {
-    let history = use_history().unwrap();
-
-    let onclick = Callback::once(move |_| history.push(Route::Login));
-    html! {
-        <div>
-            <h1>{ "Secure" }</h1>
-            <button {onclick}>{ "Go Home" }</button>
-        </div>
-    }
 }
 
 fn switch(routes: &Route) -> Html {
@@ -51,42 +48,19 @@ fn switch(routes: &Route) -> Html {
         Route::Login => html! {<Login/>},
         Route::Signup => html! {<Signup/>},
         Route::ListView => html! {<ListView/>},
-        Route::Secure => html! {
-            <Secure />
-        },
         Route::NotFound => html! { <h1>{ "404" }</h1> },
     }
 }
 
-use std::cell::RefCell;
-use std::rc::Rc;
+pub type UserId = Rc<RefCell<Option<i32>>>;
 
-pub type User = Rc<UserInner>;
+// pub type User = Rc<UserInner>;
 
-#[derive(Debug, PartialEq)]
-pub struct UserInner {
-    pub username: RefCell<String>,
-    pub password: RefCell<String>,
-    pub email: RefCell<String>,
-}
+// #[derive(Debug, PartialEq)]
+// pub struct UserInner {
+//     pub username: RefCell<String>,
+//     pub password: RefCell<String>,
+//     pub email: RefCell<String>,
+// }
 
 //------------------------------------Routing-------------
-
-#[function_component(App)]
-pub fn app() -> Html {
-    let ctx = use_state(|| {
-        Rc::new(UserInner {
-            username: RefCell::new("initial".into()),
-            password: RefCell::new("initial".into()),
-            email: RefCell::new("initial".into()),
-        })
-    });
-
-    html! {
-        <ContextProvider<User> context={(*ctx).clone()}>
-            <BrowserRouter>
-                <Switch<Route> render={Switch::render(switch)} />
-            </BrowserRouter>
-        </ContextProvider<User>>
-    }
-}
