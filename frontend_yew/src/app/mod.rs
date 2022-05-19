@@ -6,10 +6,12 @@ pub mod task_info;
 pub mod task_list;
 pub mod login;
 pub mod signup;
+pub mod navigation_bar;
 
 use list_view::*;
 use login::*;
 use signup::*;
+use navigation_bar::*;
 
 //------------------------------------Routing-------------
 use yew_router::prelude::*;
@@ -52,7 +54,7 @@ fn switch(routes: &Route) -> Html {
         Route::ListView => html! {<ListView/>},
         Route::Home => html! { <h1>{ "Home" }</h1> },
         Route::Secure => html! {
-            <Secure />
+            <Secure/>
         },
         Route::NotFound => html! { <h1>{ "404" }</h1> },
     }
@@ -86,7 +88,8 @@ pub fn app() -> Html {
     html! {
         <ContextProvider<User> context={(*ctx).clone()}>
         <BrowserRouter>
-            <Switch<Route> render={Switch::render(switch)} />
+            <NavigationBar/>
+            <Switch<Route> render={Switch::render(switch)}/>
         </BrowserRouter>
         </ContextProvider<User>>
     }
