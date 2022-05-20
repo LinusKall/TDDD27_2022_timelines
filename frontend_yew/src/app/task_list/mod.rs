@@ -4,6 +4,7 @@ use graphql_api as gql;
 use web_sys::HtmlInputElement as InputElement;
 use yew::prelude::*;
 use yew::Callback;
+use weblog::*;
 
 #[derive(Debug, Properties, PartialEq)]
 pub struct Props {
@@ -37,6 +38,12 @@ pub fn task_list(props: &Props) -> Html {
         })
     };
 
+    let ondblclick = {
+        Callback::from(|e: MouseEvent| {
+            console_log!("doubleclicked");
+        })
+    };
+
     let task_switch = {
         let message = props.task_update.clone();
         Callback::from(move |taskid: i32| {
@@ -46,7 +53,7 @@ pub fn task_list(props: &Props) -> Html {
 
     html! {
         <div class="task_list">
-            <h2>{timeline_context.unwrap_or_default().title}</h2>
+            <h2 {ondblclick}>{timeline_context.unwrap_or_default().title}</h2>
 
             <input
                 type="new_todo"
