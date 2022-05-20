@@ -18,6 +18,21 @@ use list_view::*;
 use login::*;
 use signup::*;
 
+#[derive(Clone, Routable, PartialEq)]
+pub enum Route {
+    #[at("/")]
+    ListView,
+    #[at("/login")]
+    Login,
+    #[at("/signup")]
+    Signup,
+    #[not_found]
+    #[at("/404")]
+    NotFound,
+}
+
+pub type UserId = Rc<RefCell<Option<i32>>>;
+
 #[function_component(App)]
 pub fn app() -> Html {
     let ctx = use_state(|| Rc::new(RefCell::new(None)));
@@ -47,31 +62,3 @@ pub fn app() -> Html {
         </ContextProvider<UserId>>
     }
 }
-
-//------------------------------------Routing-------------
-
-#[derive(Clone, Routable, PartialEq)]
-pub enum Route {
-    #[at("/")]
-    ListView,
-    #[at("/login")]
-    Login,
-    #[at("/signup")]
-    Signup,
-    #[not_found]
-    #[at("/404")]
-    NotFound,
-}
-
-pub type UserId = Rc<RefCell<Option<i32>>>;
-
-// pub type User = Rc<UserInner>;
-
-// #[derive(Debug, PartialEq)]
-// pub struct UserInner {
-//     pub username: RefCell<String>,
-//     pub password: RefCell<String>,
-//     pub email: RefCell<String>,
-// }
-
-//------------------------------------Routing-------------
