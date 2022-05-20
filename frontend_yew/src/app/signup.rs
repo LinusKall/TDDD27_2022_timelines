@@ -1,9 +1,11 @@
+use cynic::{http::SurfExt, MutationBuilder};
+use regex::Regex;
 use web_sys::HtmlInputElement;
+use weblog::*;
 use yew::functional::*;
 use yew::prelude::*;
+use yew_hooks::prelude::*;
 use yew_router::prelude::*;
-use weblog::*;
-use regex::Regex;
 
 use super::Route;
 use super::UserId;
@@ -12,14 +14,15 @@ mod schema {
     cynic::use_schema!("graphql/schema.graphql");
 }
 
-#[derive(cynic::FragmentArguments)]
+#[derive(cynic::FragmentArguments, cynic::InputObject)]
+#[cynic(schema_path = "graphql/schema.graphql")]
 struct CreateUserInput {
     username: String,
     email: String,
     hashed_password: String,
 }
 
-#[derive(cynic::QueryFragment, Debug)]
+#[derive(cynic::QueryFragment, Debug, Clone)]
 #[cynic(
     schema_path = "graphql/schema.graphql",
     graphql_type = "Mutation",
@@ -27,19 +30,16 @@ struct CreateUserInput {
 )]
 struct CreateUser {
     #[arguments(input = &args)]
-    create_user: Option<i32>,
+    create_user: User,
 }
 
-#[derive(cynic::QueryFragment, Debug)]
-#[cynic(
-    schema_path = "graphql/schema.graphql",
-    graphql_type = "User",
-)]
+#[derive(cynic::QueryFragment, Debug, Clone)]
+#[cynic(schema_path = "graphql/schema.graphql", graphql_type = "User")]
 struct User {
     id: i32,
 }
 
-#[derive(Properties, PartialEq)]
+#[derive(Properties, PartialEq, Clone)]
 pub struct Properties {
     pub set_user_id: Callback<i32>,
 }
@@ -60,23 +60,26 @@ pub fn signup(props: &Properties) -> Html {
     let user_id_request = {
         let set_user_id = props.set_user_id.clone();
         let username = (*username).to_owned();
-        let hashed_password = (*password).to_owned();
         let email = (*email).to_owned();
-        let operation = CreateUser::build(CreateUserInput { username, email, hashed_password });
+        let hashed_password = (*password).to_owned();
+        let operation = CreateUser::build(CreateUserInput {
+            username,
+            email,
+            hashed_password,
+        });
         use_async(async move {
             let data = surf::post("http://localhost/api/graphql")
                 .run_graphql(operation)
                 .await
                 .expect("Could not send request")
-                .data
-                .unwrap();
+                .data;
 
             console_log!(format!("{:#?}", &data));
-            if let Some(User { id }) = data.create_user {
-                set_user_id.emit(id);
-                return Ok(id);
+            if let Some(CreateUser { create_user }) = data {
+                set_user_id.emit(create_user.id);
+                return Ok(create_user.id);
             }
-            Err("Could not fetch user ID.")
+            Err("Could not create new user")
         })
     };
 

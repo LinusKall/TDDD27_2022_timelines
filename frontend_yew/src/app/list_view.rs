@@ -1,18 +1,16 @@
-use std::ops::Deref;
+use gloo::storage::LocalStorage;
+use gloo_storage::Storage;
 use graphql_api::*;
+use std::ops::Deref;
 use yew::prelude::*;
 use yew::ContextProvider;
-use gloo_storage::Storage;
-use gloo::storage::LocalStorage;
 use yew_router::prelude::*;
-
 
 use super::list_selector::*;
 use super::task_info::*;
 use super::task_list::*;
 use super::Route;
 use super::UserId;
-
 
 #[function_component(ListView)]
 pub fn list_view() -> Html {
@@ -92,5 +90,3 @@ pub fn list_view() -> Html {
         </div>
     }
 }
-
-
