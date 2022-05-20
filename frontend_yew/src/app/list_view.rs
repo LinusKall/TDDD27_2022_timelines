@@ -26,9 +26,8 @@ pub struct Timeline {
 pub fn list_view() -> Html {
     let timeline_state = use_state(Timeline::default);
     let user_id = use_context::<UserId>().expect("No context found.");
-    // TODO: Read users data into timeline_state.
 
-    LocalStorage::delete("timelines_user_id");
+    // LocalStorage::delete("timelines_user_id");
 
     *user_id.borrow_mut() = match LocalStorage::get("timelines_user_id") {
         Ok(uid) => uid,

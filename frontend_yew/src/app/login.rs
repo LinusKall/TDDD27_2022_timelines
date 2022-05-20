@@ -1,6 +1,4 @@
 use cynic::{http::SurfExt, QueryBuilder};
-use gloo::storage::LocalStorage;
-use gloo_storage::Storage;
 // use wasm_bindgen_futures::spawn_local;
 use web_sys::HtmlInputElement;
 use yew::functional::*;
@@ -35,16 +33,25 @@ struct GetUserdId {
     get_user_id: Option<i32>,
 }
 
+#[derive(Properties, PartialEq)]
+pub struct Properties {
+    pub set_user_id: Callback<i32>,
+}
+
 #[function_component(Login)]
-pub fn login() -> Html {
+pub fn login(props: &Properties) -> Html {
     let username = use_state(|| String::new());
     let password = use_state(|| String::new());
     let user_id = use_context::<UserId>().expect("No context found.");
 
+    if let Some(_) = *user_id.borrow() {
+        return html! { <Redirect<Route> to={Route::ListView} /> };
+    }
+
     let user_id_request = {
+        let set_user_id = props.set_user_id.clone();
         let username = (*username).to_owned();
         let password = (*password).to_owned();
-        let cuid = user_id.clone();
         let operation = GetUserdId::build(GetUserdIdArguments { username, password });
         use_async(async move {
             let data = surf::post("http://localhost/api/graphql")
@@ -56,8 +63,7 @@ pub fn login() -> Html {
 
             console_log!(format!("{:#?}", &data));
             if let Some(id) = data.get_user_id {
-                *cuid.borrow_mut() = Some(id);
-                LocalStorage::set("timelines_user_id", id).unwrap();
+                set_user_id.emit(id);
                 return Ok(id);
             }
             Err("Could not fetch user ID.")
@@ -66,7 +72,9 @@ pub fn login() -> Html {
 
     let onclick = {
         let user_id_request = user_id_request.clone();
-        Callback::from(move |_| user_id_request.run())
+        Callback::from(move |_| {
+            user_id_request.run();
+        })
     };
 
     let oninput = {
@@ -106,13 +114,6 @@ pub fn login() -> Html {
             <Link<Route> to={Route::Signup}>
                 <button {onclick}>{"Sign up"}</button>
             </Link<Route>>
-            {
-                if user_id_request.loading {
-                    html! { "Loading" }
-                } else {
-                    html! {}
-                }
-            }
         </>
     }
 }
