@@ -3,8 +3,8 @@ use juniper::GraphQLObject;
 // use graphql_client::{GraphQLQuery, Response};
 use serde::Deserialize;
 
-#[derive(GraphQLObject, Deserialize)]
-pub struct Userdata {
+#[derive(GraphQLObject, Deserialize, Default, PartialEq, Clone)]
+pub struct UserData {
     pub id: i32,
     pub timelines: Vec<Timeline>,
 }
@@ -19,15 +19,16 @@ pub struct User {
     pub updated_at: NaiveDateTime,
 }
 
-#[derive(GraphQLObject, Deserialize)]
+#[derive(GraphQLObject, Deserialize, Default, Clone, PartialEq)]
 pub struct Timeline {
     pub id: i32,
+    pub title: String,
     pub color: String,
     pub events: Vec<Event>,
     pub tasks: Vec<Task>,
 }
 
-#[derive(GraphQLObject, Deserialize)]
+#[derive(GraphQLObject, Deserialize, Clone, PartialEq)]
 pub struct Event {
     pub id: i32,
     pub timeline_id: i32,
@@ -37,18 +38,18 @@ pub struct Event {
     pub end_time: NaiveDateTime,
 }
 
-#[derive(GraphQLObject, Deserialize)]
+#[derive(GraphQLObject, Deserialize, Clone, Default, PartialEq)]
 pub struct Task {
     pub id: i32,
     pub timeline_id: i32,
     pub title: String,
     pub body: Option<String>,
     pub done: bool,
-    pub end_time: NaiveDateTime,
+    //pub end_time: NaiveDateTime,
     pub sub_tasks: Vec<SubTask>,
 }
 
-#[derive(GraphQLObject, Deserialize)]
+#[derive(GraphQLObject, Deserialize, Clone, PartialEq)]
 pub struct SubTask {
     pub id: i32,
     pub task_id: i32,

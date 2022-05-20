@@ -1,23 +1,26 @@
 // use gloo::console::log;
 use super::task::Task;
-use super::Timeline;
+use graphql_api as gql;
 use web_sys::HtmlInputElement as InputElement;
 use yew::prelude::*;
 use yew::Callback;
+use weblog::*;
 
 #[derive(Debug, Properties, PartialEq)]
 pub struct Props {
-    pub task_update: Callback<String>,
+    pub add_task: Callback<String>,
+    pub task_update: Callback<i32>,
 }
 
 #[function_component(TaskList)]
 pub fn task_list(props: &Props) -> Html {
     let tasks = use_state(|| Vec::new());
-    let timeline_context = use_context::<Timeline>();
+    let timeline_context = use_context::<gql::Timeline>();
     // TODO: Read from context into tasks here.
 
     let onkeypress = {
         let tasks = tasks.clone();
+        let add_task = props.add_task.clone();
         Callback::from(move |e: KeyboardEvent| {
             if e.key() == "Enter" {
                 let mut tasklist = (*tasks).clone();
@@ -27,6 +30,7 @@ pub fn task_list(props: &Props) -> Html {
                     input.set_value("");
                     tasklist.push(value.to_owned());
                     tasks.set(tasklist);
+                    add_task.emit(value.to_owned());
                 } else {
                 }
             } else {
@@ -34,16 +38,22 @@ pub fn task_list(props: &Props) -> Html {
         })
     };
 
+    let ondblclick = {
+        Callback::from(|e: MouseEvent| {
+            console_log!("doubleclicked");
+        })
+    };
+
     let task_switch = {
         let message = props.task_update.clone();
-        Callback::from(move |name: String| {
-            message.emit(name);
+        Callback::from(move |taskid: i32| {
+            message.emit(taskid);
         })
     };
 
     html! {
         <div class="task_list">
-            <h2>{timeline_context.unwrap_or_default().name}</h2>
+            <h2 {ondblclick}>{timeline_context.unwrap_or_default().title}</h2>
 
             <input
                 type="new_todo"
@@ -55,7 +65,7 @@ pub fn task_list(props: &Props) -> Html {
                 {
                     for (*tasks).iter().map(|task|
                         html! {
-                            <Task title={task.clone()} get_task_name={task_switch.clone()}/>
+                            <Task id={"1"} title={task.clone()} get_task_name={task_switch.clone()}/>
                         }
                     )
                 }

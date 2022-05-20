@@ -1,12 +1,13 @@
+//use graphql_api::*;
 use wasm_bindgen::JsCast;
 use web_sys::HtmlButtonElement;
 use web_sys::HtmlInputElement as InputElement;
 use yew::prelude::*;
-// use super::Timeline;
 
 #[derive(Debug, Clone, Properties, PartialEq)]
 pub struct Props {
     pub current_timeline: Callback<String>,
+    pub added_timeline: Callback<String>,
 }
 
 #[function_component(ListSelector)]
@@ -17,6 +18,7 @@ pub fn list_selector(props: &Props) -> Html {
 
     let onkeypress = {
         let timelines = timelines.clone();
+        let added_timeline = props.added_timeline.clone();
         Callback::from(move |e: KeyboardEvent| {
             if e.key() == "Enter" {
                 let mut timeline_list = (*timelines).clone();
@@ -24,8 +26,9 @@ pub fn list_selector(props: &Props) -> Html {
                 if input.value() != "" {
                     let value = input.value();
                     input.set_value("");
-                    timeline_list.push(value);
+                    timeline_list.push(value.clone());
                     timelines.set(timeline_list);
+                    added_timeline.emit(value);
                 } else {
                 }
             } else {
