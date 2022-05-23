@@ -4,6 +4,7 @@ use graphql_api::*;
 use std::ops::Deref;
 use yew::prelude::*;
 use yew::ContextProvider;
+use yew_hooks::prelude::*;
 use yew_router::prelude::*;
 
 use super::list_selector::*;
@@ -12,15 +13,30 @@ use super::task_list::*;
 use super::Route;
 use super::UserId;
 
+mod schema {
+    cynic::use_schema!("graphql/schema.graphql");
+}
+
+#[derive(cynic::FragmentArguments)]
+struct GetUserdDataArguments {
+    id: i32,
+}
+
+#[derive(cynic::QueryFragment, Debug)]
+#[cynic(
+    schema_path = "graphql/schema.graphql",
+    graphql_type = "Query",
+    argument_struct = "GetUserdDataArguments"
+)]
+struct GetUserData {
+    #[arguments(id = &args.id)]
+    get_user_data: UserData,
+}
+
 #[function_component(ListView)]
 pub fn list_view() -> Html {
-    let user_data = use_state(UserData::default);
-    let timeline_state = use_state(Timeline::default);
-    let highlited_task = use_state(Task::default);
     let user_id = use_context::<UserId>().expect("No context found.");
-
     // LocalStorage::delete("timelines_user_id");
-
     *user_id.borrow_mut() = match LocalStorage::get("timelines_user_id") {
         Ok(uid) => uid,
         _ => {
@@ -29,8 +45,28 @@ pub fn list_view() -> Html {
             }
         }
     };
-    // TODO: Read users data into timeline_state.
 
+    let user_data = use_state(UserData::default);
+    let timeline_state = use_state(Timeline::default);
+    let highlited_task = use_state(Task::default);
+    // TODO: Read users data into timeline_state.
+    let user_data_request = {
+        user_id = user_id.clone();
+        let operation = GetUserData::build(GetUserdDataArguments { id });
+        use_async(async move {
+            let data = surf::post("http://localhost/api/graphql")
+                .run_graphql(operation)
+                .await
+                .expect("Could not get user data")
+                .data
+                .unwrap();
+
+            if let user_data = data.get_user_data {
+                return Ok(user_data);
+            }
+            Err("Could not fetch user data.")
+        })
+    };
     let timeline_switch = {
         let timeline_state = timeline_state.clone();
         Callback::from(move |name: String| {
