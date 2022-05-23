@@ -2,9 +2,9 @@
 use super::task::Task;
 use graphql_api as gql;
 use web_sys::HtmlInputElement as InputElement;
+use weblog::*;
 use yew::prelude::*;
 use yew::Callback;
-use weblog::*;
 
 #[derive(Debug, Properties, PartialEq)]
 pub struct Props {
