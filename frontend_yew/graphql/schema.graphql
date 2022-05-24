@@ -74,12 +74,25 @@ type Query {
   getUserById(id: Int!): User
   getUserId(username: String!, password: String!): Int
   getUserData(id: Int!, hashedPassword: String!): UserData!
+  getTimelinesById(userId: Int!): [UserTimeline!]!
   getTimelines: [Timeline!]!
   getTimelineById(id: Int!): Timeline
+  getTasksById(timelineId: Int!): [Task!]!
 }
 
 type Subscription {
   interval(n: Int! = 1): Int!
+}
+
+type Task {
+  id: Int!
+  timelineId: Int!
+  title: String!
+  body: String
+  done: Boolean!
+  endTime: DateTime!
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 type Timeline {
@@ -102,4 +115,17 @@ type User {
 type UserData {
   id: Int!
   timelines: [NestedTimeline!]!
+}
+
+type UserTimeline {
+  propsId: Int!
+  userId: Int!
+  timelineId: Int!
+  title: String!
+  userTimelineRelation: Int!
+  color: String!
+  propsCreatedAt: DateTime!
+  propsUpdatedAt: DateTime!
+  timelineCreatedAt: DateTime!
+  timelineUpdatedAt: DateTime!
 }

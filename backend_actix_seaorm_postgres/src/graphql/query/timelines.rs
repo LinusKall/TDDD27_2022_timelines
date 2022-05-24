@@ -11,6 +11,7 @@ pub struct UserTimeline {
     props_id: i32,
     user_id: i32,
     timeline_id: i32,
+    title: String,
     user_timeline_relation: i32,
     color: String,
     props_created_at: DateTimeUtc,
@@ -38,6 +39,7 @@ impl TimelinesQuery {
             .column_as(timelines_users::Column::Id, "props_id")
             .column_as(timelines_users::Column::UserId, "user_id")
             .column_as(timelines_users::Column::TimelineId, "timeline_id")
+            .column_as(timelines::Column::Title, "title")
             .column_as(timelines_users::Column::Relation, "user_timeline_relation")
             .column_as(timelines_users::Column::Color, "color")
             .column_as(timelines_users::Column::CreatedAt, "props_created_at")
