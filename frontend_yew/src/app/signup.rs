@@ -108,8 +108,14 @@ pub fn signup(props: &Properties) -> Html {
         })
     };
 
-    let onclick = {
+    let login_button = {
+        Callback::from(move |_| {
+        })
+    };
+
+    let signup_button = {
         let user_id_request = user_id_request.clone();
+
         Callback::from(move |_| {
             user_id_request.run();
         })
@@ -118,7 +124,7 @@ pub fn signup(props: &Properties) -> Html {
     html! {
         <>
             <form>
-                <Link<Route> to={Route::Login}> <button onclick={onclick.clone()} >{"Log in"}</button></Link<Route>>
+                <Link<Route> to={Route::Login}> <button onclick={login_button} >{"Log in"}</button></Link<Route>>
                 <div>
                     <input name="username" oninput = {oninput.clone()} placeholder="Username"/>
                 </div>
@@ -128,7 +134,7 @@ pub fn signup(props: &Properties) -> Html {
                 <div>
                     <input name="email" {oninput} type="email" id="email" placeholder="Email"/>
                 </div>
-                <Link<Route> to={Route::ListView}> <button onclick={onclick} disabled={username.len()<4 || password.len()<8 || !*valid_email}>{"Create account"}</button></Link<Route>>
+                <Link<Route> to={Route::ListView}> <button onclick={signup_button} disabled={username.len()<4 || password.len()<8 || !*valid_email}>{"Create account"}</button></Link<Route>>
             </form>
         </>
     }
