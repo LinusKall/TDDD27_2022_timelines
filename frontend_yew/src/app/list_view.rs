@@ -18,26 +18,24 @@ mod schema {
 }
 
 #[derive(cynic::FragmentArguments)]
-struct GetUserdDataArguments {
+struct GetTimelinesUsersArguments {
     id: i32,
-    hashed_password: String,
 }
 
 #[derive(cynic::QueryFragment, Debug)]
 #[cynic(
     schema_path = "graphql/schema.graphql",
     graphql_type = "Query",
-    argument_struct = "GetUserdDataArguments"
+    argument_struct = "GetTimelinesUsersArguments"
 )]
-struct GetUserData {
-    #[arguments(id = &args.id, hashed_password = &args.hashed_password)]
-    get_user_data: UserData,
+struct GetTimelinesUsers {
+    #[arguments(id = &args.id)]
+    get_timelines_users: TimelinesUsers,
 }
 
 #[function_component(ListView)]
 pub fn list_view() -> Html {
     let user_id = use_context::<UserId>().expect("No context found.");
-    let user_password = "aaaaaaaa";
     let first_render = use_state(|| true);
     // LocalStorage::delete("timelines_user_id");
 
@@ -50,10 +48,9 @@ pub fn list_view() -> Html {
         }
     };
 
-    let user_data = {
+    let timelinesusers_request = {
         let id = user_id.clone();
-        let hashed_password = user_password.to_owned();
-        let operation = GetUserData::build(GetUserdDataArguments { id, hashed_password });
+        let operation = GetTimelinesUsers::build(GetTimelinesUsersArguments { id });
         use_async(async move {
             let data = surf::post("http://localhost/api/graphql")
                 .run_graphql(operation)
@@ -62,16 +59,16 @@ pub fn list_view() -> Html {
                 .data
                 .unwrap();
 
-            if let user_data = data.get_user_data {
-                return Ok(user_data);
+            if let timelines_users = data.get_user_data {
+                return Ok(timelines_users);
             }
-            Err("Could not fetch user data.")
+            Err("Could not fetch timelinesusers.")
         })
     };
 
     use_effect(move || {
         if *first_render {
-            user_data.run();
+            timelinesusers_request.run();
             first_render.set(false);
         }
         || {}
