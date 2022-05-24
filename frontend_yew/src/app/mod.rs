@@ -51,7 +51,7 @@ pub fn app() -> Html {
 
     let switch = Switch::render(move |route: &Route| match route {
         Route::Login => html! { <Login set_user_id={set_user_id.clone()} /> },
-        Route::Signup => html! { <Signup/> },
+        Route::Signup => html! { <Signup set_user_id={set_user_id.clone()} /> },
         Route::ListView => html! { <ListView/> },
         Route::NotFound => html! { <h1>{ "404" }</h1> },
     });
