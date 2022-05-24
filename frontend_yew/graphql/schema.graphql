@@ -78,6 +78,10 @@ type Query {
   getTimelineById(id: Int!): Timeline
 }
 
+type Subscription {
+  interval(n: Int! = 1): Int!
+}
+
 type Timeline {
   id: Int!
   title: String!

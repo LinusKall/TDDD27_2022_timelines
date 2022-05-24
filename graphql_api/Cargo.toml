@@ -10,8 +10,7 @@ edition = "2021"
 chrono = { version = "0.4.19", features = ["serde"] }
 
 #### GraphQL ####
-juniper = "0.15.9"
-graphql_client = { version = "0.10.0"}
+cynic = { version = "1.0.0", features = [ "surf-wasm-client" ] }
 
 #### DeSerilaizing ####
 serde = { version = "1.0", features = ["derive"] }

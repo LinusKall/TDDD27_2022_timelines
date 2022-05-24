@@ -20,6 +20,7 @@ mod schema {
 #[derive(cynic::FragmentArguments)]
 struct GetUserdDataArguments {
     id: i32,
+    hashed_password: String,
 }
 
 #[derive(cynic::QueryFragment, Debug)]
@@ -29,13 +30,14 @@ struct GetUserdDataArguments {
     argument_struct = "GetUserdDataArguments"
 )]
 struct GetUserData {
-    #[arguments(id = &args.id)]
+    #[arguments(id = &args.id, hashed_password = &args.hashed_password)]
     get_user_data: UserData,
 }
 
 #[function_component(ListView)]
 pub fn list_view() -> Html {
     let user_id = use_context::<UserId>().expect("No context found.");
+    let user_password = "aaaaaaaa";
     let first_render = use_state(|| true);
     // LocalStorage::delete("timelines_user_id");
 
@@ -49,8 +51,9 @@ pub fn list_view() -> Html {
     };
 
     let user_data = {
-        user_id = user_id.clone();
-        let operation = GetUserData::build(GetUserdDataArguments { id });
+        let id = user_id.clone();
+        let hashed_password = user_password.to_owned();
+        let operation = GetUserData::build(GetUserdDataArguments { id, hashed_password });
         use_async(async move {
             let data = surf::post("http://localhost/api/graphql")
                 .run_graphql(operation)
@@ -128,20 +131,22 @@ pub fn list_view() -> Html {
 
     html! {
         <div class="list_view">
-            if user_data.loading {
+            {if user_data.loading {
                 html! {<h1>{ " Loading..." }</h1>}
             }
             else if let Some(_) = &user_data.data {
                 html! {
-                    <ContextProvider<Timeline> context={timeline_state.deref().clone()}>
-                        <ListSelector current_timeline={timeline_switch} added_timeline={timeline_add}/>
-                        <TaskList task_update={task_switch} add_task={task_add}/>
-                    </ContextProvider<Timeline>>
-                    <ContextProvider<Task> context={highlited_task.deref().clone()}>
-                        <TaskInfo/>
-                    </ContextProvider<Task>>
+                    <>
+                        <ContextProvider<Timeline> context={timeline_state.deref().clone()}>
+                            <ListSelector current_timeline={timeline_switch} added_timeline={timeline_add}/>
+                            <TaskList task_update={task_switch} add_task={task_add}/>
+                        </ContextProvider<Timeline>>
+                        <ContextProvider<Task> context={highlited_task.deref().clone()}>
+                            <TaskInfo/>
+                        </ContextProvider<Task>>
+                    </>
                 }
-            }
+            }}
         </div>
     }
 }
