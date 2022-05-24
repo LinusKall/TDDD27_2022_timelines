@@ -97,6 +97,11 @@ pub fn login(props: &Properties) -> Html {
 
     html! {
         <>
+            <Link<Route> to={Route::Signup}>
+                <button onclick={
+                    onclick.clone()
+                }>{"Sign up"}</button>
+            </Link<Route>>
             <div>
                 <input name="username" oninput = {oninput.clone()} placeholder="Username"/>
             </div>
@@ -105,14 +110,11 @@ pub fn login(props: &Properties) -> Html {
             </div>
             <Link<Route> to={Route::ListView}>
                 <button onclick = {
-                    onclick.clone()
+                    onclick
                 } disabled={
                     username.len()<4 ||
                     password.len()<8
                 }>{"Log in"}</button>
-            </Link<Route>>
-            <Link<Route> to={Route::Signup}>
-                <button {onclick}>{"Sign up"}</button>
             </Link<Route>>
         </>
     }
