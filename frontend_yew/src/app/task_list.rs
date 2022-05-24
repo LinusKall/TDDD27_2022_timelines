@@ -1,9 +1,11 @@
 // use gloo::console::log;
-use super::task::Task;
 use web_sys::HtmlInputElement as InputElement;
 use weblog::*;
 use yew::prelude::*;
 use yew::Callback;
+use std::ops::Deref;
+
+use super::gql::query::*;
 
 #[derive(Debug, Properties, PartialEq)]
 pub struct Props {
@@ -15,6 +17,11 @@ pub struct Props {
 pub fn task_list(props: &Props) -> Html {
     let timeline_context = use_context::<UserTimeline>();
     let tasks = use_state(|| Vec::new());
+    for t in timelines_context.unwrap_or_default().tasks.iter() {
+        let temp = tasks.deref().clone();
+        temp.push(t.title.clone());
+        tasks.set(temp);
+    }
 
     // TODO: Read from context into tasks here.
 
@@ -65,7 +72,7 @@ pub fn task_list(props: &Props) -> Html {
                 {
                     for (*tasks).iter().map(|task|
                         html! {
-                            <Task id={task.id.clone()} title={task.title.clone()} get_task_name={task_switch.clone()}/>
+                            <TaskItem id={task.id.clone()} title={task.title.clone()} get_task_name={task_switch.clone()}/>
                         }
                     )
                 }

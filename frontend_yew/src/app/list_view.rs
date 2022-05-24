@@ -5,32 +5,14 @@ use yew::prelude::*;
 use yew::ContextProvider;
 use yew_hooks::prelude::*;
 use yew_router::prelude::*;
+use cynic::QueryBuilder;
 
 use super::list_selector::*;
 use super::task_info::*;
 use super::task_list::*;
 use super::Route;
 use super::UserId;
-
-mod schema {
-    cynic::use_schema!("graphql/schema.graphql");
-}
-
-#[derive(cynic::FragmentArguments)]
-struct GetUserTimelinesArguments {
-    id: i32,
-}
-
-#[derive(cynic::QueryFragment, Debug)]
-#[cynic(
-    schema_path = "graphql/schema.graphql",
-    graphql_type = "Query",
-    argument_struct = "GetUserTimelinesArguments"
-)]
-struct GetUserTimelinesById {
-    #[arguments(id = &args.id)]
-    get_usertimelinesbyid: UserTimeline,
-}
+use super::gql::query::*;
 
 #[function_component(ListView)]
 pub fn list_view() -> Html {
@@ -50,8 +32,8 @@ pub fn list_view() -> Html {
     };
 
     let usertimelines = {
-        let id = user_id.clone();
-        let operation = GetUserTimelinesById::build(GetUserTimelinesArguments { id });
+        let user_id = user_id.clone();
+        let operation = GetUserTimelinesById::build(GetUserTimelinesArguments { user_id.borrow_mut().deref().unwrap() });
         use_async(async move {
             let data = surf::post("http://localhost/api/graphql")
                 .run_graphql(operation)
@@ -66,23 +48,23 @@ pub fn list_view() -> Html {
         })
     };
 
-    let task_request = {
-        let id = task_id.clone();
-        let operation = GetTask::build(GetTaskArguments { id });
-        use_async(async move {
-            let data = surf::post("http://localhost/api/graphql")
-                .run_graphql(operation)
-                .await
-                .expect("Could not get task")
-                .data
-                .unwrap();
+    // let task_request = {
+    //     let id = task_id.clone();
+    //     let operation = GetTask::build(GetTaskArguments { id });
+    //     use_async(async move {
+    //         let data = surf::post("http://localhost/api/graphql")
+    //             .run_graphql(operation)
+    //             .await
+    //             .expect("Could not get task")
+    //             .data
+    //             .unwrap();
 
-            if let task = data.get_user_data {
-                return Ok(task);
-            }
-            Err("Could not fetch task.")
-        })
-    };
+    //         if let task = data.get_user_data {
+    //             return Ok(task);
+    //         }
+    //         Err("Could not fetch task.")
+    //     })
+    // };
 
     use_effect(move || {
         if *first_render {
@@ -93,7 +75,7 @@ pub fn list_view() -> Html {
     });
 
     let timelines = use_state(|| Vec::new());
-    let timeline_state = use_state(Timeline::default);
+    let timeline_state = use_state(UserTimeline::default);
     let highlited_task = use_state(Task::default);
 
     // TODO: Change to look at timelineID
@@ -116,13 +98,13 @@ pub fn list_view() -> Html {
     };
 
     let timeline_add = {
-        let user_data = user_data.clone();
+        let usertimelines = usertimelines.clone();
         Callback::from(move |timelinename: String| {
-            let mut ud = user_data.deref().clone();
-            let mut timeline = Timeline::default();
+            let mut utl = usertimelines.data.clone();
+            let mut timeline = UserTimeline::default();
             timeline.title = timelinename;
-            ud.timelines.push(timeline);
-            user_data.set(ud);
+            utl.push(timeline);
+            usertimelines.set(utl);
             // TODO: Set correct new id to timeline
         })
     };
@@ -158,24 +140,26 @@ pub fn list_view() -> Html {
 
     html! {
         <div class="list_view">
-            {if user_data.loading {
-                html! {<h1>{ " Loading..." }</h1>}
-            }
-            else if let Some(_) = &user_data.data {
-                html! {
-                    <>
-                        <ContextProvider<Vec<UserTimeline>> context={usertimelines.data.clone()}>
-                            <ListSelector current_timeline={timeline_switch} added_timeline={timeline_add}/>
-                        </ContextProvider<Vec<UserTimeline>>
-                        <ContextProvider<UserTimeline> context={timeline_state.deref().clone()}>
-                            <TaskList task_update={task_switch} add_task={task_add}/>
-                        </ContextProvider<UserTimeline>>
-                        <ContextProvider<Task> context={highlited_task.deref().clone()}>
-                            <TaskInfo/>
-                        </ContextProvider<Task>>
-                    </>
+            {
+                if usertimelines.loading {
+                    html! {<h1>{ " Loading..." }</h1>}
                 }
-            }}
+                else if let Some(_) = &usertimelines.data {
+                    html! {
+                        <>
+                            // <ContextProvider<Vec<UserTimeline>> context={usertimelines.data.clone()}>
+                            //     <ListSelector current_timeline={timeline_switch} added_timeline={timeline_add}/>
+                            // </ContextProvider<Vec<UserTimeline>>
+                            // <ContextProvider<UserTimeline> context={timeline_state.deref().clone()}>
+                            //     <TaskList task_update={task_switch} add_task={task_add}/>
+                            // </ContextProvider<UserTimeline>>
+                            // <ContextProvider<Task> context={highlited_task.deref().clone()}>
+                            //     <TaskInfo/>
+                            // </ContextProvider<Task>>
+                        </>
+                    }
+                }
+            }
         </div>
     }
 }

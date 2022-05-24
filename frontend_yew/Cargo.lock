@@ -591,7 +591,6 @@ dependencies = [
  "cynic",
  "gloo 0.7.0",
  "gloo-storage",
- "graphql_api",
  "insta",
  "regex",
  "reqwasm",
@@ -964,16 +963,6 @@ checksum = "d1abd4ce5247dfc04a03ccde70f87a048458c9356c7e41d21ad8c407b3dde6f2"
 dependencies = [
  "combine",
  "thiserror",
-]
-
-[[package]]
-name = "graphql_api"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "cynic",
- "serde",
- "serde_json",
 ]
 
 [[package]]

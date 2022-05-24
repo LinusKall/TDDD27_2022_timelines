@@ -9,8 +9,8 @@ pub struct Props {
     pub get_task_name: Callback<i32>,
 }
 
-#[function_component(Task)]
-pub fn task(props: &Props) -> Html {
+#[function_component(TaskItem)]
+pub fn task_item(props: &Props) -> Html {
     let onclick = {
         let get_task_name = props.get_task_name.clone();
         Callback::from(move |e: MouseEvent| {

@@ -1,6 +1,6 @@
 use yew::prelude::*;
 
-use graphql_api::*;
+use super::gql::query::*;
 
 #[function_component(TaskInfo)]
 pub fn task_info() -> Html {

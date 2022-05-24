@@ -4,6 +4,8 @@ use web_sys::HtmlButtonElement;
 use web_sys::HtmlInputElement as InputElement;
 use yew::prelude::*;
 
+use super::gql::query::*;
+
 #[derive(Debug, Clone, Properties, PartialEq)]
 pub struct Props {
     pub current_timeline: Callback<String>,
@@ -16,7 +18,7 @@ pub fn list_selector(props: &Props) -> Html {
     let timelines = use_state(|| Vec::new());
     for t in timelines_context.unwrap_or_default().iter() {
         let temp = timelines.deref().clone();
-        temp.push((t.title.clone(), t.id.clone()));
+        temp.push(t.title.clone());
         timelines.set(temp);
     }
     // TODO: Read users timelines into timelines.
@@ -47,7 +49,7 @@ pub fn list_selector(props: &Props) -> Html {
             let target = e.target().unwrap();
             let input = target.unchecked_into::<HtmlButtonElement>();
             let value = input.id();
-            current_timeline.emit(value.trim().parse::<i32>().unwrap());
+            current_timeline.emit(value);
         })
     };
 
@@ -67,8 +69,8 @@ pub fn list_selector(props: &Props) -> Html {
                         .map(|timeline| html! {
                             <button
                                 onclick={onclick.clone()}
-                                id={(*timeline.1).clone()}
-                                name={(*timeline.0).clone()}>{timeline}
+                                id={(*timeline).clone()}
+                                name={(*timeline).clone()}>{timeline}
                             </button>
                         })
                 }

@@ -2,9 +2,10 @@ pub mod list_selector;
 pub mod list_view;
 pub mod login;
 pub mod signup;
-pub mod task;
+pub mod task_item;
 pub mod task_info;
 pub mod task_list;
+pub mod gql;
 
 use gloo::storage::LocalStorage;
 use gloo_storage::Storage;
