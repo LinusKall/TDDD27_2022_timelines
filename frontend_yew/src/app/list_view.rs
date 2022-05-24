@@ -36,7 +36,9 @@ struct GetUserData {
 #[function_component(ListView)]
 pub fn list_view() -> Html {
     let user_id = use_context::<UserId>().expect("No context found.");
+    let first_render = use_state(|| true);
     // LocalStorage::delete("timelines_user_id");
+
     *user_id.borrow_mut() = match LocalStorage::get("timelines_user_id") {
         Ok(uid) => uid,
         _ => {
@@ -46,11 +48,7 @@ pub fn list_view() -> Html {
         }
     };
 
-    let user_data = use_state(UserData::default);
-    let timeline_state = use_state(Timeline::default);
-    let highlited_task = use_state(Task::default);
-    // TODO: Read users data into timeline_state.
-    let user_data_request = {
+    let user_data = {
         user_id = user_id.clone();
         let operation = GetUserData::build(GetUserdDataArguments { id });
         use_async(async move {
@@ -67,6 +65,20 @@ pub fn list_view() -> Html {
             Err("Could not fetch user data.")
         })
     };
+
+    use_effect(move || {
+        if *first_render {
+            user_data.run();
+            first_render.set(false);
+        }
+        || {}
+    });
+
+    let timeline_state = use_state(Timeline::default);
+    let highlited_task = use_state(Task::default);
+    // TODO: Read users data into timeline_state.
+
+    // TODO: Change to look at timelineID
     let timeline_switch = {
         let timeline_state = timeline_state.clone();
         Callback::from(move |name: String| {
@@ -116,13 +128,20 @@ pub fn list_view() -> Html {
 
     html! {
         <div class="list_view">
-            <ContextProvider<Timeline> context={timeline_state.deref().clone()}>
-                <ListSelector current_timeline={timeline_switch} added_timeline={timeline_add}/>
-                <TaskList task_update={task_switch} add_task={task_add}/>
-            </ContextProvider<Timeline>>
-            <ContextProvider<Task> context={highlited_task.deref().clone()}>
-                <TaskInfo/>
-            </ContextProvider<Task>>
+            if user_data.loading {
+                html! {<h1>{ " Loading..." }</h1>}
+            }
+            else if let Some(_) = &user_data.data {
+                html! {
+                    <ContextProvider<Timeline> context={timeline_state.deref().clone()}>
+                        <ListSelector current_timeline={timeline_switch} added_timeline={timeline_add}/>
+                        <TaskList task_update={task_switch} add_task={task_add}/>
+                    </ContextProvider<Timeline>>
+                    <ContextProvider<Task> context={highlited_task.deref().clone()}>
+                        <TaskInfo/>
+                    </ContextProvider<Task>>
+                }
+            }
         </div>
     }
 }
