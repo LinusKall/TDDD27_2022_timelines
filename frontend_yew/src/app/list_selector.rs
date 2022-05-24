@@ -1,4 +1,4 @@
-//use graphql_api::*;
+use std::ops::Deref;
 use wasm_bindgen::JsCast;
 use web_sys::HtmlButtonElement;
 use web_sys::HtmlInputElement as InputElement;
@@ -12,8 +12,13 @@ pub struct Props {
 
 #[function_component(ListSelector)]
 pub fn list_selector(props: &Props) -> Html {
+    let timelines_context = use_context::<Vec<UserTimeline>>();
     let timelines = use_state(|| Vec::new());
-    // let timeline_context = use_context::<Timeline>();
+    for t in timelines_context.unwrap_or_default().iter() {
+        let temp = timelines.deref().clone();
+        temp.push((t.title.clone(), t.id.clone()));
+        timelines.set(temp);
+    }
     // TODO: Read users timelines into timelines.
 
     let onkeypress = {
@@ -21,7 +26,7 @@ pub fn list_selector(props: &Props) -> Html {
         let added_timeline = props.added_timeline.clone();
         Callback::from(move |e: KeyboardEvent| {
             if e.key() == "Enter" {
-                let mut timeline_list = (*timelines).clone();
+                let mut timeline_list = timelines.deref().clone();
                 let input: InputElement = e.target_unchecked_into();
                 if input.value() != "" {
                     let value = input.value();
@@ -41,8 +46,8 @@ pub fn list_selector(props: &Props) -> Html {
         Callback::from(move |e: MouseEvent| {
             let target = e.target().unwrap();
             let input = target.unchecked_into::<HtmlButtonElement>();
-            let value = input.name();
-            current_timeline.emit(value);
+            let value = input.id();
+            current_timeline.emit(value.trim().parse::<i32>().unwrap());
         })
     };
 
@@ -60,7 +65,11 @@ pub fn list_selector(props: &Props) -> Html {
                         .clone()
                         .iter()
                         .map(|timeline| html! {
-                            <button onclick={onclick.clone()} name={(*timeline).clone()}>{timeline}</button>
+                            <button
+                                onclick={onclick.clone()}
+                                id={(*timeline.1).clone()}
+                                name={(*timeline.0).clone()}>{timeline}
+                            </button>
                         })
                 }
             </div>

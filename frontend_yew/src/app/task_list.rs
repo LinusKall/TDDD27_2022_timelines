@@ -1,6 +1,5 @@
 // use gloo::console::log;
 use super::task::Task;
-use graphql_api as gql;
 use web_sys::HtmlInputElement as InputElement;
 use weblog::*;
 use yew::prelude::*;
@@ -14,8 +13,9 @@ pub struct Props {
 
 #[function_component(TaskList)]
 pub fn task_list(props: &Props) -> Html {
+    let timeline_context = use_context::<UserTimeline>();
     let tasks = use_state(|| Vec::new());
-    let timeline_context = use_context::<gql::Timeline>();
+
     // TODO: Read from context into tasks here.
 
     let onkeypress = {
@@ -65,7 +65,7 @@ pub fn task_list(props: &Props) -> Html {
                 {
                     for (*tasks).iter().map(|task|
                         html! {
-                            <Task id={"1"} title={task.clone()} get_task_name={task_switch.clone()}/>
+                            <Task id={task.id.clone()} title={task.title.clone()} get_task_name={task_switch.clone()}/>
                         }
                     )
                 }

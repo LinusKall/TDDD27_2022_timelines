@@ -1,6 +1,5 @@
 use gloo::storage::LocalStorage;
 use gloo_storage::Storage;
-use graphql_api::*;
 use std::ops::Deref;
 use yew::prelude::*;
 use yew::ContextProvider;
@@ -18,7 +17,7 @@ mod schema {
 }
 
 #[derive(cynic::FragmentArguments)]
-struct GetTimelinesUsersArguments {
+struct GetUserTimelinesArguments {
     id: i32,
 }
 
@@ -26,17 +25,19 @@ struct GetTimelinesUsersArguments {
 #[cynic(
     schema_path = "graphql/schema.graphql",
     graphql_type = "Query",
-    argument_struct = "GetTimelinesUsersArguments"
+    argument_struct = "GetUserTimelinesArguments"
 )]
-struct GetTimelinesUsers {
+struct GetUserTimelinesById {
     #[arguments(id = &args.id)]
-    get_timelines_users: TimelinesUsers,
+    get_usertimelinesbyid: UserTimeline,
 }
 
 #[function_component(ListView)]
 pub fn list_view() -> Html {
     let user_id = use_context::<UserId>().expect("No context found.");
     let first_render = use_state(|| true);
+    let timeline_id = use_state(|| 0);
+    let task_id = use_state(|| 0);
     // LocalStorage::delete("timelines_user_id");
 
     *user_id.borrow_mut() = match LocalStorage::get("timelines_user_id") {
@@ -48,45 +49,72 @@ pub fn list_view() -> Html {
         }
     };
 
-    let timelinesusers_request = {
+    let usertimelines = {
         let id = user_id.clone();
-        let operation = GetTimelinesUsers::build(GetTimelinesUsersArguments { id });
+        let operation = GetUserTimelinesById::build(GetUserTimelinesArguments { id });
         use_async(async move {
             let data = surf::post("http://localhost/api/graphql")
                 .run_graphql(operation)
                 .await
-                .expect("Could not get user data")
+                .expect("Could not get User Timelines")
+                .data;
+
+            if let Some(utl) = data {
+                return Ok(utl.get_usertimelinesbyid);
+            }
+            Err("Could not fetch user Timelines.")
+        })
+    };
+
+    let task_request = {
+        let id = task_id.clone();
+        let operation = GetTask::build(GetTaskArguments { id });
+        use_async(async move {
+            let data = surf::post("http://localhost/api/graphql")
+                .run_graphql(operation)
+                .await
+                .expect("Could not get task")
                 .data
                 .unwrap();
 
-            if let timelines_users = data.get_user_data {
-                return Ok(timelines_users);
+            if let task = data.get_user_data {
+                return Ok(task);
             }
-            Err("Could not fetch timelinesusers.")
+            Err("Could not fetch task.")
         })
     };
 
     use_effect(move || {
         if *first_render {
-            timelinesusers_request.run();
+            usertimelines.run();
             first_render.set(false);
         }
         || {}
     });
 
+    let timelines = use_state(|| Vec::new());
     let timeline_state = use_state(Timeline::default);
     let highlited_task = use_state(Task::default);
-    // TODO: Read users data into timeline_state.
 
     // TODO: Change to look at timelineID
     let timeline_switch = {
         let timeline_state = timeline_state.clone();
-        Callback::from(move |name: String| {
+        let usertimelines = usertimelines.clone();
+        Callback::from(move |id: i32| {
             let mut timeline = timeline_state.deref().clone();
-            timeline.title = name;
+            let timelines = usertimelines.data.unwrap();
+            for t in timelines.iter() {
+                if t.id == id {
+                    timeline.title = t.title;
+                    timeline_state.set(timeline);
+                    break;
+                }
+            }
+            timeline.title = id;
             timeline_state.set(timeline);
         })
     };
+
     let timeline_add = {
         let user_data = user_data.clone();
         Callback::from(move |timelinename: String| {
@@ -98,6 +126,7 @@ pub fn list_view() -> Html {
             // TODO: Set correct new id to timeline
         })
     };
+
     let task_add = {
         let timeline_state = timeline_state.clone();
         Callback::from(move |taskname: String| {
@@ -110,6 +139,7 @@ pub fn list_view() -> Html {
             // TODO: Set correct new id to task
         })
     };
+
     let task_switch = {
         let highlited_task = highlited_task.clone();
         let timeline_state = timeline_state.clone();
@@ -134,10 +164,12 @@ pub fn list_view() -> Html {
             else if let Some(_) = &user_data.data {
                 html! {
                     <>
-                        <ContextProvider<Timeline> context={timeline_state.deref().clone()}>
+                        <ContextProvider<Vec<UserTimeline>> context={usertimelines.data.clone()}>
                             <ListSelector current_timeline={timeline_switch} added_timeline={timeline_add}/>
+                        </ContextProvider<Vec<UserTimeline>>
+                        <ContextProvider<UserTimeline> context={timeline_state.deref().clone()}>
                             <TaskList task_update={task_switch} add_task={task_add}/>
-                        </ContextProvider<Timeline>>
+                        </ContextProvider<UserTimeline>>
                         <ContextProvider<Task> context={highlited_task.deref().clone()}>
                             <TaskInfo/>
                         </ContextProvider<Task>>
