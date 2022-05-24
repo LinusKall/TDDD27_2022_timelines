@@ -6,6 +6,7 @@ pub mod task;
 pub mod task_info;
 pub mod task_list;
 pub mod navigation_bar;
+pub mod account_info;
 
 use gloo::storage::LocalStorage;
 use gloo_storage::Storage;
@@ -18,6 +19,7 @@ use yew_router::prelude::*;
 use list_view::*;
 use login::*;
 use signup::*;
+use account_info::*;
 use navigation_bar::*;
 
 #[derive(Clone, Routable, PartialEq, Debug)]
@@ -28,6 +30,8 @@ pub enum Route {
     Login,
     #[at("/signup")]
     Signup,
+    #[at("/account-information")]
+    AccountInfo,
     #[not_found]
     #[at("/404")]
     NotFound,
@@ -54,6 +58,7 @@ pub fn app() -> Html {
         Route::Login => html! { <Login set_user_id={set_user_id.clone()} /> },
         Route::Signup => html! { <Signup set_user_id={set_user_id.clone()} /> },
         Route::ListView => html! { <ListView/> },
+        Route::AccountInfo => html! { <AccountInfo/> },
         Route::NotFound => html! { <h1>{ "404" }</h1> },
     });
 

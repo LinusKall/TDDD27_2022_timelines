@@ -13,18 +13,18 @@ use super::USER_ID_KEY;
 #[function_component(NavigationBar)]
 pub fn navigation_bar() -> Html {
     let user_id = use_context::<UserId>().expect("No context found.");
-    let username = use_state(String::default);
     let current_route = use_route::<Route>().unwrap();
     
-    let mut login_button = true;
-    let mut signup_button = true;
-    let mut listview_button = true;
+    let login_button;
+    let signup_button;
+    let listview_button;
 
     match current_route {
-        Route::Login    => {login_button = false; signup_button = false; listview_button = false; },
-        Route::Signup   => {login_button = false; signup_button = false; listview_button = false; },
-        Route::ListView => {login_button = true;  signup_button = true;  listview_button = false; },
-        Route::NotFound => {login_button = false; signup_button = false; listview_button = false; },
+        Route::Login       => {login_button = false; signup_button = false; listview_button = false; },
+        Route::Signup      => {login_button = false; signup_button = false; listview_button = false; },
+        Route::ListView    => {login_button = true;  signup_button = true;  listview_button = false; },
+        Route::AccountInfo => {login_button = false; signup_button = false; listview_button = true;  },
+        Route::NotFound    => {login_button = false; signup_button = false; listview_button = false; },
     }
 
     let onclick = {
@@ -46,7 +46,7 @@ pub fn navigation_bar() -> Html {
     html! {
         <>
             <Link<Route> to={Route::Login}> <button name={"logout"} onclick={onclick.clone()} hidden={!login_button}>{"Log out"}</button></Link<Route>>
-            <Link<Route> to={Route::Signup}> <button name={"account_info"} onclick={onclick.clone()} hidden={!signup_button}>{"Account information"}</button></Link<Route>>
+            <Link<Route> to={Route::AccountInfo}> <button name={"account_info"} onclick={onclick.clone()} hidden={!signup_button}>{"Account information"}</button></Link<Route>>
             <Link<Route> to={Route::ListView}> <button name={"listview"} onclick={onclick} hidden={!listview_button}>{"Timelines"}</button></Link<Route>>
         </>
     }
