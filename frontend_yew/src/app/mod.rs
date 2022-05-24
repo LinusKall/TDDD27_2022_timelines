@@ -5,6 +5,7 @@ pub mod signup;
 pub mod task;
 pub mod task_info;
 pub mod task_list;
+pub mod navigation_bar;
 
 use gloo::storage::LocalStorage;
 use gloo_storage::Storage;
@@ -17,8 +18,9 @@ use yew_router::prelude::*;
 use list_view::*;
 use login::*;
 use signup::*;
+use navigation_bar::*;
 
-#[derive(Clone, Routable, PartialEq)]
+#[derive(Clone, Routable, PartialEq, Debug)]
 pub enum Route {
     #[at("/")]
     ListView,
@@ -57,6 +59,7 @@ pub fn app() -> Html {
     html! {
         <ContextProvider<UserId> context={(*ctx).clone()}>
             <BrowserRouter>
+                <NavigationBar/>
                 <Switch<Route> render={switch} />
             </BrowserRouter>
         </ContextProvider<UserId>>

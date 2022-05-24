@@ -2,14 +2,11 @@ use web_sys::HtmlInputElement;
 use yew::functional::*;
 use yew::prelude::*;
 use yew_router::prelude::*;
+use weblog::*;
+use regex::Regex;
 
 use super::Route;
 use super::UserId;
-
-// Consolelog
-use weblog::*;
-
-use regex::Regex;
 
 #[function_component(Signup)]
 pub fn signup() -> Html {
@@ -51,6 +48,7 @@ pub fn signup() -> Html {
     html! {
         <>
             <form>
+                <Link<Route> to={Route::Login}> <button onclick = {onclick.clone()} >{"Log in"}</button></Link<Route>>
                 <div>
                     <input name="username" oninput = {oninput.clone()} placeholder="Username"/>
                 </div>
