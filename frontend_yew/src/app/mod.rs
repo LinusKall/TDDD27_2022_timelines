@@ -16,7 +16,7 @@ use navigation_bar::*;
 //------------------------------------Routing-------------
 use yew_router::prelude::*;
 
-#[derive(Clone, Routable, PartialEq)]
+#[derive(Clone, Routable, PartialEq, Debug)]
 pub enum Route {
     #[at("/login")]
     Login,

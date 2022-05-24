@@ -31,7 +31,7 @@ graphql_client = { version = "0.10.0" }
 weblog = { version = "0.3.0" }
 
 #### Routing ####
-yew-router = "0.16"
+yew-router = { version = "0.16" }
 
 #### Regex ####
 regex = "1"
