@@ -74,7 +74,7 @@ type Query {
   getUserById(id: Int!): User
   getUserId(username: String!, password: String!): Int
   getUserData(id: Int!, hashedPassword: String!): UserData!
-  getTimelinesById(userId: Int!): [UserTimeline!]!
+  getUserTimelinesById(userId: Int!): [UserTimeline!]!
   getTimelines: [Timeline!]!
   getTimelineById(id: Int!): Timeline
   getTasksById(timelineId: Int!): [Task!]!
