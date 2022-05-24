@@ -41,14 +41,15 @@ pub fn login() -> Html {
 
     html! {
         <>
+            <Link<Route> to={Route::Signup}> <button onclick={onclick.clone()}>{"Sign up"}</button></Link<Route>>
+            <h2>{"Login"}</h2>
             <div>
                 <input name="username" oninput = {oninput.clone()} placeholder="Username"/>
             </div>
             <div>
                 <input name="password" {oninput} type="password" placeholder="Password"/>
             </div>
-            <Link<Route> to={Route::ListView}> <button onclick = {onclick.clone()} disabled={username.len()<4 || password.len()<8}>{"Log in"}</button></Link<Route>>
-            <Link<Route> to={Route::Signup}> <button {onclick}>{"Sign up"}</button></Link<Route>>
+            <Link<Route> to={Route::ListView}> <button onclick={onclick} disabled={username.len()<4 || password.len()<8}>{"Log in"}</button></Link<Route>>
         </>
     }
 }
