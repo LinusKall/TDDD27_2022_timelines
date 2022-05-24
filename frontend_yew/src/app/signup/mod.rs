@@ -56,6 +56,8 @@ pub fn signup() -> Html {
 
     html! {
         <>
+            <Link<Route> to={Route::Login}> <button onclick = {onclick.clone()} >{"Log in"}</button></Link<Route>>
+            <h2>{"Create an account"}</h2>
             <div>
                 <input name="username" oninput = {oninput.clone()} placeholder="Username"/>
             </div>
