@@ -14,6 +14,10 @@ input CreateUserInput {
 # The input/output is a string in RFC3339 format.
 scalar DateTime
 
+type DateTimeWrapper {
+  inner: DateTime!
+}
+
 type DeleteTimelineResult {
   success: Boolean!
   rowsAffected: Int!
@@ -31,10 +35,45 @@ type Mutation {
   deleteTimeline(id: Int!): DeleteTimelineResult!
 }
 
+type NestedEvent {
+  id: Int!
+  timelineId: Int!
+  title: String!
+  body: String
+  startTime: DateTimeWrapper!
+  endTime: DateTimeWrapper!
+}
+
+type NestedSubTask {
+  id: Int!
+  taskId: Int!
+  title: String!
+  done: Boolean!
+}
+
+type NestedTask {
+  id: Int!
+  timelineId: Int!
+  title: String!
+  body: String
+  done: Boolean!
+  endTime: DateTimeWrapper!
+  subTasks: [NestedSubTask!]!
+}
+
+type NestedTimeline {
+  id: Int!
+  title: String!
+  color: String!
+  events: [NestedEvent!]!
+  tasks: [NestedTask!]!
+}
+
 type Query {
   getUsers: [User!]!
   getUserById(id: Int!): User
   getUserId(username: String!, password: String!): Int
+  getUserData(id: Int!, hashedPassword: String!): UserData!
   getTimelines: [Timeline!]!
   getTimelineById(id: Int!): Timeline
 }
@@ -54,4 +93,9 @@ type User {
   hashedPassword: String!
   createdAt: DateTime!
   updatedAt: DateTime!
+}
+
+type UserData {
+  id: Int!
+  timelines: [NestedTimeline!]!
 }
