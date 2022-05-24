@@ -1,7 +1,7 @@
-use async_graphql::{Context, Object, Result};
-use entity::async_graphql::{self, InputObject, SimpleObject};
+use entity::async_graphql::{self, Context, InputObject, Object, Result, SimpleObject};
 use entity::users;
-use sea_orm::{ActiveModelTrait, EntityTrait, Set};
+use sea_orm::entity::prelude::*;
+use sea_orm::{query::*, ActiveModelTrait, EntityTrait, FromQueryResult, Set};
 
 use crate::db::Database;
 
@@ -16,6 +16,13 @@ pub struct CreateUserInput {
 pub struct DeleteUserResult {
     pub success: bool,
     pub rows_affected: u64,
+}
+
+#[derive(Debug, FromQueryResult, SimpleObject)]
+pub struct UserInfo {
+    pub id: i32,
+    pub username: String,
+    pub email: String,
 }
 
 #[derive(Default)]
@@ -55,5 +62,19 @@ impl UsersMutation {
         } else {
             unimplemented!()
         }
+    }
+
+    pub async fn get_user(&self, ctx: &Context<'_>, user_id: i32) -> Result<Option<UserInfo>> {
+        let db = ctx.data::<Database>().unwrap();
+
+        Ok(users::Entity::find()
+            .having(users::Column::Id.eq(user_id))
+            .select_only()
+            .column(users::Column::Id)
+            .column(users::Column::Username)
+            .column(users::Column::Email)
+            .into_model::<UserInfo>()
+            .one(db.get_connection())
+            .await?)
     }
 }
