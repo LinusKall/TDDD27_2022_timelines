@@ -6,6 +6,7 @@ use sea_orm::{query::*, FromQueryResult};
 
 use super::user_data::*;
 use crate::db::Database;
+use crate::graphql::schema::DateTimeWrapper;
 use entity::sea_orm_active_enums::ClearanceMapping;
 
 #[derive(Default)]

@@ -1,17 +1,6 @@
 use entity::async_graphql::{self, SimpleObject};
-use sea_orm::entity::prelude::*;
 
-#[derive(SimpleObject, Clone, Debug, PartialEq)]
-pub struct DateTimeWrapper {
-    pub inner: DateTimeUtc,
-}
-impl Default for DateTimeWrapper {
-    fn default() -> Self {
-        Self {
-            inner: chrono::Utc::now(),
-        }
-    }
-}
+use crate::graphql::schema::DateTimeWrapper;
 
 #[derive(SimpleObject, Default, PartialEq, Clone)]
 pub struct UserData {
