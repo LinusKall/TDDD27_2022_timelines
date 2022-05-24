@@ -34,6 +34,7 @@ pub enum Route {
 }
 
 pub type UserId = Rc<RefCell<Option<i32>>>;
+pub const USER_ID_KEY: &'static str = "timelines_user_id";
 
 #[function_component(App)]
 pub fn app() -> Html {
@@ -44,7 +45,7 @@ pub fn app() -> Html {
         Callback::from(move |id: i32| {
             let user_id = (*context).clone();
             *user_id.borrow_mut() = Some(id);
-            LocalStorage::set("timelines_user_id", id).unwrap();
+            LocalStorage::set(USER_ID_KEY, id).unwrap();
             context.set(user_id);
         })
     };
