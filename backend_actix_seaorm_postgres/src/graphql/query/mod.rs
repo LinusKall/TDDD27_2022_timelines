@@ -1,6 +1,7 @@
 use entity::async_graphql;
 
 pub mod timelines;
+pub mod timelines_users;
 pub mod user_data;
 pub mod users;
 
