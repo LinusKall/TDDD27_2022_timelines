@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 pub mod gql;
 pub mod list_selector;
 pub mod list_view;
@@ -32,6 +31,8 @@ pub enum Route {
     Login,
     #[at("/signup")]
     Signup,
+    #[at("/account-information")]
+    AccountInfo,
     #[not_found]
     #[at("/404")]
     NotFound,
@@ -58,6 +59,7 @@ pub fn app() -> Html {
         Route::Login => html! { <Login set_user_id={set_user_id.clone()} /> },
         Route::Signup => html! { <Signup set_user_id={set_user_id.clone()} /> },
         Route::ListView => html! { <ListView/> },
+        Route::AccountInfo => html! { <AccountInfo/>},
         Route::NotFound => html! { <h1>{ "404" }</h1> },
     });
 

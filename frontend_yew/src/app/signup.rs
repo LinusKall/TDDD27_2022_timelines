@@ -9,35 +9,7 @@ use yew_router::prelude::*;
 
 use super::Route;
 use super::UserId;
-
-mod schema {
-    cynic::use_schema!("graphql/schema.graphql");
-}
-
-#[derive(cynic::FragmentArguments, cynic::InputObject)]
-#[cynic(schema_path = "graphql/schema.graphql")]
-struct CreateUserInput {
-    username: String,
-    email: String,
-    hashed_password: String,
-}
-
-#[derive(cynic::QueryFragment, Debug, Clone)]
-#[cynic(
-    schema_path = "graphql/schema.graphql",
-    graphql_type = "Mutation",
-    argument_struct = "CreateUserInput"
-)]
-struct CreateUser {
-    #[arguments(input = &args)]
-    create_user: User,
-}
-
-#[derive(cynic::QueryFragment, Debug, Clone)]
-#[cynic(schema_path = "graphql/schema.graphql", graphql_type = "User")]
-struct User {
-    id: i32,
-}
+use super::gql::query::*;
 
 #[derive(Properties, PartialEq, Clone)]
 pub struct Properties {
@@ -50,7 +22,7 @@ pub fn signup(props: &Properties) -> Html {
     let password = use_state(String::default);
     let email = use_state(String::default);
     let valid_email = use_state(bool::default);
-    let validate = Regex::new(r"^[^ ]+@[^ ]+\.[a-z]{2,6}$").unwrap();
+    let validate = Regex::new(r"^[^ ]+@[^ ]+\.[a-ö]{2,6}$").unwrap();
     let user_id = use_context::<UserId>().expect("No context found.");
 
     if let Some(_) = *user_id.borrow() {

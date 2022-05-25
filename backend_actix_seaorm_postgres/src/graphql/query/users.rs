@@ -1,19 +1,11 @@
-use async_graphql::{Context, Object, Result, SimpleObject};
+use async_graphql::{Context, Object, Result};
 use entity::{async_graphql, users};
 use sea_orm::entity::prelude::*;
 use sea_orm::query::*;
 use sea_orm::EntityTrait;
-use sea_orm::{entity::*, query::*, FromQueryResult};
 
 use crate::db::Database;
 use crate::graphql::custom_types::UserInfo;
-
-#[derive(Debug, FromQueryResult, SimpleObject)]
-pub struct UserInfo {
-    pub id: i32,
-    pub username: String,
-    pub email: String,
-}
 
 #[derive(Default)]
 pub struct UsersQuery;

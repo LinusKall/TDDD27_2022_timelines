@@ -118,3 +118,108 @@ impl Task {
         }
     }
 }
+
+// Login component 
+// ---------------------------------
+#[derive(cynic::FragmentArguments)]
+pub struct GetUserIdArguments {
+    pub username: String,
+    pub password: String,
+}
+
+#[derive(cynic::QueryFragment, Debug)]
+#[cynic(
+    schema_path = "graphql/schema.graphql",
+    graphql_type = "Query",
+    argument_struct = "GetUserIdArguments"
+)]
+pub struct GetUserId {
+    #[arguments(username = &args.username, password = &args.password)]
+    pub get_user_id: Option<i32>,
+}
+// ---------------------------------
+
+// Signup component 
+// ---------------------------------
+#[derive(cynic::FragmentArguments, cynic::InputObject)]
+#[cynic(schema_path = "graphql/schema.graphql")]
+pub struct CreateUserInput {
+    pub username: String,
+    pub email: String,
+    pub hashed_password: String,
+}
+
+#[derive(cynic::QueryFragment, Debug, Clone)]
+#[cynic(
+    schema_path = "graphql/schema.graphql",
+    graphql_type = "Mutation",
+    argument_struct = "CreateUserInput"
+)]
+pub struct CreateUser {
+    #[arguments(input = &args)]
+    pub create_user: User,
+}
+
+#[derive(cynic::QueryFragment, Debug, Clone)]
+#[cynic(schema_path = "graphql/schema.graphql", graphql_type = "User")]
+pub struct User {
+    pub id: i32,
+}
+// ---------------------------------
+
+// Account_info component 
+// ---------------------------------
+#[derive(cynic::QueryFragment, Clone, Debug)]
+#[cynic(
+    schema_path = "graphql/schema.graphql",
+    graphql_type = "UserInfo",
+)]
+pub struct UserInfo {
+    pub id: i32,
+    pub username: String,
+    pub email: String,
+}
+
+#[derive(cynic::FragmentArguments)]
+pub struct GetUserInfoArgs {
+    pub user_id: i32,
+}
+
+#[derive(cynic::QueryFragment, Debug)]
+#[cynic(
+    schema_path = "graphql/schema.graphql",
+    graphql_type = "Query",
+    argument_struct = "GetUserInfoArgs"
+)]
+pub struct GetUserInfo {
+    #[arguments(user_id = &args.user_id)]
+    pub get_user_info: UserInfo,
+}
+
+#[derive(cynic::FragmentArguments)]
+pub struct DeleteUserInput {
+    pub user_id: i32,
+    pub password: String,
+}
+
+#[derive(cynic::QueryFragment, Debug)]
+#[cynic(
+    schema_path = "graphql/schema.graphql",
+    graphql_type = "Mutation",
+    argument_struct = "DeleteUserInput"
+)]
+pub struct DeleteUser {
+    #[arguments(user_id = &args.user_id, password = &args.password)]
+    pub delete_user: DeleteUserResult,
+}
+
+#[derive(cynic::QueryFragment, Debug, Clone)]
+#[cynic(
+    schema_path = "graphql/schema.graphql",
+    graphql_type = "DeleteUserResult",
+)]
+pub struct DeleteUserResult {
+    pub success: bool,
+    pub rows_affected: i32,
+}
+// ---------------------------------

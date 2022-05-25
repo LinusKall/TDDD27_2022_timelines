@@ -11,64 +11,7 @@ use weblog::*;
 use super::Route;
 use super::UserId;
 use super::USER_ID_KEY;
-
-mod schema {
-    cynic::use_schema!("graphql/schema.graphql");
-}
-
-#[derive(cynic::QueryFragment, Clone, Debug)]
-#[cynic(
-    schema_path = "graphql/schema.graphql",
-    graphql_type = "UserInfo",
-)]
-struct UserInfo {
-    id: i32,
-    username: String,
-    email: String,
-}
-
-#[derive(cynic::FragmentArguments)]
-struct GetUserInfoArgs {
-    user_id: i32,
-}
-
-#[derive(cynic::QueryFragment, Debug)]
-#[cynic(
-    schema_path = "graphql/schema.graphql",
-    graphql_type = "Query",
-    argument_struct = "GetUserInfoArgs"
-)]
-struct GetUserInfo {
-    #[arguments(user_id = &args.user_id)]
-    get_user_info: UserInfo,
-}
-
-#[derive(cynic::FragmentArguments)]
-struct DeleteUserInput {
-    user_id: i32,
-    password: String,
-}
-
-#[derive(cynic::QueryFragment, Debug)]
-#[cynic(
-    schema_path = "graphql/schema.graphql",
-    graphql_type = "Mutation",
-    argument_struct = "DeleteUserInput"
-)]
-struct DeleteUser {
-    #[arguments(user_id = &args.user_id, password = &args.password)]
-    delete_user: DeleteUserResult,
-}
-
-#[derive(cynic::QueryFragment, Debug, Clone)]
-#[cynic(
-    schema_path = "graphql/schema.graphql",
-    graphql_type = "DeleteUserResult",
-)]
-struct DeleteUserResult {
-    success: bool,
-    rows_affected: i32,
-}
+use super::gql::query::*;
 
 #[function_component(AccountInfo)]
 pub fn account_info() -> Html {

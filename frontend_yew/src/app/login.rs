@@ -5,33 +5,11 @@ use yew::functional::*;
 use yew::prelude::*;
 use yew_hooks::prelude::*;
 use yew_router::prelude::*;
+use weblog::*;
 
 use super::Route;
 use super::UserId;
-
-// Consolelog
-use weblog::*;
-
-mod schema {
-    cynic::use_schema!("graphql/schema.graphql");
-}
-
-#[derive(cynic::FragmentArguments)]
-struct GetUserIdArguments {
-    username: String,
-    password: String,
-}
-
-#[derive(cynic::QueryFragment, Debug)]
-#[cynic(
-    schema_path = "graphql/schema.graphql",
-    graphql_type = "Query",
-    argument_struct = "GetUserIdArguments"
-)]
-struct GetUserId {
-    #[arguments(username = &args.username, password = &args.password)]
-    get_user_id: Option<i32>,
-}
+use super::gql::query::*;
 
 #[derive(Properties, PartialEq)]
 pub struct Properties {
