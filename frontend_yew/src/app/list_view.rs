@@ -1,3 +1,4 @@
+use cynic::{http::SurfExt, MutationBuilder, QueryBuilder};
 use gloo::storage::LocalStorage;
 use gloo_storage::Storage;
 use std::ops::Deref;
@@ -5,21 +6,25 @@ use yew::prelude::*;
 use yew::ContextProvider;
 use yew_hooks::prelude::*;
 use yew_router::prelude::*;
-use cynic::QueryBuilder;
+use std::rc::Rc;
+use std::cell::RefCell;
 
+use super::gql::query::*;
 use super::list_selector::*;
 use super::task_info::*;
 use super::task_list::*;
 use super::Route;
 use super::UserId;
-use super::gql::query::*;
 
 #[function_component(ListView)]
 pub fn list_view() -> Html {
+    let timeline_state = use_state(UserTimeline::default);
+    let highlited_task = use_state(Task::default);
     let user_id = use_context::<UserId>().expect("No context found.");
-    let first_render = use_state(|| true);
-    let timeline_id = use_state(|| 0);
+    let rf_first = use_state(|| true);
     let task_id = use_state(|| 0);
+    let timeline_title = use_state(|| "".to_owned());
+    let rf_new_timeline = use_state(|| false);
     // LocalStorage::delete("timelines_user_id");
 
     *user_id.borrow_mut() = match LocalStorage::get("timelines_user_id") {
@@ -33,7 +38,9 @@ pub fn list_view() -> Html {
 
     let usertimelines = {
         let user_id = user_id.clone();
-        let operation = GetUserTimelinesById::build(GetUserTimelinesArguments { user_id.borrow_mut().deref().unwrap() });
+        let operation = GetUserTimelinesById::build(GetUserTimelinesArguments {
+            user_id: user_id.borrow_mut().deref().unwrap(),
+        });
         use_async(async move {
             let data = surf::post("http://localhost/api/graphql")
                 .run_graphql(operation)
@@ -42,41 +49,33 @@ pub fn list_view() -> Html {
                 .data;
 
             if let Some(utl) = data {
-                return Ok(utl.get_usertimelinesbyid);
+                return Ok(Rc::new(RefCell::new(utl.get_user_timelines_by_id)));
             }
             Err("Could not fetch user Timelines.")
         })
     };
 
-    // let task_request = {
-    //     let id = task_id.clone();
-    //     let operation = GetTask::build(GetTaskArguments { id });
-    //     use_async(async move {
-    //         let data = surf::post("http://localhost/api/graphql")
-    //             .run_graphql(operation)
-    //             .await
-    //             .expect("Could not get task")
-    //             .data
-    //             .unwrap();
+    let new_timeline = {
+        let user_id = user_id.clone();
+        let timeline_title = timeline_title.deref().clone();
+        let operation = CreateUserTimeline::build(CreateUserTimelineArguments {
+            user_id: user_id.borrow_mut().deref().unwrap(),
+            title: timeline_title,
+            public: false,
+        });
+        use_async(async move {
+            let data = surf::post("http://localhost/api/graphql")
+                .run_graphql(operation)
+                .await
+                .expect("Could not create User Timeline")
+                .data;
 
-    //         if let task = data.get_user_data {
-    //             return Ok(task);
-    //         }
-    //         Err("Could not fetch task.")
-    //     })
-    // };
-
-    use_effect(move || {
-        if *first_render {
-            usertimelines.run();
-            first_render.set(false);
-        }
-        || {}
-    });
-
-    let timelines = use_state(|| Vec::new());
-    let timeline_state = use_state(UserTimeline::default);
-    let highlited_task = use_state(Task::default);
+            if let Some(tl) = data {
+                return Ok(tl.create_user_timeline);
+            }
+            Err("Could not create User Timeline.")
+        })
+    };
 
     // TODO: Change to look at timelineID
     let timeline_switch = {
@@ -84,80 +83,77 @@ pub fn list_view() -> Html {
         let usertimelines = usertimelines.clone();
         Callback::from(move |id: i32| {
             let mut timeline = timeline_state.deref().clone();
-            let timelines = usertimelines.data.unwrap();
-            for t in timelines.iter() {
-                if t.id == id {
-                    timeline.title = t.title;
+            let timelines = usertimelines.data.as_ref().unwrap();
+            for t in timelines.borrow().iter() {
+                if t.timeline_id == id {
+                    timeline.title = t.title.to_owned();
+                    timeline.timeline_id = id;
                     timeline_state.set(timeline);
                     break;
                 }
             }
-            timeline.title = id;
-            timeline_state.set(timeline);
         })
     };
 
     let timeline_add = {
         let usertimelines = usertimelines.clone();
+        let timeline_title = timeline_title.clone();
+        let new_timeline = new_timeline.clone();
+        let rf_new_timeline = rf_new_timeline.clone();
         Callback::from(move |timelinename: String| {
-            let mut utl = usertimelines.data.clone();
-            let mut timeline = UserTimeline::default();
-            timeline.title = timelinename;
-            utl.push(timeline);
-            usertimelines.set(utl);
-            // TODO: Set correct new id to timeline
-        })
-    };
-
-    let task_add = {
-        let timeline_state = timeline_state.clone();
-        Callback::from(move |taskname: String| {
-            let mut timeline = timeline_state.deref().clone();
-            let mut task = Task::default();
-            task.title = taskname;
-            task.id = 1;
-            timeline.tasks.push(task);
-            timeline_state.set(timeline);
-            // TODO: Set correct new id to task
+            let utl = usertimelines.data.as_ref().unwrap();
+            let new_timeline = new_timeline.clone();
+            let mut title = timeline_title.deref().clone();
+            title = timelinename;
+            timeline_title.set(title);
+            new_timeline.run();
+            rf_new_timeline.set(true);
         })
     };
 
     let task_switch = {
         let highlited_task = highlited_task.clone();
-        let timeline_state = timeline_state.clone();
-        Callback::from(move |taskid: i32| {
-            let mut task = highlited_task.deref().clone();
-            let timeline = timeline_state.deref().clone();
-            for t in timeline.tasks.iter() {
-                if t.id == taskid {
-                    task.title = t.title.clone();
-                    highlited_task.set(task);
-                    break;
-                }
-            }
+        Callback::from(move |task: Task| {
+            highlited_task.set(task);
         })
     };
-
+    {
+        let usertimelines = usertimelines.clone();
+        use_effect(move || {
+            if *rf_first {
+                usertimelines.run();
+                rf_first.set(false);
+            }
+            if *rf_new_timeline {
+                if let Some(new_user_timeline) = new_timeline.data.clone() {
+                    let utl = usertimelines.data.as_ref().unwrap().clone();
+                    utl.borrow_mut().push(new_user_timeline);
+                    rf_new_timeline.set(false);
+                }
+            }
+            || {}
+        });
+    }
     html! {
         <div class="list_view">
-            {
-                if usertimelines.loading {
-                    html! {<h1>{ " Loading..." }</h1>}
-                }
-                else if let Some(_) = &usertimelines.data {
+            {   
+                if let Some(usertimelines) = &usertimelines.data {
                     html! {
-                        <>
-                            // <ContextProvider<Vec<UserTimeline>> context={usertimelines.data.clone()}>
-                            //     <ListSelector current_timeline={timeline_switch} added_timeline={timeline_add}/>
-                            // </ContextProvider<Vec<UserTimeline>>
-                            // <ContextProvider<UserTimeline> context={timeline_state.deref().clone()}>
-                            //     <TaskList task_update={task_switch} add_task={task_add}/>
-                            // </ContextProvider<UserTimeline>>
-                            // <ContextProvider<Task> context={highlited_task.deref().clone()}>
-                            //     <TaskInfo/>
-                            // </ContextProvider<Task>>
-                        </>
+                        // <>
+                        //     <ContextProvider<Vec<UserTimeline>> context={usertimelines}>
+                        //         <ListSelector current_timeline={timeline_switch} added_timeline={timeline_add}/>
+                        //     </ContextProvider<Vec<UserTimeline>>
+                        //     <ContextProvider<UserTimeline> context={timeline_statte.deref().clone()}>
+                        //         <TaskList task_update={task_switch}/>
+                        //     </ContextProvider<UserTimeline>>
+                        //     <ContextProvider<Task> context={highlited_task.deref().clone()}>
+                        //         <TaskInfo/>
+                        //     </ContextProvider<Task>>
+                        // </>
+                        <h1>{"Shit ner dig"}</h1>
                     }
+                } else {
+                    html! {<h1>{ " Loading..." }</h1>}
                 }
             }
         </div>

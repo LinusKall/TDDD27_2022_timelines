@@ -8,7 +8,7 @@ use super::gql::query::*;
 
 #[derive(Debug, Clone, Properties, PartialEq)]
 pub struct Props {
-    pub current_timeline: Callback<String>,
+    pub current_timeline: Callback<i32>,
     pub added_timeline: Callback<String>,
 }
 
@@ -17,7 +17,7 @@ pub fn list_selector(props: &Props) -> Html {
     let timelines_context = use_context::<Vec<UserTimeline>>();
     let timelines = use_state(|| Vec::new());
     for t in timelines_context.unwrap_or_default().iter() {
-        let temp = timelines.deref().clone();
+        let mut temp = timelines.deref().clone();
         temp.push(t.title.clone());
         timelines.set(temp);
     }
@@ -49,7 +49,7 @@ pub fn list_selector(props: &Props) -> Html {
             let target = e.target().unwrap();
             let input = target.unchecked_into::<HtmlButtonElement>();
             let value = input.id();
-            current_timeline.emit(value);
+            current_timeline.emit(value.trim().parse::<i32>().unwrap());
         })
     };
 
