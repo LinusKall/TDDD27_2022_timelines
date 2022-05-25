@@ -56,7 +56,7 @@ impl UsersQuery {
         }
     }
 
-    pub async fn get_user_info(&self, ctx: &Context<'_>, user_id: i32) -> Result<Option<UserInfo>> {
+    pub async fn get_user_info(&self, ctx: &Context<'_>, user_id: i32) -> Result<UserInfo> {
         let db = ctx.data::<Database>().unwrap();
 
         Ok(users::Entity::find()
@@ -67,6 +67,7 @@ impl UsersQuery {
             .column(users::Column::Email)
             .into_model::<UserInfo>()
             .one(db.get_connection())
-            .await?)
+            .await?
+            .unwrap())
     }
 }
