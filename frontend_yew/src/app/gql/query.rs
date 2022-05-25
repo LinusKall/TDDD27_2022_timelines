@@ -24,6 +24,40 @@ pub struct GetUserTimelinesById {
     pub get_user_timelines_by_id: Vec<UserTimeline>,
 }
 
+#[derive(cynic::FragmentArguments)]
+pub struct CreateUserTimelineArguments {
+    pub user_id: i32,
+    pub title: String,
+    pub public: bool,
+}
+
+#[derive(cynic::QueryFragment, Debug)]
+#[cynic(
+    schema_path = "graphql/schema.graphql",
+    graphql_type = "Mutation",
+    argument_struct = "CreateUserTimelineArguments"
+)]
+pub struct CreateUserTimeline {
+    #[arguments(input = &args)]
+    pub create_user_timeline: UserTimeline,
+}
+
+#[derive(cynic::FragmentArguments)]
+pub struct GetTasksByIdArguments {
+    pub timeline_id: i32,
+}
+
+#[derive(cynic::QueryFragment, Debug)]
+#[cynic(
+    schema_path = "graphql/schema.graphql",
+    graphql_type = "Mutation",
+    argument_struct = "GetTaskByIdArguments"
+)]
+pub struct GetTaskById {
+    #[arguments(timeline_id = &args.timeline_id)]
+    pub get_tasks_by_id: Vec<Task>,
+}
+
 // #[derive(cynic::FragmentArguments)]
 // #[derive(cynic::QueryFragment, Debug)]
 // #[cynic(
@@ -42,7 +76,6 @@ pub struct UserTimeline {
     pub user_id: i32,
     pub timeline_id: i32,
     pub title: String,
-    pub user_timeline_relation: i32,
     pub color: String,
     pub props_created_at: DateTimeUtc,
     pub props_updated_at: DateTimeUtc,
@@ -50,7 +83,11 @@ pub struct UserTimeline {
     pub timeline_updated_at: DateTimeUtc,
 }
 
-#[derive(PartialEq, Clone, Default)]
+#[derive(Debug, QueryFragment, Clone, PartialEq, Default)]
+#[cynic(
+    schema_path = "graphql/schema.graphql",
+    graphql_type = "Task",
+)]
 pub struct Task {
     pub id: i32,
     pub timeline_id: i32,
