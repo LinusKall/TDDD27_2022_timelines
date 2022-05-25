@@ -65,6 +65,7 @@ impl UsersQuery {
             .column(users::Column::Id)
             .column(users::Column::Username)
             .column(users::Column::Email)
+            .group_by(users::Column::Id)
             .into_model::<UserInfo>()
             .one(db.get_connection())
             .await?
