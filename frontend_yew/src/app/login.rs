@@ -76,19 +76,21 @@ pub fn login(props: &Properties) -> Html {
         })
     };
 
-    let oninput = {
+    let username_input = {
         let current_username = username.clone();
-        let current_password = password.clone();
 
         Callback::from(move |e: InputEvent| {
             let input: HtmlInputElement = e.target_unchecked_into();
-            if input.name() == "username" {
-                current_username.set(input.value());
-            } else if input.name() == "password" {
-                current_password.set(input.value());
-            } else {
-                console_error!("Should be impossible to get here");
-            }
+            current_username.set(input.value());
+        })
+    };
+
+    let password_input = {
+        let current_password = password.clone();
+        
+        Callback::from(move |e: InputEvent| {
+            let input: HtmlInputElement = e.target_unchecked_into();
+            current_password.set(input.value());
         })
     };
 
@@ -100,10 +102,10 @@ pub fn login(props: &Properties) -> Html {
                 }>{"Sign up"}</button>
             </Link<Route>>
             <div>
-                <input name="username" oninput = {oninput.clone()} placeholder="Username"/>
+                <input oninput={username_input} placeholder="Username"/>
             </div>
             <div>
-                <input name="password" {oninput} type="password" placeholder="Password"/>
+                <input oninput={password_input} type="password" placeholder="Password"/>
             </div>
             <Link<Route> to={Route::ListView}>
                 <button onclick = {
