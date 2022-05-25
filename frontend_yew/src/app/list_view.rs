@@ -135,27 +135,26 @@ pub fn list_view() -> Html {
         });
     }
     html! {
-        <div class="list_view">
-            {   
-                if let Some(usertimelines) = &usertimelines.data {
-                    html! {
-                        // <>
-                        //     <ContextProvider<Vec<UserTimeline>> context={usertimelines}>
-                        //         <ListSelector current_timeline={timeline_switch} added_timeline={timeline_add}/>
-                        //     </ContextProvider<Vec<UserTimeline>>
-                        //     <ContextProvider<UserTimeline> context={timeline_statte.deref().clone()}>
-                        //         <TaskList task_update={task_switch}/>
-                        //     </ContextProvider<UserTimeline>>
-                        //     <ContextProvider<Task> context={highlited_task.deref().clone()}>
-                        //         <TaskInfo/>
-                        //     </ContextProvider<Task>>
-                        // </>
-                        <h1>{"Shit ner dig"}</h1>
-                    }
-                } else {
-                    html! {<h1>{ " Loading..." }</h1>}
+        {   
+            if let Some(usertimelines) = usertimelines.data.as_ref() {
+                html! {
+                    <div class="list_view">
+                        <ContextProvider<Rc<RefCell<Vec<UserTimeline>>>> context={usertimelines.clone()}>
+                            <ListSelector current_timeline={timeline_switch} added_timeline={timeline_add}/>
+                        </ContextProvider<Rc<RefCell<Vec<UserTimeline>>>>>
+
+                        <ContextProvider<UserTimeline> context={timeline_state.deref().clone()}>
+                            <TaskList task_update={task_switch}/>
+                        </ContextProvider<UserTimeline>>
+                        
+                        <ContextProvider<Task> context={highlited_task.deref().clone()}>
+                            <TaskInfo/>
+                        </ContextProvider<Task>>
+                    </div>
                 }
+            } else {
+                html! {<h1>{ " Loading..." }</h1>}
             }
-        </div>
+        }
     }
 }

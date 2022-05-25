@@ -107,7 +107,11 @@ pub fn task_list(props: &Props) -> Html {
                         {
                             for tasks.borrow().iter().map(|task|
                                 html! {
-                                    <TaskItem id={task.id.to_string()} title={task.title.clone()} get_task_name={task_switch.clone()}/>
+                                    <TaskItem 
+                                        id={task.id.to_string()} 
+                                        title={task.title.clone()} 
+                                        get_task_name={task_switch.clone()}
+                                    />
                                 }
                             )
                         }

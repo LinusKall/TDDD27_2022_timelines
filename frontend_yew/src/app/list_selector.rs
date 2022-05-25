@@ -3,6 +3,8 @@ use wasm_bindgen::JsCast;
 use web_sys::HtmlButtonElement;
 use web_sys::HtmlInputElement as InputElement;
 use yew::prelude::*;
+use std::rc::Rc;
+use std::cell::RefCell;
 
 use super::gql::query::*;
 
@@ -14,27 +16,18 @@ pub struct Props {
 
 #[function_component(ListSelector)]
 pub fn list_selector(props: &Props) -> Html {
-    let timelines_context = use_context::<Vec<UserTimeline>>();
-    let timelines = use_state(|| Vec::new());
-    for t in timelines_context.unwrap_or_default().iter() {
-        let mut temp = timelines.deref().clone();
-        temp.push(t.title.clone());
-        timelines.set(temp);
-    }
+    let timelines_context = use_context::<Rc<RefCell<Vec<UserTimeline>>>>();
+    let timelines = use_state(|| timelines_context.unwrap());
     // TODO: Read users timelines into timelines.
 
     let onkeypress = {
-        let timelines = timelines.clone();
         let added_timeline = props.added_timeline.clone();
         Callback::from(move |e: KeyboardEvent| {
             if e.key() == "Enter" {
-                let mut timeline_list = timelines.deref().clone();
                 let input: InputElement = e.target_unchecked_into();
                 if input.value() != "" {
                     let value = input.value();
                     input.set_value("");
-                    timeline_list.push(value.clone());
-                    timelines.set(timeline_list);
                     added_timeline.emit(value);
                 } else {
                 }
@@ -63,14 +56,14 @@ pub fn list_selector(props: &Props) -> Html {
 
             <div class="available_timelines">
                 {
-                    for (*timelines)
-                        .clone()
+                    for timelines
+                        .borrow()
                         .iter()
                         .map(|timeline| html! {
                             <button
                                 onclick={onclick.clone()}
-                                id={(*timeline).clone()}
-                                name={(*timeline).clone()}>{timeline}
+                                id={timeline.timeline_id.clone().to_string()}
+                                name={timeline.title.clone()}>{timeline.title.clone()}
                             </button>
                         })
                 }
