@@ -1,13 +1,11 @@
-// use gloo::console::log;
-use cynic::{http::SurfExt, MutationBuilder, QueryBuilder};
-use std::ops::Deref;
+use cynic::{http::SurfExt, /*MutationBuilder,*/ QueryBuilder};
+use std::cell::RefCell;
+use std::rc::Rc;
 use web_sys::HtmlInputElement as InputElement;
 use weblog::*;
 use yew::prelude::*;
 use yew::Callback;
 use yew_hooks::prelude::*;
-use std::rc::Rc;
-use std::cell::RefCell;
 
 use super::gql::query::*;
 use super::task_item::*;
@@ -47,7 +45,7 @@ pub fn task_list(props: &Props) -> Html {
         let task_title = task_title.clone();
         Callback::from(move |e: KeyboardEvent| {
             if e.key() == "Enter" {
-                let mut tasklist = tasks.data.as_ref().unwrap().clone();
+                let _tasklist = tasks.data.as_ref().unwrap().clone();
                 let input: InputElement = e.target_unchecked_into();
                 if input.value() != "" {
                     let value = input.value();
@@ -61,7 +59,7 @@ pub fn task_list(props: &Props) -> Html {
     };
 
     let ondblclick = {
-        Callback::from(|e: MouseEvent| {
+        Callback::from(|_: MouseEvent| {
             console_log!("doubleclicked");
         })
     };
@@ -80,7 +78,7 @@ pub fn task_list(props: &Props) -> Html {
         })
     };
 
-    {   
+    {
         let tasks = tasks.clone();
         use_effect(move || {
             if *rf_first {
@@ -107,9 +105,9 @@ pub fn task_list(props: &Props) -> Html {
                         {
                             for tasks.borrow().iter().map(|task|
                                 html! {
-                                    <TaskItem 
-                                        id={task.id.to_string()} 
-                                        title={task.title.clone()} 
+                                    <TaskItem
+                                        id={task.id.to_string()}
+                                        title={task.title.clone()}
                                         get_task_name={task_switch.clone()}
                                     />
                                 }

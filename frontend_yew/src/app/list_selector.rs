@@ -1,10 +1,9 @@
-use std::ops::Deref;
+use std::cell::RefCell;
+use std::rc::Rc;
 use wasm_bindgen::JsCast;
 use web_sys::HtmlButtonElement;
 use web_sys::HtmlInputElement as InputElement;
 use yew::prelude::*;
-use std::rc::Rc;
-use std::cell::RefCell;
 
 use super::gql::query::*;
 

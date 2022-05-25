@@ -1,15 +1,19 @@
 use cynic::{http::SurfExt, MutationBuilder, QueryBuilder};
 use gloo::storage::LocalStorage;
 use gloo_storage::Storage;
+use std::cell::RefCell;
 use std::ops::Deref;
+use std::rc::Rc;
 use yew::prelude::*;
 use yew::ContextProvider;
 use yew_hooks::prelude::*;
 use yew_router::prelude::*;
-use std::rc::Rc;
-use std::cell::RefCell;
 
+use super::gql::query::*;
+use super::list_selector::*;
+use super::task_info::*;
 use super::task_list::*;
+use super::Route;
 use super::UserId;
 
 #[function_component(ListView)]
@@ -18,7 +22,6 @@ pub fn list_view() -> Html {
     let highlited_task = use_state(Task::default);
     let user_id = use_context::<UserId>().expect("No context found.");
     let rf_first = use_state(|| true);
-    let task_id = use_state(|| 0);
     let timeline_title = use_state(|| "".to_owned());
     let rf_new_timeline = use_state(|| false);
     // LocalStorage::delete("timelines_user_id");
@@ -92,15 +95,12 @@ pub fn list_view() -> Html {
     };
 
     let timeline_add = {
-        let usertimelines = usertimelines.clone();
         let timeline_title = timeline_title.clone();
         let new_timeline = new_timeline.clone();
         let rf_new_timeline = rf_new_timeline.clone();
         Callback::from(move |timelinename: String| {
-            let utl = usertimelines.data.as_ref().unwrap();
             let new_timeline = new_timeline.clone();
-            let mut title = timeline_title.deref().clone();
-            title = timelinename;
+            let title = timelinename;
             timeline_title.set(title);
             new_timeline.run();
             rf_new_timeline.set(true);
@@ -131,7 +131,7 @@ pub fn list_view() -> Html {
         });
     }
     html! {
-        {   
+        {
             if let Some(usertimelines) = usertimelines.data.as_ref() {
                 html! {
                     <div class="list_view">
@@ -142,7 +142,7 @@ pub fn list_view() -> Html {
                         <ContextProvider<UserTimeline> context={timeline_state.deref().clone()}>
                             <TaskList task_update={task_switch}/>
                         </ContextProvider<UserTimeline>>
-                        
+
                         <ContextProvider<Task> context={highlited_task.deref().clone()}>
                             <TaskInfo/>
                         </ContextProvider<Task>>

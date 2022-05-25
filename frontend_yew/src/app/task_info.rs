@@ -6,7 +6,7 @@ use super::gql::query::*;
 pub fn task_info() -> Html {
     let task_context = use_context::<Task>();
 
-    let ondblclick = { Callback::from(|e: MouseEvent| {}) };
+    let ondblclick = { Callback::from(|_: MouseEvent| {}) };
     html! {
         <div class="task-info">
             <h2 {ondblclick}>{task_context.unwrap_or(Task::default()).title}</h2>
