@@ -1,5 +1,4 @@
-use async_graphql::{Context, Object, Result};
-use entity::async_graphql::{self, InputObject, SimpleObject};
+use entity::async_graphql::{self, Context, InputObject, Object, Result, SimpleObject};
 use entity::users;
 use sea_orm::{ActiveModelTrait, EntityTrait, Set};
 
@@ -53,7 +52,11 @@ impl UsersMutation {
                 rows_affected: res.rows_affected,
             })
         } else {
-            unimplemented!()
+            Err(entity::async_graphql::Error {
+                message: format!("{} users were deleted", res.rows_affected),
+                source: None,
+                extensions: None,
+            })
         }
     }
 }

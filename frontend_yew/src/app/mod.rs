@@ -1,9 +1,10 @@
+pub mod gql;
 pub mod list_selector;
 pub mod list_view;
 pub mod login;
 pub mod signup;
-pub mod task;
 pub mod task_info;
+pub mod task_item;
 pub mod task_list;
 pub mod navigation_bar;
 
@@ -17,8 +18,8 @@ use yew_router::prelude::*;
 
 use list_view::*;
 use login::*;
-use signup::*;
 use navigation_bar::*;
+use signup::*;
 
 #[derive(Clone, Routable, PartialEq, Debug)]
 pub enum Route {

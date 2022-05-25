@@ -1,3 +1,16 @@
+enum ClearanceMapping {
+  MODERATOR
+  OWNER
+  SUBSCRIBER
+}
+
+input CreateTaskInput {
+  timelineId: Int!
+  title: String!
+  body: String
+  endTime: DateTime!
+}
+
 input CreateTimelineInput {
   title: String!
   public: Boolean!
@@ -9,10 +22,21 @@ input CreateUserInput {
   hashedPassword: String!
 }
 
+input CreateUserTimelineInput {
+  userId: Int!
+  title: String!
+  public: Boolean!
+}
+
 # Implement the DateTime<Utc> scalar
 #
 # The input/output is a string in RFC3339 format.
 scalar DateTime
+
+type DeleteTaskResult {
+  success: Boolean!
+  rowsAffected: Int!
+}
 
 type DeleteTimelineResult {
   success: Boolean!
@@ -29,14 +53,35 @@ type Mutation {
   deleteUser(id: Int!): DeleteUserResult!
   createTimeline(input: CreateTimelineInput!): Timeline!
   deleteTimeline(id: Int!): DeleteTimelineResult!
+  createUserTimeline(input: CreateUserTimelineInput!): UserTimeline!
+  createTask(input: CreateTaskInput!): Task!
+  deleteTask(taskId: Int!): DeleteTaskResult!
 }
 
 type Query {
   getUsers: [User!]!
   getUserById(id: Int!): User
   getUserId(username: String!, password: String!): Int
+  getUserInfo(userId: Int!): UserInfo!
   getTimelines: [Timeline!]!
   getTimelineById(id: Int!): Timeline
+  getTasksById(timelineId: Int!): [Task!]!
+  getUserTimelinesById(userId: Int!): [UserTimeline!]!
+}
+
+type Subscription {
+  interval(n: Int! = 1): Int!
+}
+
+type Task {
+  id: Int!
+  timelineId: Int!
+  title: String!
+  body: String
+  done: Boolean!
+  endTime: DateTime!
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 type Timeline {
@@ -54,4 +99,23 @@ type User {
   hashedPassword: String!
   createdAt: DateTime!
   updatedAt: DateTime!
+}
+
+type UserInfo {
+  id: Int!
+  username: String!
+  email: String!
+}
+
+type UserTimeline {
+  propsId: Int!
+  userId: Int!
+  timelineId: Int!
+  title: String!
+  relation: ClearanceMapping!
+  color: String!
+  propsCreatedAt: DateTime!
+  propsUpdatedAt: DateTime!
+  timelineCreatedAt: DateTime!
+  timelineUpdatedAt: DateTime!
 }

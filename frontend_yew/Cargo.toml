@@ -26,7 +26,7 @@ serde_json = { version = "1.0" }
 wasm-bindgen-futures = "0.4"
 
 #### GraphQL ####
-graphql_api = { path = "../graphql_api" }
+#graphql_api = { path = "../graphql_api" }
 cynic = { version = "1.0.0", features = [ "surf-wasm-client" ] }
 surf = { version = "2.3.2", default-features = false, features = [ "wasm-client" ] }
 
@@ -34,7 +34,7 @@ surf = { version = "2.3.2", default-features = false, features = [ "wasm-client"
 weblog = { version = "0.3.0" }
 
 #### Time ####
-chrono = { version = "0.4.19", features = ["wasmbind"] }
+chrono = { version = "0.4.19", features = ["wasmbind", "serde"] }
 
 #### Routing ####
 yew-router = "0.16"
