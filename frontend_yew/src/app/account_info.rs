@@ -143,7 +143,6 @@ pub fn account_info() -> Html {
     };
     
     let onclick_delete = {
-        let user_id = user_id.clone();
         let delete_user = delete_user.clone();
         Callback::from(move |_: MouseEvent| {
             delete_user.run();
