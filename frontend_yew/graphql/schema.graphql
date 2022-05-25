@@ -1,3 +1,9 @@
+enum ClearanceMapping {
+  MODERATOR
+  OWNER
+  SUBSCRIBER
+}
+
 input CreateTimelineInput {
   title: String!
   public: Boolean!
@@ -9,14 +15,16 @@ input CreateUserInput {
   hashedPassword: String!
 }
 
+input CreateUserTimelineInput {
+  userId: Int!
+  title: String!
+  public: Boolean!
+}
+
 # Implement the DateTime<Utc> scalar
 #
 # The input/output is a string in RFC3339 format.
 scalar DateTime
-
-type DateTimeWrapper {
-  inner: DateTime!
-}
 
 type DeleteTimelineResult {
   success: Boolean!
@@ -33,51 +41,18 @@ type Mutation {
   deleteUser(id: Int!): DeleteUserResult!
   createTimeline(input: CreateTimelineInput!): Timeline!
   deleteTimeline(id: Int!): DeleteTimelineResult!
-}
-
-type NestedEvent {
-  id: Int!
-  timelineId: Int!
-  title: String!
-  body: String
-  startTime: DateTimeWrapper!
-  endTime: DateTimeWrapper!
-}
-
-type NestedSubTask {
-  id: Int!
-  taskId: Int!
-  title: String!
-  done: Boolean!
-}
-
-type NestedTask {
-  id: Int!
-  timelineId: Int!
-  title: String!
-  body: String
-  done: Boolean!
-  endTime: DateTimeWrapper!
-  subTasks: [NestedSubTask!]!
-}
-
-type NestedTimeline {
-  id: Int!
-  title: String!
-  color: String!
-  events: [NestedEvent!]!
-  tasks: [NestedTask!]!
+  createUserTimeline(input: CreateUserTimelineInput!): UserTimeline!
 }
 
 type Query {
   getUsers: [User!]!
   getUserById(id: Int!): User
   getUserId(username: String!, password: String!): Int
-  getUserData(id: Int!, hashedPassword: String!): UserData!
-  getUserTimelinesById(userId: Int!): [UserTimeline!]!
+  getUserInfo(userId: Int!): UserInfo!
   getTimelines: [Timeline!]!
   getTimelineById(id: Int!): Timeline
   getTasksById(timelineId: Int!): [Task!]!
+  getUserTimelinesById(userId: Int!): [UserTimeline!]!
 }
 
 type Subscription {
@@ -112,9 +87,10 @@ type User {
   updatedAt: DateTime!
 }
 
-type UserData {
+type UserInfo {
   id: Int!
-  timelines: [NestedTimeline!]!
+  username: String!
+  email: String!
 }
 
 type UserTimeline {
@@ -122,7 +98,7 @@ type UserTimeline {
   userId: Int!
   timelineId: Int!
   title: String!
-  userTimelineRelation: Int!
+  relation: ClearanceMapping!
   color: String!
   propsCreatedAt: DateTime!
   propsUpdatedAt: DateTime!
