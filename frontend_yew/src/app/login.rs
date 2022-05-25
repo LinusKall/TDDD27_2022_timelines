@@ -69,7 +69,13 @@ pub fn login(props: &Properties) -> Html {
         })
     };
 
-    let onclick = {
+    let signup_click = {
+        let user_id_request = user_id_request.clone();
+        Callback::from(move |_| {
+        })
+    };
+
+    let login_click = {
         let user_id_request = user_id_request.clone();
         Callback::from(move |_| {
             user_id_request.run();
@@ -98,7 +104,7 @@ pub fn login(props: &Properties) -> Html {
         <>
             <Link<Route> to={Route::Signup}>
                 <button onclick={
-                    onclick.clone()
+                    signup_click
                 }>{"Sign up"}</button>
             </Link<Route>>
             <div>
@@ -108,8 +114,8 @@ pub fn login(props: &Properties) -> Html {
                 <input oninput={password_input} type="password" placeholder="Password"/>
             </div>
             <Link<Route> to={Route::ListView}>
-                <button onclick = {
-                    onclick
+                <button onclick={
+                    login_click
                 } disabled={
                     username.len()<4 ||
                     password.len()<8
