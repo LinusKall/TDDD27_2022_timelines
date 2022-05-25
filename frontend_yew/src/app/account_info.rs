@@ -3,8 +3,9 @@ use yew_router::prelude::*;
 use web_sys::HtmlInputElement;
 use web_sys::HtmlButtonElement;
 use gloo_storage::LocalStorage;
+use gloo_storage::Storage;
 use yew_hooks::prelude::*;
-use cynic::{QueryBuilder, http::SurfExt};
+use cynic::{QueryBuilder, http::SurfExt, MutationBuilder};
 use std::ops::Deref;
 use weblog::*;
 
@@ -43,13 +44,42 @@ struct GetUserInfo {
     get_user_info: UserInfo,
 }
 
+#[derive(cynic::FragmentArguments)]
+struct DeleteUserInput {
+    user_id: i32,
+    password: String,
+}
+
+#[derive(cynic::QueryFragment, Debug)]
+#[cynic(
+    schema_path = "graphql/schema.graphql",
+    graphql_type = "Mutation",
+    argument_struct = "DeleteUserInput"
+)]
+struct DeleteUser {
+    #[arguments(user_id = &args.user_id, password = &args.password)]
+    delete_user: DeleteUserResult,
+}
+
+#[derive(cynic::QueryFragment, Debug, Clone)]
+#[cynic(
+    schema_path = "graphql/schema.graphql",
+    graphql_type = "DeleteUserResult",
+)]
+struct DeleteUserResult {
+    success: bool,
+    rows_affected: i32,
+}
 
 #[function_component(AccountInfo)]
 pub fn account_info() -> Html {
     let user_id = use_context::<UserId>().expect("No context found.");
-    let password = use_state(String::default);
-    let email = use_state(String::default);
+    let password = use_state(|| String::new());
     let first_render = use_state(|| true);
+
+    if user_id.borrow().is_none() {
+        return html! { <Redirect<Route> to={Route::Login} /> };
+    }
 
     let user_info = {
         let user_id = user_id.clone();
@@ -61,25 +91,20 @@ pub fn account_info() -> Html {
                 .expect("Could not send request")
                 .data;
 
-            console_log!(format!("USERID {:?}", user_id.borrow_mut().deref()));
             if let Some(user_info) = data {
-                console_log!(format!("USERINFO {:?}", user_info));
                 return Ok(user_info.get_user_info);
             }
-            console_log!("Error");
             Err("Could not fetch userinfo.")
         })
     };
 
     {
         let user_info = user_info.clone();
+        let first_render = first_render.clone();
         use_effect(move || {
             if *first_render {
-                console_log!("FIRST RENDER");
                 user_info.run();
                 first_render.set(false);
-            } else {
-                console_log!("NOT FIRST RENDER");
             }
             || {}
         });
@@ -94,68 +119,70 @@ pub fn account_info() -> Html {
         })
     };
 
-    
-    let onclick_delete = {
+    let delete_user = {
         let user_id = user_id.clone();
-        Callback::from(move |_: MouseEvent| {
-            //user_id.deleteUser();
+        let password = password.deref().to_owned();
+        let first_render = first_render.clone();
+        let operation = DeleteUser::build(DeleteUserInput {user_id: user_id.borrow_mut().deref().unwrap(), password: password});
+        use_async(async move {
+            let data = surf::post("http://localhost/api/graphql")
+                .run_graphql(operation)
+                .await
+                .expect("Could not send request")
+                .data;
+            if let Some(delete_user_result) = data {
+                *user_id.borrow_mut() = None;
+                LocalStorage::delete(USER_ID_KEY);
+                first_render.set(true);
+                return Ok(delete_user_result.delete_user);
+            }
+            Err("Could not delete user.")
         })
     };
     
-    let matches = use_state(bool::default);
+    let onclick_delete = {
+        let user_id = user_id.clone();
+        let delete_user = delete_user.clone();
+        Callback::from(move |_: MouseEvent| {
+            delete_user.run();
+        })
+    };
+    
     let oninput = {
         let current_password = password.clone();
-        let matches = matches.clone();
         Callback::from(move |e: InputEvent| {
             let input: HtmlInputElement = e.target_unchecked_into();
-            /* if input == current_password {
-                matches.set(true);
-            } else {
-                matches.set(false);
-            } */
+            current_password.set(input.value());
         })
     };
 
     html! {
         <>
-            <h1>{"Account Information"}</h1>
+            <h2>{"Account Information"}</h2>
             <div> 
                 {
-                    /* if user_info.loading {
-                        html! {<p>{"loading"}</p>}
-                    } else { */
                     if let Some(data) = &user_info.data {
-                        html! {<p>{format!("Username: {}", data.username)}</p>}
+                        html! {
+                            <>
+                                <p>{format!("Username: {}", data.username)}</p>
+                                <p>{format!("Email: {}", data.email)}</p>
+                            </>
+                        }
                     } else {
-                        html! {<p>{"loading"}</p>}
+                        html! {<p>{"Loading"}</p>}
                     }
                 }
             </div>
-          /*   <div>
-                {
-                    if user_info.loading {
-                        html! {<p>{"loading"}</p>}
-                    } else {
-                        html! {<p>{format!("Email: {}", user_info.data.clone().unwrap().email)}</p>}
-                    }
-                }
-            </div> */
             <button name={"del_acc"} onclick = {
                 onclick_delete_ready
             } hidden={
                 *delete_ready
             }>{"Delete account"}</button>
-            <Link<Route> to={Route::Login}>
-                <button name={"del"} onclick = {
-                    onclick_delete
-                } disabled={
-                    /* (username.len()<4 ||
-                    password.len()<8) && */
-                    *matches
-                } hidden={
-                    !*delete_ready
-                }>{"Input your password and press this if you are sure you want to delete your account"}</button>
-            </Link<Route>>
+            <button name={"del"} onclick = {
+                onclick_delete
+            } hidden={
+                !*delete_ready
+            }>{"Input your password and press this if you are sure you want to delete your account"}</button>
             <div>
                 <input {oninput} hidden={!*delete_ready} type="password" placeholder="Password"/>
             </div>
