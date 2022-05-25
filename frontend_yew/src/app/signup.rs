@@ -83,28 +83,33 @@ pub fn signup(props: &Properties) -> Html {
         })
     };
 
-    let oninput = {
+    let username_input = {
         let current_username = username.clone();
-        let current_password = password.clone();
-        let current_email = email.clone();
-        let current_valid_email = valid_email.clone();
-
         Callback::from(move |e: InputEvent| {
             let input: HtmlInputElement = e.target_unchecked_into();
-            if input.name() == "username" {
-                current_username.set(input.value());
-            } else if input.name() == "password" {
-                current_password.set(input.value());
-            } else if input.name() == "email" {
-                if validate.is_match(&input.value()) {
-                    current_valid_email.set(true);
-                } else {
-                    current_valid_email.set(false);
-                }
-                current_email.set(input.value());
+            current_username.set(input.value());
+        })
+    };
+
+    let password_input = {
+        let current_password = password.clone();
+        Callback::from(move |e: InputEvent| {
+            let input: HtmlInputElement = e.target_unchecked_into();
+            current_password.set(input.value());
+        })
+    };
+
+    let email_input = {
+        let current_email = email.clone();
+        let current_valid_email = valid_email.clone();
+        Callback::from(move |e: InputEvent| {
+            let input: HtmlInputElement = e.target_unchecked_into();
+            if validate.is_match(&input.value()) {
+                current_valid_email.set(true);
             } else {
-                console_error!("Should be impossible to get here");
+                current_valid_email.set(false);
             }
+            current_email.set(input.value());
         })
     };
 
@@ -126,13 +131,13 @@ pub fn signup(props: &Properties) -> Html {
             <form>
                 <Link<Route> to={Route::Login}> <button onclick={login_button} >{"Log in"}</button></Link<Route>>
                 <div>
-                    <input name="username" oninput = {oninput.clone()} placeholder="Username"/>
+                    <input oninput={username_input} placeholder="Username"/>
                 </div>
                 <div>
-                    <input name="password" oninput = {oninput.clone()} type="password" placeholder="Password"/>
+                    <input oninput={password_input} type="password" placeholder="Password"/>
                 </div>
                 <div>
-                    <input name="email" {oninput} type="email" id="email" placeholder="Email"/>
+                    <input oninput={email_input} type="email" id="email" placeholder="Email"/>
                 </div>
                 <Link<Route> to={Route::ListView}> <button onclick={signup_button} disabled={username.len()<4 || password.len()<8 || !*valid_email}>{"Create account"}</button></Link<Route>>
             </form>
