@@ -74,7 +74,6 @@ pub fn signup(props: &Properties) -> Html {
                 .expect("Could not send request")
                 .data;
 
-            console_log!(format!("{:#?}", &data));
             if let Some(CreateUser { create_user }) = data {
                 set_user_id.emit(create_user.id);
                 return Ok(create_user.id);
@@ -113,14 +112,8 @@ pub fn signup(props: &Properties) -> Html {
         })
     };
 
-    let login_button = {
-        Callback::from(move |_| {
-        })
-    };
-
     let signup_button = {
         let user_id_request = user_id_request.clone();
-
         Callback::from(move |_| {
             user_id_request.run();
         })
@@ -128,19 +121,16 @@ pub fn signup(props: &Properties) -> Html {
 
     html! {
         <>
-            <form>
-                <Link<Route> to={Route::Login}> <button onclick={login_button} >{"Log in"}</button></Link<Route>>
-                <div>
-                    <input oninput={username_input} placeholder="Username"/>
-                </div>
-                <div>
-                    <input oninput={password_input} type="password" placeholder="Password"/>
-                </div>
-                <div>
-                    <input oninput={email_input} type="email" id="email" placeholder="Email"/>
-                </div>
-                <Link<Route> to={Route::ListView}> <button onclick={signup_button} disabled={username.len()<4 || password.len()<8 || !*valid_email}>{"Create account"}</button></Link<Route>>
-            </form>
+            <div>
+                <input oninput={username_input} placeholder="Username"/>
+            </div>
+            <div>
+                <input oninput={password_input} type="password" placeholder="Password"/>
+            </div>
+            <div>
+                <input oninput={email_input} type="email" id="email" placeholder="Email"/>
+            </div>
+            <button onclick={signup_button} disabled={username.len()<4 || password.len()<8 || !*valid_email}>{"Create account"}</button>
         </>
     }
 }
