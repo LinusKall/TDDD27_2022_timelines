@@ -1,7 +1,6 @@
 use yew::prelude::*;
 use yew_router::prelude::*;
 use web_sys::HtmlInputElement;
-use web_sys::HtmlButtonElement;
 use gloo_storage::LocalStorage;
 use gloo_storage::Storage;
 use yew_hooks::prelude::*;
@@ -75,6 +74,7 @@ struct DeleteUserResult {
 pub fn account_info() -> Html {
     let user_id = use_context::<UserId>().expect("No context found.");
     let password = use_state(|| String::new());
+    let incorrect_password = use_state(bool::default);
     let first_render = use_state(|| true);
 
     if user_id.borrow().is_none() {
@@ -122,6 +122,7 @@ pub fn account_info() -> Html {
     let delete_user = {
         let user_id = user_id.clone();
         let password = password.deref().to_owned();
+        let incorrect_password = incorrect_password.clone();
         let first_render = first_render.clone();
         let operation = DeleteUser::build(DeleteUserInput {user_id: user_id.borrow_mut().deref().unwrap(), password: password});
         use_async(async move {
@@ -136,6 +137,7 @@ pub fn account_info() -> Html {
                 first_render.set(true);
                 return Ok(delete_user_result.delete_user);
             }
+            incorrect_password.set(true);
             Err("Could not delete user.")
         })
     };
@@ -185,6 +187,7 @@ pub fn account_info() -> Html {
             }>{"Input your password and press this if you are sure you want to delete your account"}</button>
             <div>
                 <input {oninput} hidden={!*delete_ready} type="password" placeholder="Password"/>
+                <p hidden={!*incorrect_password} style={"color:Tomato;"}>{"Wrong password. Try again."}</p>
             </div>
         </>
     }
