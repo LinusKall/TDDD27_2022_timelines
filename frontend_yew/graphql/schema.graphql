@@ -35,6 +35,7 @@ type Query {
   getUsers: [User!]!
   getUserById(id: Int!): User
   getUserId(username: String!, password: String!): Int
+  getUserInfo(userId: Int!): UserInfo!
   getTimelines: [Timeline!]!
   getTimelineById(id: Int!): Timeline
 }
@@ -54,4 +55,10 @@ type User {
   hashedPassword: String!
   createdAt: DateTime!
   updatedAt: DateTime!
+}
+
+type UserInfo {
+  id: Int!
+  username: String!
+  email: String!
 }
