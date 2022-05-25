@@ -4,6 +4,13 @@ enum ClearanceMapping {
   SUBSCRIBER
 }
 
+input CreateTaskInput {
+  timelineId: Int!
+  title: String!
+  body: String
+  endTime: DateTime!
+}
+
 input CreateTimelineInput {
   title: String!
   public: Boolean!
@@ -26,6 +33,11 @@ input CreateUserTimelineInput {
 # The input/output is a string in RFC3339 format.
 scalar DateTime
 
+type DeleteTaskResult {
+  success: Boolean!
+  rowsAffected: Int!
+}
+
 type DeleteTimelineResult {
   success: Boolean!
   rowsAffected: Int!
@@ -42,6 +54,8 @@ type Mutation {
   createTimeline(input: CreateTimelineInput!): Timeline!
   deleteTimeline(id: Int!): DeleteTimelineResult!
   createUserTimeline(input: CreateUserTimelineInput!): UserTimeline!
+  createTask(input: CreateTaskInput!): Task!
+  deleteTask(taskId: Int!): DeleteTaskResult!
 }
 
 type Query {

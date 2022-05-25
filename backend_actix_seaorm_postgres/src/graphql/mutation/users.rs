@@ -52,7 +52,11 @@ impl UsersMutation {
                 rows_affected: res.rows_affected,
             })
         } else {
-            unimplemented!()
+            Err(entity::async_graphql::Error {
+                message: format!("{} users were deleted", res.rows_affected),
+                source: None,
+                extensions: None,
+            })
         }
     }
 }
