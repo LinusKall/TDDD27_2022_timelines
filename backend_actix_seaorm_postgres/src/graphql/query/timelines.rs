@@ -1,5 +1,5 @@
 use async_graphql::{Context, Object, Result, SimpleObject};
-use entity::{async_graphql, timelines, timelines_users};
+use entity::{async_graphql, sea_orm_active_enums::ClearanceMapping, timelines, timelines_users};
 use sea_orm::entity::prelude::*;
 use sea_orm::{query::*, EntityTrait, FromQueryResult};
 
@@ -12,6 +12,7 @@ pub struct UserTimeline {
     user_id: i32,
     timeline_id: i32,
     title: String,
+    relation: ClearanceMapping,
     user_timeline_relation: i32,
     color: String,
     props_created_at: DateTimeUtc,
