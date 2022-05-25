@@ -26,7 +26,7 @@ type DeleteUserResult {
 
 type Mutation {
   createUser(input: CreateUserInput!): User!
-  deleteUser(id: Int!): DeleteUserResult!
+  deleteUser(userId: Int!, password: String!): DeleteUserResult!
   createTimeline(input: CreateTimelineInput!): Timeline!
   deleteTimeline(id: Int!): DeleteTimelineResult!
 }
