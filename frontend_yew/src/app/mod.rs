@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 pub mod gql;
 pub mod list_selector;
 pub mod list_view;
@@ -7,6 +8,7 @@ pub mod task_info;
 pub mod task_item;
 pub mod task_list;
 pub mod navigation_bar;
+pub mod account_info;
 
 use gloo::storage::LocalStorage;
 use gloo_storage::Storage;
@@ -18,8 +20,9 @@ use yew_router::prelude::*;
 
 use list_view::*;
 use login::*;
-use navigation_bar::*;
 use signup::*;
+use account_info::*;
+use navigation_bar::*;
 
 #[derive(Clone, Routable, PartialEq, Debug)]
 pub enum Route {

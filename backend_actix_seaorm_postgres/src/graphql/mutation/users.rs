@@ -1,6 +1,6 @@
 use entity::async_graphql::{self, Context, InputObject, Object, Result, SimpleObject};
 use entity::users;
-use sea_orm::{ActiveModelTrait, EntityTrait, Set};
+use sea_orm::{entity::*, query::*, ActiveModelTrait, EntityTrait, Set};
 
 use crate::db::Database;
 
@@ -39,14 +39,20 @@ impl UsersMutation {
         Ok(user.insert(db.get_connection()).await?)
     }
 
-    pub async fn delete_user(&self, ctx: &Context<'_>, id: i32) -> Result<DeleteUserResult> {
+    pub async fn delete_user(
+        &self,
+        ctx: &Context<'_>,
+        user_id: i32,
+        password: String,
+    ) -> Result<DeleteUserResult> {
         let db = ctx.data::<Database>().unwrap();
 
-        let res = users::Entity::delete_by_id(id)
+        let res = users::Entity::delete_by_id(user_id)
+            .filter(users::Column::HashedPassword.eq(password))
             .exec(db.get_connection())
             .await?;
 
-        if res.rows_affected <= 1 {
+        if res.rows_affected == 1 {
             Ok(DeleteUserResult {
                 success: true,
                 rows_affected: res.rows_affected,

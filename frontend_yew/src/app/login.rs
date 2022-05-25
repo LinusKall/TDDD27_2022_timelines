@@ -17,7 +17,7 @@ mod schema {
 }
 
 #[derive(cynic::FragmentArguments)]
-struct GetUserdIdArguments {
+struct GetUserIdArguments {
     username: String,
     password: String,
 }
@@ -26,9 +26,9 @@ struct GetUserdIdArguments {
 #[cynic(
     schema_path = "graphql/schema.graphql",
     graphql_type = "Query",
-    argument_struct = "GetUserdIdArguments"
+    argument_struct = "GetUserIdArguments"
 )]
-struct GetUserdId {
+struct GetUserId {
     #[arguments(username = &args.username, password = &args.password)]
     get_user_id: Option<i32>,
 }
@@ -43,7 +43,7 @@ pub fn login(props: &Properties) -> Html {
     let username = use_state(|| String::new());
     let password = use_state(|| String::new());
     let user_id = use_context::<UserId>().expect("No context found.");
-
+    
     if let Some(_) = *user_id.borrow() {
         return html! { <Redirect<Route> to={Route::ListView} /> };
     }
@@ -52,7 +52,7 @@ pub fn login(props: &Properties) -> Html {
         let set_user_id = props.set_user_id.clone();
         let username = (*username).to_owned();
         let password = (*password).to_owned();
-        let operation = GetUserdId::build(GetUserdIdArguments { username, password });
+        let operation = GetUserId::build(GetUserIdArguments { username, password });
         use_async(async move {
             let data = surf::post("http://localhost/api/graphql")
                 .run_graphql(operation)
@@ -60,8 +60,6 @@ pub fn login(props: &Properties) -> Html {
                 .expect("Could not send request")
                 .data
                 .unwrap();
-
-            console_log!(format!("{:#?}", &data));
             if let Some(id) = data.get_user_id {
                 set_user_id.emit(id);
                 return Ok(id);
@@ -70,52 +68,50 @@ pub fn login(props: &Properties) -> Html {
         })
     };
 
-    let onclick = {
+    let login_click = {
         let user_id_request = user_id_request.clone();
         Callback::from(move |_| {
             user_id_request.run();
         })
     };
 
-    let oninput = {
+    let username_input = {
         let current_username = username.clone();
-        let current_password = password.clone();
-
         Callback::from(move |e: InputEvent| {
             let input: HtmlInputElement = e.target_unchecked_into();
-            if input.name() == "username" {
-                current_username.set(input.value());
-                console_log!("Username: ", input.value());
-            } else if input.name() == "password" {
-                current_password.set(input.value());
-                console_log!("Password: ", input.value());
-            } else {
-                console_error!("Should be impossible to get here");
-            }
+            current_username.set(input.value());
+        })
+    };
+
+    let password_input = {
+        let current_password = password.clone();
+        Callback::from(move |e: InputEvent| {
+            let input: HtmlInputElement = e.target_unchecked_into();
+            current_password.set(input.value());
         })
     };
 
     html! {
         <>
-            <Link<Route> to={Route::Signup}>
-                <button onclick={
-                    onclick.clone()
-                }>{"Sign up"}</button>
-            </Link<Route>>
             <div>
-                <input name="username" oninput = {oninput.clone()} placeholder="Username"/>
+                <input oninput={username_input} placeholder="Username"/>
             </div>
             <div>
-                <input name="password" {oninput} type="password" placeholder="Password"/>
+                <input oninput={password_input} type="password" placeholder="Password"/>
             </div>
-            <Link<Route> to={Route::ListView}>
-                <button onclick = {
-                    onclick
-                } disabled={
-                    username.len()<4 ||
-                    password.len()<8
-                }>{"Log in"}</button>
-            </Link<Route>>
+            <button onclick={
+                login_click
+            } disabled={
+                username.len()<4 ||
+                password.len()<8
+            }>{"Log in"}</button>
+            {
+                if user_id_request.error.is_some() {
+                    html! {<p style={"color:Tomato;"}>{"Wrong username or password. Try again."}</p>}
+                } else {
+                    html! {}
+                }
+            }
         </>
     }
 }
