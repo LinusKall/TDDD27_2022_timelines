@@ -43,7 +43,7 @@ pub fn login(props: &Properties) -> Html {
     let username = use_state(|| String::new());
     let password = use_state(|| String::new());
     let user_id = use_context::<UserId>().expect("No context found.");
-
+    
     if let Some(_) = *user_id.borrow() {
         return html! { <Redirect<Route> to={Route::ListView} /> };
     }
@@ -60,18 +60,11 @@ pub fn login(props: &Properties) -> Html {
                 .expect("Could not send request")
                 .data
                 .unwrap();
-
             if let Some(id) = data.get_user_id {
                 set_user_id.emit(id);
                 return Ok(id);
             }
             Err("Could not fetch user ID.")
-        })
-    };
-
-    let signup_click = {
-        let user_id_request = user_id_request.clone();
-        Callback::from(move |_| {
         })
     };
 
@@ -84,7 +77,6 @@ pub fn login(props: &Properties) -> Html {
 
     let username_input = {
         let current_username = username.clone();
-
         Callback::from(move |e: InputEvent| {
             let input: HtmlInputElement = e.target_unchecked_into();
             current_username.set(input.value());
@@ -93,7 +85,6 @@ pub fn login(props: &Properties) -> Html {
 
     let password_input = {
         let current_password = password.clone();
-        
         Callback::from(move |e: InputEvent| {
             let input: HtmlInputElement = e.target_unchecked_into();
             current_password.set(input.value());
@@ -102,25 +93,25 @@ pub fn login(props: &Properties) -> Html {
 
     html! {
         <>
-            <Link<Route> to={Route::Signup}>
-                <button onclick={
-                    signup_click
-                }>{"Sign up"}</button>
-            </Link<Route>>
             <div>
                 <input oninput={username_input} placeholder="Username"/>
             </div>
             <div>
                 <input oninput={password_input} type="password" placeholder="Password"/>
             </div>
-            <Link<Route> to={Route::ListView}>
-                <button onclick={
-                    login_click
-                } disabled={
-                    username.len()<4 ||
-                    password.len()<8
-                }>{"Log in"}</button>
-            </Link<Route>>
+            <button onclick={
+                login_click
+            } disabled={
+                username.len()<4 ||
+                password.len()<8
+            }>{"Log in"}</button>
+            {
+                if user_id_request.error.is_some() {
+                    html! {<p style={"color:Tomato;"}>{"Wrong username or password. Try again."}</p>}
+                } else {
+                    html! {}
+                }
+            }
         </>
     }
 }
