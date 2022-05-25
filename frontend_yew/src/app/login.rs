@@ -17,7 +17,7 @@ mod schema {
 }
 
 #[derive(cynic::FragmentArguments)]
-struct GetUserdIdArguments {
+struct GetUserIdArguments {
     username: String,
     password: String,
 }
@@ -26,9 +26,9 @@ struct GetUserdIdArguments {
 #[cynic(
     schema_path = "graphql/schema.graphql",
     graphql_type = "Query",
-    argument_struct = "GetUserdIdArguments"
+    argument_struct = "GetUserIdArguments"
 )]
-struct GetUserdId {
+struct GetUserId {
     #[arguments(username = &args.username, password = &args.password)]
     get_user_id: Option<i32>,
 }
@@ -52,7 +52,7 @@ pub fn login(props: &Properties) -> Html {
         let set_user_id = props.set_user_id.clone();
         let username = (*username).to_owned();
         let password = (*password).to_owned();
-        let operation = GetUserdId::build(GetUserdIdArguments { username, password });
+        let operation = GetUserId::build(GetUserIdArguments { username, password });
         use_async(async move {
             let data = surf::post("http://localhost/api/graphql")
                 .run_graphql(operation)
@@ -61,7 +61,6 @@ pub fn login(props: &Properties) -> Html {
                 .data
                 .unwrap();
 
-            console_log!(format!("{:#?}", &data));
             if let Some(id) = data.get_user_id {
                 set_user_id.emit(id);
                 return Ok(id);
@@ -85,10 +84,8 @@ pub fn login(props: &Properties) -> Html {
             let input: HtmlInputElement = e.target_unchecked_into();
             if input.name() == "username" {
                 current_username.set(input.value());
-                console_log!("Username: ", input.value());
             } else if input.name() == "password" {
                 current_password.set(input.value());
-                console_log!("Password: ", input.value());
             } else {
                 console_error!("Should be impossible to get here");
             }
