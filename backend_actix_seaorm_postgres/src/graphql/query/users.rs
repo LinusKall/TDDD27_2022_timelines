@@ -1,9 +1,16 @@
-use async_graphql::{Context, Object, Result};
+use async_graphql::{Context, Object, Result, SimpleObject};
 use entity::{async_graphql, users};
 use sea_orm::EntityTrait;
-use sea_orm::{entity::*, query::*};
+use sea_orm::{entity::*, query::*, FromQueryResult};
 
 use crate::db::Database;
+
+#[derive(Debug, FromQueryResult, SimpleObject)]
+pub struct UserInfo {
+    pub id: i32,
+    pub username: String,
+    pub email: String,
+}
 
 #[derive(Default)]
 pub struct UsersQuery;
@@ -47,5 +54,19 @@ impl UsersQuery {
         } else {
             Ok(None)
         }
+    }
+
+    pub async fn get_user_info(&self, ctx: &Context<'_>, user_id: i32) -> Result<Option<UserInfo>> {
+        let db = ctx.data::<Database>().unwrap();
+
+        Ok(users::Entity::find()
+            .having(users::Column::Id.eq(user_id))
+            .select_only()
+            .column(users::Column::Id)
+            .column(users::Column::Username)
+            .column(users::Column::Email)
+            .into_model::<UserInfo>()
+            .one(db.get_connection())
+            .await?)
     }
 }
