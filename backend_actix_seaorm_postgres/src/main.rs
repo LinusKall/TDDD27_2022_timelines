@@ -15,11 +15,7 @@ use actix_web::{
     App, HttpServer,
 };
 
-#[cfg(not(windows))]
 pub const PORT: u16 = 8000;
-
-#[cfg(windows)]
-pub const PORT: u16 = 80;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {

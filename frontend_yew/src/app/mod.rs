@@ -1,13 +1,13 @@
+pub mod account_info;
 pub mod gql;
 pub mod list_selector;
 pub mod list_view;
 pub mod login;
+pub mod navigation_bar;
 pub mod signup;
 pub mod task_info;
 pub mod task_item;
 pub mod task_list;
-pub mod navigation_bar;
-pub mod account_info;
 
 use gloo::storage::LocalStorage;
 use gloo_storage::Storage;
@@ -17,11 +17,11 @@ use weblog::*;
 use yew::prelude::*;
 use yew_router::prelude::*;
 
+use account_info::*;
 use list_view::*;
 use login::*;
-use signup::*;
-use account_info::*;
 use navigation_bar::*;
+use signup::*;
 
 #[derive(Clone, Routable, PartialEq, Debug)]
 pub enum Route {
@@ -41,11 +41,7 @@ pub enum Route {
 pub type UserId = Rc<RefCell<Option<i32>>>;
 pub const USER_ID_KEY: &'static str = "timelines_user_id";
 
-#[cfg(not(windows))]
 pub const LOCALHOST: &'static str = "http://localhost:8000";
-
-#[cfg(windows)]
-pub const LOCALHOST: &'static str = "http://localhost";
 
 #[function_component(App)]
 pub fn app() -> Html {

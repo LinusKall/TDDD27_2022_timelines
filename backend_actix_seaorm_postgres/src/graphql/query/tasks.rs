@@ -18,7 +18,7 @@ impl TasksQuery {
         let db = ctx.data::<Database>().unwrap();
 
         Ok(tasks::Entity::find()
-            .having(tasks::Column::TimelineId.eq(timeline_id))
+            .filter(tasks::Column::TimelineId.eq(timeline_id))
             .all(db.get_connection())
             .await?)
     }
