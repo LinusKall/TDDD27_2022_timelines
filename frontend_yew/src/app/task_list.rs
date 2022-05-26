@@ -23,6 +23,7 @@ pub fn task_list(props: &Props) -> Html {
     let rf_new_task = use_state(|| false);
     let task_title = use_state(|| "".to_owned());
     let tlid = use_state_eq(|| -1);
+    let task_id = use_state(|| 0);
 
     let tasks = {
         let id = timeline_context.as_ref().unwrap().clone().timeline_id;
@@ -61,6 +62,25 @@ pub fn task_list(props: &Props) -> Html {
             if let Some(t) = data {
                 rf_new_task.set(true);
                 return Ok(t.create_task);
+            }
+            Err("Could not create User Timeline.")
+        })
+    };
+
+    let remove_task = {
+        let rf_first = rf_first.clone();
+        let task_id = task_id.deref().clone();
+        let operation = DeleteTask::build(DeleteTaskArguments { task_id });
+        use_async(async move {
+            let data = surf::post(format!("{}/api/graphql", crate::app::LOCALHOST))
+                .run_graphql(operation)
+                .await
+                .expect("Could not create User Timeline")
+                .data;
+
+            if let Some(t) = data {
+                rf_first.set(true);
+                return Ok(t.delete_task);
             }
             Err("Could not create User Timeline.")
         })
@@ -107,6 +127,16 @@ pub fn task_list(props: &Props) -> Html {
         })
     };
 
+    let delete_task = {
+        let remove_task = remove_task.clone();
+        let task_id = task_id.clone();
+        Callback::from(move |taskid: i32| {
+            let remove_task = remove_task.clone();
+            task_id.set(taskid);
+            remove_task.run();
+        })
+    };
+
     {
         let tasks = tasks.clone();
         let timeline_id = timeline_context.as_ref().unwrap().clone().timeline_id;
@@ -150,6 +180,7 @@ pub fn task_list(props: &Props) -> Html {
                                         id={task.id.to_string()}
                                         title={task.title.clone()}
                                         get_task_name={task_switch.clone()}
+                                        get_id_delete={delete_task.clone()}
                                     />
                                 }
                             )

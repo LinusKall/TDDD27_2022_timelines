@@ -99,6 +99,33 @@ pub struct GetTasksById {
     pub get_tasks_by_id: Vec<Task>,
 }
 
+// DeleteTask
+#[derive(cynic::FragmentArguments)]
+pub struct DeleteTaskArguments {
+    pub task_id: i32,
+}
+
+#[derive(QueryFragment, Debug)]
+#[cynic(
+    schema_path = "graphql/schema.graphql",
+    graphql_type = "Mutation",
+    argument_struct = "DeleteTaskArguments"
+)]
+pub struct DeleteTask {
+    #[arguments(task_id = &args.task_id)]
+    pub delete_task: DeleteTaskResult,
+}
+
+#[derive(QueryFragment, Debug, Clone, Copy)]
+#[cynic(
+    schema_path = "graphql/schema.graphql",
+    graphql_type = "DeleteTaskResult"
+)]
+pub struct DeleteTaskResult {
+    pub success: bool,
+    pub rows_affected: i32,
+}
+
 #[derive(Debug, QueryFragment, Clone, PartialEq)]
 #[cynic(schema_path = "graphql/schema.graphql", graphql_type = "UserTimeline")]
 pub struct UserTimeline {
