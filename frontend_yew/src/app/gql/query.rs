@@ -7,6 +7,17 @@ mod schema {
     cynic::use_schema!("graphql/schema.graphql");
 }
 
+#[derive(Debug, cynic::Enum, Clone, Copy, PartialEq)]
+#[cynic(
+    schema_path = "graphql/schema.graphql",
+    graphql_type = "ClearanceMapping",
+)]
+pub enum ClearanceMapping {
+    Moderator,
+    Owner,
+    Subscriber
+}
+
 #[derive(cynic::FragmentArguments)]
 pub struct GetUserTimelinesArguments {
     pub user_id: i32,
@@ -69,6 +80,7 @@ pub struct UserTimeline {
     pub timeline_id: i32,
     pub title: String,
     pub color: String,
+    pub relation: ClearanceMapping,
     pub props_created_at: DateTimeUtc,
     pub props_updated_at: DateTimeUtc,
     pub timeline_created_at: DateTimeUtc,
@@ -96,6 +108,7 @@ impl UserTimeline {
             timeline_id: 0,
             title: "".to_owned(),
             color: "".to_owned(),
+            relation: ClearanceMapping::Owner,
             props_created_at: chrono::offset::Utc::now(),
             props_updated_at: chrono::offset::Utc::now(),
             timeline_created_at: chrono::offset::Utc::now(),

@@ -18,7 +18,9 @@ impl UserTimelinesQuery {
     ) -> Result<Vec<UserTimeline>> {
         let db = ctx.data::<Database>().unwrap();
 
-        Ok(timelines_users::Entity::find()
+        println!("Finding user timelines");
+
+        let res = timelines_users::Entity::find()
             .having(timelines_users::Column::UserId.eq(user_id))
             .inner_join(timelines::Entity)
             .select_only()
@@ -26,7 +28,7 @@ impl UserTimelinesQuery {
             .column_as(timelines_users::Column::UserId, "user_id")
             .column_as(timelines_users::Column::TimelineId, "timeline_id")
             .column_as(timelines::Column::Title, "title")
-            .column_as(timelines_users::Column::Relation, "user_timeline_relation")
+            .column_as(timelines_users::Column::Relation, "relation")
             .column_as(timelines_users::Column::Color, "color")
             .column_as(timelines_users::Column::CreatedAt, "props_created_at")
             .column_as(timelines_users::Column::UpdatedAt, "props_updated_at")
@@ -36,6 +38,10 @@ impl UserTimelinesQuery {
             .group_by(timelines_users::Column::Id)
             .into_model::<UserTimeline>()
             .all(db.get_connection())
-            .await?)
+            .await?;
+
+        println!("Got res: {:#?}", res);
+
+        Ok(res)
     }
 }

@@ -36,8 +36,7 @@ impl UserTimelinesMutation {
     ) -> Result<UserTimeline> {
         let db = ctx.data::<Database>().unwrap();
 
-        let _user = users::Entity::find()
-            .having(users::Column::Id.eq(input.user_id))
+        let _user = users::Entity::find_by_id(input.user_id)
             .one(db.get_connection())
             .await?
             .expect("The user trying to create a timeline does not exist.");
@@ -54,6 +53,7 @@ impl UserTimelinesMutation {
             timeline_id: Set(timeline.id),
             user_id: Set(input.user_id),
             relation: Set(ClearanceMapping::Owner),
+            color: Set("#888888".to_owned()),
             ..Default::default()
         };
 
@@ -65,7 +65,7 @@ impl UserTimelinesMutation {
             timeline_id: timeline_user.timeline_id,
             title: timeline.title,
             relation: timeline_user.relation,
-            color: "#ffffff".to_owned(),
+            color: "#888888".to_owned(),
             props_created_at: timeline_user.created_at,
             props_updated_at: timeline_user.updated_at,
             timeline_created_at: timeline.created_at,
