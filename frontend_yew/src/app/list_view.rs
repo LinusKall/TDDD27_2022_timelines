@@ -41,7 +41,7 @@ pub fn list_view() -> Html {
             user_id: user_id.borrow_mut().deref().unwrap(),
         });
         use_async(async move {
-            let data = surf::post("http://localhost/api/graphql")
+            let data = surf::post(format!("{}/api/graphql", crate::app::LOCALHOST))
                 .run_graphql(operation)
                 .await
                 .expect("Could not get User Timelines")
@@ -63,7 +63,7 @@ pub fn list_view() -> Html {
             public: false,
         });
         use_async(async move {
-            let data = surf::post("http://localhost/api/graphql")
+            let data = surf::post(format!("{}/api/graphql", crate::app::LOCALHOST))
                 .run_graphql(operation)
                 .await
                 .expect("Could not create User Timeline")

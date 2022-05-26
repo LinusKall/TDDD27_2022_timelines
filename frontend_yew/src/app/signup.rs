@@ -40,7 +40,7 @@ pub fn signup(props: &Properties) -> Html {
             hashed_password,
         });
         use_async(async move {
-            let data = surf::post("http://localhost/api/graphql")
+            let data = surf::post(format!("{}/api/graphql", crate::app::LOCALHOST))
                 .run_graphql(operation)
                 .await
                 .expect("Could not send request")

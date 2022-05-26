@@ -28,7 +28,7 @@ pub fn account_info() -> Html {
         let user_id = user_id.clone();
         let operation = GetUserInfo::build(GetUserInfoArgs { user_id: user_id.borrow_mut().deref().unwrap() });
         use_async(async move {
-            let data = surf::post("http://localhost/api/graphql")
+            let data = surf::post(format!("{}/api/graphql", crate::app::LOCALHOST))
                 .run_graphql(operation)
                 .await
                 .expect("Could not send request")
@@ -69,7 +69,7 @@ pub fn account_info() -> Html {
         let first_render = first_render.clone();
         let operation = DeleteUser::build(DeleteUserInput {user_id: user_id.borrow_mut().deref().unwrap(), password: password});
         use_async(async move {
-            let data = surf::post("http://localhost/api/graphql")
+            let data = surf::post(format!("{}/api/graphql", crate::app::LOCALHOST))
                 .run_graphql(operation)
                 .await
                 .expect("Could not send request")
