@@ -20,6 +20,14 @@ pub struct DeleteTaskResult {
     pub rows_affected: u64,
 }
 
+#[derive(InputObject)]
+pub struct UpdateTaskInput {
+    pub title: Option<String>,
+    pub body: Option<String>,
+    pub done: Option<bool>,
+    pub end_time: Option<DateTimeUtc>,
+}
+
 #[derive(Default)]
 pub struct TasksMutation;
 
@@ -62,5 +70,35 @@ impl TasksMutation {
                 extensions: None,
             })
         }
+    }
+
+    pub async fn update_task(
+        &self,
+        ctx: &Context<'_>,
+        task_id: i32,
+        input: UpdateTaskInput,
+    ) -> Result<tasks::Model> {
+        let db = ctx.data::<Database>().unwrap();
+
+        let task = tasks::Entity::find_by_id(task_id)
+            .one(db.get_connection())
+            .await?;
+
+        let mut task: tasks::ActiveModel = task.unwrap().into();
+
+        if let Some(title) = input.title {
+            task.title = Set(title.to_owned());
+        }
+        if let Some(body) = input.body {
+            task.body = Set(Some(body.to_owned()));
+        }
+        if let Some(done) = input.done {
+            task.done = Set(done);
+        }
+        if let Some(end_time) = input.end_time {
+            task.end_time = Set(Some(end_time));
+        }
+
+        Ok(task.update(db.get_connection()).await?)
     }
 }
