@@ -4,6 +4,7 @@ use gloo_storage::Storage;
 use std::cell::RefCell;
 use std::ops::Deref;
 use std::rc::Rc;
+use weblog::*;
 use yew::prelude::*;
 use yew::ContextProvider;
 use yew_hooks::prelude::*;
@@ -55,6 +56,7 @@ pub fn list_view() -> Html {
     };
 
     let new_timeline = {
+        let rf_new_timeline = rf_new_timeline.clone();
         let user_id = user_id.clone();
         let timeline_title = timeline_title.deref().clone();
         let operation = CreateUserTimeline::build(CreateUserTimelineArguments {
@@ -70,6 +72,7 @@ pub fn list_view() -> Html {
                 .data;
 
             if let Some(tl) = data {
+                rf_new_timeline.set(true);
                 return Ok(tl.create_user_timeline);
             }
             Err("Could not create User Timeline.")
@@ -97,13 +100,12 @@ pub fn list_view() -> Html {
     let timeline_add = {
         let timeline_title = timeline_title.clone();
         let new_timeline = new_timeline.clone();
-        let rf_new_timeline = rf_new_timeline.clone();
         Callback::from(move |timelinename: String| {
+            console_log!("New timeline");
             let new_timeline = new_timeline.clone();
             let title = timelinename;
             timeline_title.set(title);
             new_timeline.run();
-            rf_new_timeline.set(true);
         })
     };
 
@@ -121,7 +123,9 @@ pub fn list_view() -> Html {
                 rf_first.set(false);
             }
             if *rf_new_timeline {
+                console_log!("after new timeline render flag");
                 if let Some(new_user_timeline) = new_timeline.data.clone() {
+                    console_log!("making new timeline");
                     let utl = usertimelines.data.as_ref().unwrap().clone();
                     utl.borrow_mut().push(new_user_timeline);
                     rf_new_timeline.set(false);
