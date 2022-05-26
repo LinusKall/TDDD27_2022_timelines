@@ -41,6 +41,12 @@ pub enum Route {
 pub type UserId = Rc<RefCell<Option<i32>>>;
 pub const USER_ID_KEY: &'static str = "timelines_user_id";
 
+#[cfg(not(windows))]
+pub const LOCALHOST: &'static str = "http://localhost:8000";
+
+#[cfg(windows)]
+pub const LOCALHOST: &'static str = "http://localhost";
+
 #[function_component(App)]
 pub fn app() -> Html {
     let ctx = use_state(|| Rc::new(RefCell::new(None)));

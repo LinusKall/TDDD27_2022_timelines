@@ -25,7 +25,7 @@ pub fn task_list(props: &Props) -> Html {
         let id = timeline_context.as_ref().unwrap().clone().timeline_id;
         let operation = GetTasksById::build(GetTasksByIdArguments { timeline_id: id });
         use_async(async move {
-            let data = surf::post("http://localhost/api/graphql")
+            let data = surf::post(format!("{}/api/graphql", crate::app::LOCALHOST))
                 .run_graphql(operation)
                 .await
                 .expect("Could not get tasks")

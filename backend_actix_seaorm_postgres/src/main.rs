@@ -15,12 +15,18 @@ use actix_web::{
     App, HttpServer,
 };
 
+#[cfg(not(windows))]
+pub const PORT: u16 = 8000;
+
+#[cfg(windows)]
+pub const PORT: u16 = 80;
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenvy::dotenv().ok();
 
     let schema = build_schema().await;
-
+    println!("Visit http://localhost:{}", PORT);
     HttpServer::new(move || {
         App::new()
             // Add data.
@@ -56,7 +62,7 @@ async fn main() -> std::io::Result<()> {
                 fs::Files::new("/images/", "../frontend_yew/dist/images/").show_files_listing(),
             )
     })
-    .bind(("127.0.0.1", 80))?
+    .bind(("127.0.0.1", PORT))?
     .run()
     .await
 }
