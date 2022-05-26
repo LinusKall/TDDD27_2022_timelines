@@ -1,7 +1,7 @@
 use async_graphql::{Context, Object, Result};
 use entity::{async_graphql, timelines, timelines_users};
 use sea_orm::entity::prelude::*;
-use sea_orm::{query::*, EntityTrait};
+use sea_orm::EntityTrait;
 
 use crate::db::Database;
 use crate::graphql::custom_types::UserTimeline;

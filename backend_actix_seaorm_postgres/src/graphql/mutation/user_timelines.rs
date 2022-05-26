@@ -1,8 +1,6 @@
 use async_graphql::{Context, Object, Result};
 use entity::async_graphql::{self, InputObject, SimpleObject};
 use entity::{sea_orm_active_enums::ClearanceMapping, timelines, timelines_users, users};
-use sea_orm::entity::prelude::*;
-use sea_orm::query::*;
 use sea_orm::{ActiveModelTrait, EntityTrait, Set};
 
 use crate::db::Database;

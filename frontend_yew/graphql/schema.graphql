@@ -8,7 +8,7 @@ input CreateTaskInput {
   timelineId: Int!
   title: String!
   body: String
-  endTime: DateTime!
+  endTime: DateTime
 }
 
 input CreateTimelineInput {
@@ -67,6 +67,7 @@ type Query {
   getTimelineById(id: Int!): Timeline
   getTasksById(timelineId: Int!): [Task!]!
   getUserTimelinesById(userId: Int!): [UserTimeline!]!
+  getTimelinesUsers(userId: Int!): [TimelineUser!]!
 }
 
 type Subscription {
@@ -79,7 +80,7 @@ type Task {
   title: String!
   body: String
   done: Boolean!
-  endTime: DateTime!
+  endTime: DateTime
   createdAt: DateTime!
   updatedAt: DateTime!
 }
@@ -88,6 +89,16 @@ type Timeline {
   id: Int!
   title: String!
   public: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type TimelineUser {
+  id: Int!
+  timelineId: Int!
+  userId: Int!
+  relation: ClearanceMapping!
+  color: String!
   createdAt: DateTime!
   updatedAt: DateTime!
 }
@@ -119,4 +130,3 @@ type UserTimeline {
   timelineCreatedAt: DateTime!
   timelineUpdatedAt: DateTime!
 }
-
