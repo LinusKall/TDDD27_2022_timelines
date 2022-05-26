@@ -18,24 +18,30 @@ impl UserTimelinesQuery {
     ) -> Result<Vec<UserTimeline>> {
         let db = ctx.data::<Database>().unwrap();
 
-        Ok(timelines_users::Entity::find()
-            .having(timelines_users::Column::UserId.eq(user_id))
-            .inner_join(timelines::Entity)
-            .select_only()
-            .column_as(timelines_users::Column::Id, "props_id")
-            .column_as(timelines_users::Column::UserId, "user_id")
-            .column_as(timelines_users::Column::TimelineId, "timeline_id")
-            .column_as(timelines::Column::Title, "title")
-            .column_as(timelines_users::Column::Relation, "user_timeline_relation")
-            .column_as(timelines_users::Column::Color, "color")
-            .column_as(timelines_users::Column::CreatedAt, "props_created_at")
-            .column_as(timelines_users::Column::UpdatedAt, "props_updated_at")
-            .column_as(timelines::Column::CreatedAt, "timeline_created_at")
-            .column_as(timelines::Column::UpdatedAt, "timeline_updated_at")
-            .group_by(timelines::Column::Id)
-            .group_by(timelines_users::Column::Id)
-            .into_model::<UserTimeline>()
+        let mut join = timelines_users::Entity::find()
+            .filter(timelines_users::Column::UserId.eq(user_id))
+            .find_also_related(timelines::Entity)
             .all(db.get_connection())
-            .await?)
+            .await?;
+
+        let mut res = Vec::new();
+
+        for (tu, to) in join.drain(..) {
+            let t = to.unwrap();
+            res.push(UserTimeline {
+                props_id: tu.id,
+                user_id: tu.user_id,
+                timeline_id: tu.timeline_id,
+                title: t.title.to_owned(),
+                relation: tu.relation,
+                color: tu.color.to_owned(),
+                props_created_at: tu.created_at,
+                props_updated_at: tu.updated_at,
+                timeline_created_at: t.created_at,
+                timeline_updated_at: t.updated_at,
+            });
+        }
+
+        Ok(res)
     }
 }

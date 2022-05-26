@@ -11,10 +11,17 @@ pub mod users;
 pub use sub_tasks::SubTasksQuery;
 pub use tasks::TasksQuery;
 pub use timelines::TimelinesQuery;
+pub use timelines_users::TimelinesUsersQuery;
 pub use user_timelines::UserTimelinesQuery;
 pub use users::UsersQuery;
 
 // Add your other ones here to create a unified Query object
 // e.x. Query(TimelinesQuery, OtherQuery, OtherOtherQuery)
 #[derive(async_graphql::MergedObject, Default)]
-pub struct Query(UsersQuery, TimelinesQuery, TasksQuery, UserTimelinesQuery);
+pub struct Query(
+    UsersQuery,
+    TimelinesQuery,
+    TasksQuery,
+    UserTimelinesQuery,
+    TimelinesUsersQuery,
+);
