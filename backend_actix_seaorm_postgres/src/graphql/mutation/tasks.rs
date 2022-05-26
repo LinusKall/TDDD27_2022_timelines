@@ -11,7 +11,7 @@ pub struct CreateTaskInput {
     pub timeline_id: i32,
     pub title: String,
     pub body: Option<String>,
-    pub end_time: DateTimeUtc,
+    pub end_time: Option<DateTimeUtc>,
 }
 
 #[derive(SimpleObject)]

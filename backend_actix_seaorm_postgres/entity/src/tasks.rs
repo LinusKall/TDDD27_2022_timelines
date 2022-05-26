@@ -15,7 +15,7 @@ pub struct Model {
     #[sea_orm(column_type = "Text", nullable)]
     pub body: Option<String>,
     pub done: bool,
-    pub end_time: DateTimeUtc,
+    pub end_time: Option<DateTimeUtc>,
     pub created_at: DateTimeUtc,
     pub updated_at: DateTimeUtc,
 }

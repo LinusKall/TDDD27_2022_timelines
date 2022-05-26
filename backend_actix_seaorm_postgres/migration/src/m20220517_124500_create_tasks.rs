@@ -20,7 +20,7 @@ impl MigrationTrait for Migration {
             title TEXT NOT NULL,
             body TEXT,
             done BOOLEAN NOT NULL DEFAULT false,
-            end_time TIMESTAMP NOT NULL,
+            end_time TIMESTAMP DEFAULT NULL,
             created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
         );"#;
