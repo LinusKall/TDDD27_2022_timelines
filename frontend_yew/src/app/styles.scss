@@ -65,10 +65,18 @@ body {
             .task {
                 font-size: 20px;
 
-                button {
+                .taskbody {
                     border: none;
                     font-size: 20px;
-                    width: 90%;
+                    width: 80%;
+                    padding: 15px 15px;
+                    cursor: pointer;
+                }
+
+                .taskdelete {
+                    border: none;
+                    font-size: 20px;
+                    width: 10%;
                     padding: 15px 15px;
                     cursor: pointer;
                 }

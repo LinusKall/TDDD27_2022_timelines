@@ -22,6 +22,7 @@ pub fn task_list(props: &Props) -> Html {
     let rf_first = use_state(|| true);
     let rf_new_task = use_state(|| false);
     let task_title = use_state(|| "".to_owned());
+    let tlid = use_state_eq(|| -1);
 
     let tasks = {
         let id = timeline_context.as_ref().unwrap().clone().timeline_id;
@@ -108,11 +109,13 @@ pub fn task_list(props: &Props) -> Html {
 
     {
         let tasks = tasks.clone();
+        let timeline_id = timeline_context.as_ref().unwrap().clone().timeline_id;
         use_effect(move || {
             console_warn!(format!("{}, {}", *rf_first, *rf_new_task));
-            if *rf_first {
+            if *rf_first || *tlid != timeline_id {
                 tasks.run();
                 rf_first.set(false);
+                tlid.set(timeline_id);
             }
             if *rf_new_task {
                 console_log!("after new task render flag");

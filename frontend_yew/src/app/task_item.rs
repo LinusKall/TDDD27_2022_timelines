@@ -30,7 +30,8 @@ pub fn task_item(props: &Props) -> Html {
                 name={props.title.clone()}
             />
             <label for={props.title.clone()}></label>
-            <button id={props.id.clone()} name={props.title.clone()} onclick={onclick.clone()}>{props.title.clone()}</button>
+            <button class={"taskbody"} id={props.id.clone()} name={props.title.clone()} onclick={onclick.clone()}>{props.title.clone()}</button>
+            <button class={"taskdelete"} id={props.id.clone()} name={props.title.clone()} onclick={onclick.clone()}>{"delete"}</button>
         </div>
     }
 }
