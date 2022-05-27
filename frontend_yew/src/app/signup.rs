@@ -51,7 +51,7 @@ pub fn signup(props: &Properties) -> Html {
                 set_user_id.emit(create_user.id);
                 return Ok(create_user.id);
             }
-            Err("Could not create new user")
+            Err("The username or email is already in use.")
         })
     };
 
@@ -112,6 +112,13 @@ pub fn signup(props: &Properties) -> Html {
                 <input oninput={email_input} type="email" id="email" placeholder="Email"/>
             </div>
             <button onclick={signup_button} disabled={username.len()<4 || password.len()<8 || !*valid_email}>{"Create account"}</button>
+            {
+                if let Some(err) = &user_id_request.error {
+                    html! {<p style={"color:Tomato;"}>{format!("{}", err)}</p>}
+                } else {
+                    html! {}
+                }
+            }
         </>
     }
 }
