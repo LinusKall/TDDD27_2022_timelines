@@ -61,7 +61,7 @@ pub fn task_list(props: &Props) -> Html {
 
             if let Some(t) = data {
                 rf_new_task.set(true);
-                return Ok(t.create_task);
+                return Ok(Some(t.create_task));
             }
             Err("Could not create User Timeline.")
         })
@@ -86,14 +86,11 @@ pub fn task_list(props: &Props) -> Html {
         })
     };
 
-    // TODO: Read from context into tasks here.
-
     let onkeypress = {
         let new_task = new_task.clone();
         let task_title = task_title.clone();
         Callback::from(move |e: KeyboardEvent| {
             if e.key() == "Enter" {
-                let new_task = new_task.clone();
                 let input: InputElement = e.target_unchecked_into();
                 if input.value() != "" {
                     let value = input.value();
@@ -115,9 +112,8 @@ pub fn task_list(props: &Props) -> Html {
 
     let task_switch = {
         let message = props.task_update.clone();
-        let tasks = tasks.clone();
+        let tasks = tasks.data.as_ref().unwrap().clone();
         Callback::from(move |taskid: i32| {
-            let tasks = tasks.data.as_ref().unwrap().clone();
             for t in tasks.borrow().iter() {
                 if t.id == taskid {
                     message.emit(t.clone());
@@ -131,7 +127,6 @@ pub fn task_list(props: &Props) -> Html {
         let remove_task = remove_task.clone();
         let task_id = task_id.clone();
         Callback::from(move |taskid: i32| {
-            let remove_task = remove_task.clone();
             task_id.set(taskid);
             remove_task.run();
         })
@@ -141,18 +136,16 @@ pub fn task_list(props: &Props) -> Html {
         let tasks = tasks.clone();
         let timeline_id = timeline_context.as_ref().unwrap().clone().timeline_id;
         use_effect(move || {
-            console_warn!(format!("{}, {}", *rf_first, *rf_new_task));
             if *rf_first || *tlid != timeline_id {
                 tasks.run();
                 rf_first.set(false);
                 tlid.set(timeline_id);
             }
             if *rf_new_task {
-                console_log!("after new task render flag");
-                if let Some(new_task) = new_task.data.clone() {
-                    console_log!("making new task");
+                if let Some(Some(task)) = new_task.data.clone() {
                     let t = tasks.data.as_ref().unwrap().clone();
-                    t.borrow_mut().push(new_task);
+                    t.borrow_mut().push(task);
+                    new_task.update(None);
                     rf_new_task.set(false);
                 }
             }

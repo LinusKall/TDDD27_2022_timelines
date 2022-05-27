@@ -17,8 +17,6 @@ pub struct Props {
 #[function_component(ListSelector)]
 pub fn list_selector(props: &Props) -> Html {
     let timelines_context = use_context::<Rc<RefCell<Vec<UserTimeline>>>>();
-    let timelines = use_state(|| timelines_context.unwrap());
-    // TODO: Read users timelines into timelines.
 
     let onkeypress = {
         let added_timeline = props.added_timeline.clone();
@@ -64,7 +62,8 @@ pub fn list_selector(props: &Props) -> Html {
 
             <div class="available_timelines">
                 {
-                    for timelines
+                    for timelines_context
+                        .unwrap()
                         .borrow()
                         .iter()
                         .map(|timeline| html! {
@@ -73,7 +72,6 @@ pub fn list_selector(props: &Props) -> Html {
                                     class={"timelinebody"}
                                     onclick={onclick.clone()}
                                     id={timeline.timeline_id.clone().to_string()}
-                                    name={timeline.title.clone()}>{timeline.title.clone()}
                                 </button>
                                 <button
                                     class={"timelinedelete"}

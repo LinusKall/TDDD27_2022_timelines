@@ -1,4 +1,3 @@
-use crate::app::web_sys::HtmlButtonElement;
 use gloo::storage::LocalStorage;
 use gloo_storage::Storage;
 #[allow(unused)]
@@ -11,6 +10,7 @@ use super::Route;
 use super::UserId;
 use super::USER_ID_KEY;
 
+#[rustfmt::skip]
 #[function_component(NavigationBar)]
 pub fn navigation_bar() -> Html {
     let user_id = use_context::<UserId>().expect("No context found.");
