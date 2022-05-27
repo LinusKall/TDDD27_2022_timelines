@@ -126,6 +126,34 @@ pub struct DeleteTaskResult {
     pub rows_affected: i32,
 }
 
+// DeleteTimeline
+#[derive(cynic::FragmentArguments)]
+pub struct DeleteUserTimelineArguments {
+    pub props_id: i32,
+}
+
+#[derive(QueryFragment, Debug)]
+#[cynic(
+    schema_path = "graphql/schema.graphql",
+    graphql_type = "Mutation",
+    argument_struct = "DeleteUserTimelineArguments"
+)]
+pub struct DeleteUserTimeline {
+    #[arguments(props_id = &args.props_id)]
+    pub delete_user_timeline: DeleteUserTimelineResult,
+}
+
+#[derive(QueryFragment, Debug, Clone, Copy)]
+#[cynic(
+    schema_path = "graphql/schema.graphql",
+    graphql_type = "DeleteUserTimelineResult"
+)]
+pub struct DeleteUserTimelineResult {
+    pub success: bool,
+    pub props_rows_affected: i32,
+    pub timeline_rows_affected: Option<i32>,
+}
+
 #[derive(Debug, QueryFragment, Clone, PartialEq)]
 #[cynic(schema_path = "graphql/schema.graphql", graphql_type = "UserTimeline")]
 pub struct UserTimeline {

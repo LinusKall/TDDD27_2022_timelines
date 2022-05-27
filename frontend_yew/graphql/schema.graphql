@@ -48,14 +48,22 @@ type DeleteUserResult {
   rowsAffected: Int!
 }
 
+type DeleteUserTimelineResult {
+  success: Boolean!
+  propsRowsAffected: Int!
+  timelineRowsAffected: Int
+}
+
 type Mutation {
   createUser(input: CreateUserInput!): User!
   deleteUser(userId: Int!, password: String!): DeleteUserResult!
   createTimeline(input: CreateTimelineInput!): Timeline!
   deleteTimeline(id: Int!): DeleteTimelineResult!
   createUserTimeline(input: CreateUserTimelineInput!): UserTimeline!
+  deleteUserTimeline(propsId: Int!): DeleteUserTimelineResult!
   createTask(input: CreateTaskInput!): Task!
   deleteTask(taskId: Int!): DeleteTaskResult!
+  updateTask(taskId: Int!, input: UpdateTaskInput!): Task!
 }
 
 type Query {
@@ -101,6 +109,13 @@ type TimelineUser {
   color: String!
   createdAt: DateTime!
   updatedAt: DateTime!
+}
+
+input UpdateTaskInput {
+  title: String
+  body: String
+  done: Boolean
+  endTime: DateTime
 }
 
 type User {
