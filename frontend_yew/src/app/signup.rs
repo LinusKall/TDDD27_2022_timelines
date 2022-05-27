@@ -24,6 +24,7 @@ pub fn signup(props: &Properties) -> Html {
     let valid_email = use_state(bool::default);
     let validate = Regex::new(r"^[^ ]+@[^ ]+\.[a-ö]{2,6}$").unwrap();
     let user_id = use_context::<UserId>().expect("No context found.");
+    let node_ref = use_node_ref();
 
     if let Some(_) = *user_id.borrow() {
         return html! { <Redirect<Route> to={Route::ListView} /> };
@@ -91,10 +92,18 @@ pub fn signup(props: &Properties) -> Html {
         })
     };
 
+    {
+        let node_ref = node_ref.clone();     
+        use_effect_once(move || {
+            node_ref.cast::<HtmlInputElement>().unwrap().focus().unwrap();
+            || {}
+        });
+    }
+
     html! {
         <>
             <div>
-                <input oninput={username_input} placeholder="Username"/>
+                <input oninput={username_input} placeholder="Username" ref={node_ref}/>
             </div>
             <div>
                 <input oninput={password_input} type="password" placeholder="Password"/>
