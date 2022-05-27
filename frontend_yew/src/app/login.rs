@@ -60,7 +60,9 @@ pub fn login(props: &Properties) -> Html {
 
     let username_input = {
         let current_username = username.clone();
+        let clear_input = clear_input.clone();
         Callback::from(move |e: InputEvent| {
+            clear_input.set(false);
             let input: HtmlInputElement = e.target_unchecked_into();
             current_username.set(input.value());
         })
@@ -68,9 +70,7 @@ pub fn login(props: &Properties) -> Html {
 
     let password_input = {
         let current_password = password.clone();
-        let clear_input = clear_input.clone();
         Callback::from(move |e: InputEvent| {
-            clear_input.set(false);
             let input: HtmlInputElement = e.target_unchecked_into();
             current_password.set(input.value());
         })
@@ -87,7 +87,6 @@ pub fn login(props: &Properties) -> Html {
         })
     };
 
-
     let first_render = use_state(|| true);
     {
         let first_render = first_render.clone();
@@ -101,6 +100,7 @@ pub fn login(props: &Properties) -> Html {
             if *clear_input {
                 password_ref.cast::<HtmlInputElement>().unwrap().focus().unwrap();
                 password_ref.cast::<HtmlInputElement>().unwrap().set_value("");
+                clear_input.set(false);
             }
             || {}
         });
