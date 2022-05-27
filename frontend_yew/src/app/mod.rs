@@ -13,7 +13,6 @@ use gloo::storage::LocalStorage;
 use gloo_storage::Storage;
 use std::cell::RefCell;
 use std::rc::Rc;
-use weblog::*;
 use yew::prelude::*;
 use yew_router::prelude::*;
 
