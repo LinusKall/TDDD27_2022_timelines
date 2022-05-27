@@ -19,6 +19,7 @@ pub fn account_info() -> Html {
     let password = use_state(|| String::new());
     let incorrect_password = use_state(bool::default);
     let first_render = use_state(|| true);
+    let node_ref = use_node_ref();
 
     if user_id.borrow().is_none() {
         return html! { <Redirect<Route> to={Route::Login} /> };
@@ -40,22 +41,9 @@ pub fn account_info() -> Html {
             Err("Could not fetch userinfo.")
         })
     };
-
-    {
-        let user_info = user_info.clone();
-        let first_render = first_render.clone();
-        use_effect(move || {
-            if *first_render {
-                user_info.run();
-                first_render.set(false);
-            }
-            || {}
-        });
-    }
     
     let delete_ready = use_state(bool::default);
     let onclick_delete_ready = {
-        let user_id = user_id.clone();
         let delete_ready = delete_ready.clone();
         Callback::from(move |_: MouseEvent| {
             delete_ready.set(true);
@@ -94,11 +82,34 @@ pub fn account_info() -> Html {
     
     let oninput = {
         let current_password = password.clone();
+        let incorrect_password = incorrect_password.clone();
         Callback::from(move |e: InputEvent| {
             let input: HtmlInputElement = e.target_unchecked_into();
             current_password.set(input.value());
+            incorrect_password.set(false);
         })
     };
+
+    {
+        let user_info = user_info.clone();
+        let first_render = first_render.clone();
+        let delete_ready = delete_ready.clone();
+        let incorrect_password = incorrect_password.clone();
+        let node_ref = node_ref.clone();
+        use_effect(move || {
+            if *first_render {
+                user_info.run();
+                first_render.set(false);
+            }
+            if *delete_ready {
+                node_ref.cast::<HtmlInputElement>().unwrap().focus().unwrap();
+            } 
+            if *incorrect_password {
+                node_ref.cast::<HtmlInputElement>().unwrap().set_value("");
+            }
+            || {}
+        });
+    }
 
     html! {
         <>
@@ -122,14 +133,18 @@ pub fn account_info() -> Html {
             } hidden={
                 *delete_ready
             }>{"Delete account"}</button>
-            <button name={"del"} onclick = {
-                onclick_delete
-            } hidden={
-                !*delete_ready
-            }>{"Input your password and press this if you are sure you want to delete your account"}</button>
+            if *delete_ready {
+                <button name={"del"} onclick = {
+                    onclick_delete
+                }>{"Input your password and press this if you are sure you want to delete your account"}</button>
+            }
             <div>
-                <input {oninput} hidden={!*delete_ready} type="password" placeholder="Password"/>
-                <p hidden={!*incorrect_password} style={"color:Tomato;"}>{"Wrong password. Try again."}</p>
+                if *delete_ready {
+                    <input {oninput} type="password" placeholder="Password" ref={node_ref}/>
+                }
+                if *incorrect_password {
+                    <p style={"color:Tomato;"}>{"Wrong password. Try again."}</p>
+                }
             </div>
         </>
     }
