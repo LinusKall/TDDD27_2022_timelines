@@ -71,7 +71,8 @@ pub fn list_selector(props: &Props) -> Html {
                                 <button
                                     class={"timelinebody"}
                                     onclick={onclick.clone()}
-                                    id={timeline.timeline_id.clone().to_string()}
+                                    id={timeline.timeline_id.clone().to_string()}>
+                                    {&timeline.title}
                                 </button>
                                 <button
                                     class={"timelinedelete"}
