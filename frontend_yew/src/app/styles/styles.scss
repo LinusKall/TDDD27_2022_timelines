@@ -1,0 +1,10 @@
+@use "./navbar";
+@use "./login";
+@use "./list_view";
+
+body {
+    margin: 1em;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}

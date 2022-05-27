@@ -107,14 +107,10 @@ pub fn login(props: &Properties) -> Html {
     }
 
     html! {
-        <>
-            <div>
-                <input oninput={username_input} onkeypress={enter_input.clone()} ref={username_ref} placeholder="Username"/>
-            </div>
-            <div>
-                <input oninput={password_input} onkeypress={enter_input} ref={password_ref} type="password" placeholder="Password"/>
-            </div>
-            <button onclick={
+        <div class="login">
+            <input id="username-input" oninput={username_input} onkeypress={enter_input.clone()} ref={username_ref} placeholder="Username"/>
+            <input id="password-input" oninput={password_input} onkeypress={enter_input} ref={password_ref} type="password" placeholder="Password"/>
+            <button id="login-button" onclick={
                 login_click
             } disabled={
                 username.len()<4 ||
@@ -122,11 +118,11 @@ pub fn login(props: &Properties) -> Html {
             }>{"Log in"}</button>
             {
                 if user_id_request.error.is_some() {
-                    html! {<p style={"color:Tomato;"}>{"Wrong username or password. Try again."}</p>}
+                    html! {<p class="error">{"Wrong username or password. Try again."}</p>}
                 } else {
                     html! {}
                 }
             }
-        </>
+        </div>
     }
 }

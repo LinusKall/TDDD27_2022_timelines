@@ -1,0 +1,42 @@
+$area_name: "task_list";
+
+@mixin task_list {
+    grid-area: task_list;
+    font-size: 20px;
+    display: grid;
+    grid-template-areas:
+        "title"
+        "input"
+        "list";
+    grid-template-columns: 1fr;
+    grid-template-rows: 50px 30px auto;
+
+    h2 {
+        margin-top: 0.5rem;
+        text-align: center;
+        grid-area: title;
+        cursor: default;
+    }
+
+    input {
+        font-size: 20px;
+        text-align: center;
+        grid-area: input;
+    }
+
+    .task {
+        font-size: 20px;
+
+        button {
+            border: none;
+            font-size: 20px;
+            width: 90%;
+            padding: 15px 15px;
+            cursor: pointer;
+        }
+
+        input {
+            cursor: pointer;
+        }
+    }
+}

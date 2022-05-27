@@ -1,0 +1,31 @@
+$area_name: "list_selector";
+
+@mixin list_selector {
+    grid-area: list_selector;
+    font-size: 20px;
+    display: grid;
+    grid-template-areas:
+        "timeline_creator"
+        "available_timelines";
+    grid-template-columns: 1fr;
+    grid-template-rows: 30px auto;
+
+    input {
+        font-size: 20px;
+        text-align: center;
+        grid-area: timeline_creator;
+    }
+
+    .available_timelines {
+        grid-area: available_timelines;
+
+        button {
+            display: block;
+            border: none;
+            font-size: 20px;
+            width: 100%;
+            padding: 15px 32px;
+            cursor: pointer;
+        }
+    }
+}

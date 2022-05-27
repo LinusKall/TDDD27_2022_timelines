@@ -22,6 +22,7 @@ pub fn navigation_bar() -> Html {
     let account_info_button;
     let listview_button;
 
+    
     match current_route {
         Route::Login       => { login_button = false; signup_button = true;  logout_button = false; account_info_button = false; listview_button = false; },
         Route::Signup      => { login_button = true;  signup_button = false; logout_button = false; account_info_button = false; listview_button = false; },
@@ -30,15 +31,9 @@ pub fn navigation_bar() -> Html {
         Route::NotFound    => { login_button = false; signup_button = false; logout_button = false; account_info_button = false; listview_button = false; },
     }
 
-    let onclick_login = {
-        Callback::from(move |_: MouseEvent| {
-        })
-    };
+    let onclick_login = { Callback::from(move |_: MouseEvent| {}) };
 
-    let onclick_signup = {
-        Callback::from(move |_: MouseEvent| {
-        })
-    };
+    let onclick_signup = { Callback::from(move |_: MouseEvent| {}) };
 
     let onclick_logout = {
         let user_id = user_id.clone();
@@ -48,20 +43,16 @@ pub fn navigation_bar() -> Html {
         })
     };
 
-    let onclick_account_info = {
-        Callback::from(move |_: MouseEvent| {})
-    };
+    let onclick_account_info = { Callback::from(move |_: MouseEvent| {}) };
 
-    let onclick_listview = {
-        Callback::from(move |_: MouseEvent| {})
-    };
+    let onclick_listview = { Callback::from(move |_: MouseEvent| {}) };
 
     html! {
-        <>
+        <div class="navbar">
             {
                 match login_button {
                     true => html! {
-                        <Link<Route> to={Route::Login}> 
+                        <Link<Route> to={Route::Login}>
                             <button onclick={onclick_login}>{"Log in"}</button>
                         </Link<Route>>
                     },
@@ -71,7 +62,7 @@ pub fn navigation_bar() -> Html {
             {
                 match signup_button {
                     true => html! {
-                        <Link<Route> to={Route::Signup}> 
+                        <Link<Route> to={Route::Signup}>
                             <button onclick={onclick_signup}>{"Sign up"}</button>
                         </Link<Route>>
                     },
@@ -81,7 +72,7 @@ pub fn navigation_bar() -> Html {
             {
                 match logout_button {
                     true => html! {
-                        <Link<Route> to={Route::Login}> 
+                        <Link<Route> to={Route::Login}>
                             <button onclick={onclick_logout}>{"Log out"}</button>
                         </Link<Route>>
                     },
@@ -91,7 +82,7 @@ pub fn navigation_bar() -> Html {
             {
                 match account_info_button {
                     true => html! {
-                        <Link<Route> to={Route::AccountInfo}> 
+                        <Link<Route> to={Route::AccountInfo}>
                             <button onclick={onclick_account_info} >{"Account information"}</button>
                         </Link<Route>>
                     },
@@ -101,13 +92,13 @@ pub fn navigation_bar() -> Html {
             {
                 match listview_button {
                     true => html! {
-                        <Link<Route> to={Route::ListView}> 
+                        <Link<Route> to={Route::ListView}>
                             <button onclick={onclick_listview} >{"Timelines"}</button>
                         </Link<Route>>
                     },
                     false => html! {},
                 }
             }
-        </>
+        </div>
     }
 }

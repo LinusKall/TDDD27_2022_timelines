@@ -1,0 +1,39 @@
+.login {
+    margin: auto;
+    width: fit-content;
+    display: grid;
+    justify-content: center;
+    row-gap: 0.1em;
+    grid-template-columns: 15em;
+    grid-template-rows: 1fr 1fr 1fr;
+    grid-template-areas:
+        "password"
+        "username"
+        "login-button";
+
+    input {
+        padding: 0.5em;
+
+        #username-input {
+            grid-area: username;
+        }
+
+        #password-input {
+            grid-area: password;
+        }
+    }
+
+    button {
+        padding: 0.5em;
+
+        #login-button {
+            grid-area: login-button;
+        }
+    }
+
+    p {
+        .error {
+            color: Tomato;
+        }
+    }
+}

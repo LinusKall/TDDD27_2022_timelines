@@ -1,0 +1,15 @@
+$area_name: "task_info";
+
+@mixin task_info {
+    grid-area: task_info;
+    grid-template-areas:
+        "title";
+    grid-template-columns: 1fr;
+    grid-template-rows: 50px;
+
+    h2 {
+        grid-area: title;
+        text-align: center;
+        cursor: default;
+    }
+}
