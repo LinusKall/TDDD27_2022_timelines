@@ -42,10 +42,10 @@ pub fn signup(props: &Properties) -> Html {
         });
         use_async(async move {
             let data = surf::post(format!("{}/api/graphql", crate::app::LOCALHOST))
-                .run_graphql(operation)
-                .await
-                .expect("Could not send request")
-                .data;
+            .run_graphql(operation)
+            .await
+            .expect("Could not send request")
+            .data;
 
             if let Some(CreateUser { create_user }) = data {
                 set_user_id.emit(create_user.id);
@@ -111,7 +111,14 @@ pub fn signup(props: &Properties) -> Html {
             <div>
                 <input oninput={email_input} type="email" id="email" placeholder="Email"/>
             </div>
-            <button onclick={signup_button} disabled={username.len()<4 || password.len()<8 || !*valid_email}>{"Create account"}</button>
+            {
+                if username.len()<4 || password.len()<8 || !*valid_email {
+                    html! {<button disabled=true>{"Create account"}</button>}
+                } else {
+                    html! {<button onclick={signup_button}>{"Create account"}</button>}
+                }
+            }
+
             {
                 if let Some(err) = &user_id_request.error {
                     html! {<p style={"color:Tomato;"}>{format!("{}", err)}</p>}
