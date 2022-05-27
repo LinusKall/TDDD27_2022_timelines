@@ -128,11 +128,13 @@ pub fn list_view() -> Html {
     };
 
     let delete_timeline = {
+        let timeline_state = timeline_state.clone();
         let props_id = props_id.clone();
         let remove_timeline = remove_timeline.clone();
         Callback::from(move |id: i32| {
             props_id.set(id);
             remove_timeline.run();
+            timeline_state.set(UserTimeline::default());
         })
     };
 
