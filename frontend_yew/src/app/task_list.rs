@@ -109,7 +109,6 @@ pub fn task_list(props: &Props) -> Html {
     {
         let tasks = tasks.clone();
         use_effect(move || {
-            console_warn!(format!("{}, {}", *rf_first, *rf_new_task));
             if *rf_first {
                 tasks.run();
                 rf_first.set(false);
