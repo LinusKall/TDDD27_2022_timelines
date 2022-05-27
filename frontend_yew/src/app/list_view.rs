@@ -23,8 +23,9 @@ pub fn list_view() -> Html {
     let highlited_task = use_state(Task::default);
     let user_id = use_context::<UserId>().expect("No context found.");
     let rf_first = use_state(|| true);
-    let timeline_title = use_state(|| "".to_owned());
+    let timeline_title = use_state_eq(|| "".to_owned());
     let rf_new_timeline = use_state(|| false);
+    let props_id = use_state(|| -1);
     // LocalStorage::delete("timelines_user_id");
 
     *user_id.borrow_mut() = match LocalStorage::get("timelines_user_id") {
@@ -58,10 +59,10 @@ pub fn list_view() -> Html {
     let new_timeline = {
         let rf_new_timeline = rf_new_timeline.clone();
         let user_id = user_id.clone();
-        let timeline_title = timeline_title.deref().clone();
+        let timeline_title = timeline_title.clone();
         let operation = CreateUserTimeline::build(CreateUserTimelineArguments {
             user_id: user_id.borrow_mut().deref().unwrap(),
-            title: timeline_title,
+            title: timeline_title.deref().to_owned(),
             public: false,
         });
         use_async(async move {
@@ -73,13 +74,31 @@ pub fn list_view() -> Html {
 
             if let Some(tl) = data {
                 rf_new_timeline.set(true);
-                return Ok(tl.create_user_timeline);
+                return Ok(Some(tl.create_user_timeline));
             }
             Err("Could not create User Timeline.")
         })
     };
 
-    // TODO: Change to look at timelineID
+    let remove_timeline = {
+        let rf_first = rf_first.clone();
+        let props_id = props_id.deref().clone();
+        let operation = DeleteUserTimeline::build(DeleteUserTimelineArguments { props_id });
+        use_async(async move {
+            let data = surf::post(format!("{}/api/graphql", crate::app::LOCALHOST))
+                .run_graphql(operation)
+                .await
+                .expect("Could not delete User Timeline")
+                .data;
+
+            if let Some(tl) = data {
+                rf_first.set(true);
+                return Ok(tl.delete_user_timeline);
+            }
+            Err("Could not delete User Timeline.")
+        })
+    };
+
     let timeline_switch = {
         let timeline_state = timeline_state.clone();
         let usertimelines = usertimelines.clone();
@@ -101,11 +120,17 @@ pub fn list_view() -> Html {
         let timeline_title = timeline_title.clone();
         let new_timeline = new_timeline.clone();
         Callback::from(move |timelinename: String| {
-            console_log!("New timeline");
-            let new_timeline = new_timeline.clone();
-            let title = timelinename;
-            timeline_title.set(title);
+            timeline_title.set(timelinename);
             new_timeline.run();
+        })
+    };
+
+    let delete_timeline = {
+        let props_id = props_id.clone();
+        let remove_timeline = remove_timeline.clone();
+        Callback::from(move |id: i32| {
+            props_id.set(id);
+            remove_timeline.run();
         })
     };
 
@@ -115,6 +140,7 @@ pub fn list_view() -> Html {
             highlited_task.set(task);
         })
     };
+
     {
         let usertimelines = usertimelines.clone();
         use_effect(move || {
@@ -123,24 +149,27 @@ pub fn list_view() -> Html {
                 rf_first.set(false);
             }
             if *rf_new_timeline {
-                console_log!("after new timeline render flag");
-                if let Some(new_user_timeline) = new_timeline.data.clone() {
-                    console_log!("making new timeline");
+                if let Some(Some(new_user_timeline)) = new_timeline.data.clone() {
                     let utl = usertimelines.data.as_ref().unwrap().clone();
                     utl.borrow_mut().push(new_user_timeline);
+                    new_timeline.update(None);
                     rf_new_timeline.set(false);
                 }
             }
             || {}
         });
     }
+
     html! {
         {
             if let Some(usertimelines) = usertimelines.data.as_ref() {
                 html! {
                     <div class="list_view">
                         <ContextProvider<Rc<RefCell<Vec<UserTimeline>>>> context={usertimelines.clone()}>
-                            <ListSelector current_timeline={timeline_switch} added_timeline={timeline_add}/>
+                            <ListSelector
+                                current_timeline={timeline_switch}
+                                added_timeline={timeline_add}
+                                get_id_delete={delete_timeline}/>
                         </ContextProvider<Rc<RefCell<Vec<UserTimeline>>>>>
 
                         <ContextProvider<UserTimeline> context={timeline_state.deref().clone()}>

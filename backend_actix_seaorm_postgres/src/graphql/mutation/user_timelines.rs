@@ -1,6 +1,6 @@
 use async_graphql::{Context, Object, Result};
 use entity::async_graphql::{self, InputObject, SimpleObject};
-use entity::{sea_orm_active_enums::ClearanceMapping, timelines, timelines_users, users};
+use entity::{sea_orm_active_enums::ClearanceMapping, tasks, timelines, timelines_users, users};
 use sea_orm::{ActiveModelTrait, EntityTrait, Set};
 
 use crate::db::Database;
@@ -19,7 +19,8 @@ pub struct CreateUserTimelineInput {
 #[derive(SimpleObject)]
 pub struct DeleteUserTimelineResult {
     pub success: bool,
-    pub rows_affected: u64,
+    pub props_rows_affected: u64,
+    pub timeline_rows_affected: Option<u64>,
 }
 
 #[derive(Default)]
@@ -71,26 +72,66 @@ impl UserTimelinesMutation {
         })
     }
 
-    // pub async fn delete_timeline(
-    //     &self,
-    //     ctx: &Context<'_>,
-    //     id: i32,
-    // ) -> Result<DeleteUserTimelineResult> {
-    //     let db = ctx.data::<Database>().unwrap();
+    pub async fn delete_user_timeline(
+        &self,
+        ctx: &Context<'_>,
+        props_id: i32,
+    ) -> Result<DeleteUserTimelineResult> {
+        let db = ctx.data::<Database>().unwrap();
 
-    //     let res = timelines::Entity::delete_by_id(id)
-    //         .exec(db.get_connection())
-    //         .await?;
+        let props = timelines_users::Entity::find_by_id(props_id)
+            .one(db.get_connection())
+            .await?
+            .unwrap();
 
-    //     if res.rows_affected <= 1 {
-    //         Ok(DeleteUserTimelineResult {
-    //             success: true,
-    //             rows_affected: res.rows_affected,
-    //         })
-    //     } else {
-    //         unimplemented!()
-    //     }
+        let props_res = timelines_users::Entity::delete_by_id(props_id)
+            .exec(db.get_connection())
+            .await?;
 
-    //     todo!()
-    // }
+        let timeline_res = if props.relation == ClearanceMapping::Owner {
+            tasks::Entity::delete_many()
+                .exec(db.get_connection())
+                .await?;
+            Some(
+                timelines::Entity::delete_by_id(props.timeline_id)
+                    .exec(db.get_connection())
+                    .await?,
+            )
+        } else {
+            None
+        };
+
+        if let Some(timeline_res) = timeline_res {
+            if props_res.rows_affected <= 1 && timeline_res.rows_affected <= 1 {
+                Ok(DeleteUserTimelineResult {
+                    success: true,
+                    props_rows_affected: props_res.rows_affected,
+                    timeline_rows_affected: Some(timeline_res.rows_affected),
+                })
+            } else {
+                Err(entity::async_graphql::Error {
+                    message: format!(
+                        "{} props and {} timelines were deleted",
+                        props_res.rows_affected, timeline_res.rows_affected
+                    ),
+                    source: None,
+                    extensions: None,
+                })
+            }
+        } else {
+            if props_res.rows_affected <= 1 {
+                Ok(DeleteUserTimelineResult {
+                    success: true,
+                    props_rows_affected: props_res.rows_affected,
+                    timeline_rows_affected: None,
+                })
+            } else {
+                Err(entity::async_graphql::Error {
+                    message: format!("{} props were deleted", props_res.rows_affected),
+                    source: None,
+                    extensions: None,
+                })
+            }
+        }
+    }
 }

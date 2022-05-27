@@ -16,6 +16,9 @@ use std::rc::Rc;
 use yew::prelude::*;
 use yew_router::prelude::*;
 
+#[allow(unused)]
+use weblog::*;
+
 use account_info::*;
 use list_view::*;
 use login::*;

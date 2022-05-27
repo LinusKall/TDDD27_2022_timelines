@@ -1,17 +1,17 @@
-use yew::prelude::*;
-use yew_router::prelude::*;
-use web_sys::HtmlInputElement;
+use cynic::{http::SurfExt, MutationBuilder, QueryBuilder};
 use gloo_storage::LocalStorage;
 use gloo_storage::Storage;
-use yew_hooks::prelude::*;
-use cynic::{QueryBuilder, http::SurfExt, MutationBuilder};
 use std::ops::Deref;
+use web_sys::HtmlInputElement;
 use weblog::*;
+use yew::prelude::*;
+use yew_hooks::prelude::*;
+use yew_router::prelude::*;
 
+use super::gql::query::*;
 use super::Route;
 use super::UserId;
 use super::USER_ID_KEY;
-use super::gql::query::*;
 
 #[function_component(AccountInfo)]
 pub fn account_info() -> Html {
@@ -27,7 +27,9 @@ pub fn account_info() -> Html {
 
     let user_info = {
         let user_id = user_id.clone();
-        let operation = GetUserInfo::build(GetUserInfoArgs { user_id: user_id.borrow_mut().deref().unwrap() });
+        let operation = GetUserInfo::build(GetUserInfoArgs {
+            user_id: user_id.borrow_mut().deref().unwrap(),
+        });
         use_async(async move {
             let data = surf::post(format!("{}/api/graphql", crate::app::LOCALHOST))
                 .run_graphql(operation)
@@ -41,7 +43,19 @@ pub fn account_info() -> Html {
             Err("Could not fetch userinfo.")
         })
     };
-    
+
+    // {
+    //     let user_info = user_info.clone();
+    //     let first_render = first_render.clone();
+    //     use_effect(move || {
+    //         if *first_render {
+    //             user_info.run();
+    //             first_render.set(false);
+    //         }
+    //         || {}
+    //     });
+    // }
+
     let delete_ready = use_state(bool::default);
     let onclick_delete_ready = {
         let delete_ready = delete_ready.clone();
@@ -55,7 +69,10 @@ pub fn account_info() -> Html {
         let password = password.deref().to_owned();
         let incorrect_password = incorrect_password.clone();
         let first_render = first_render.clone();
-        let operation = DeleteUser::build(DeleteUserInput {user_id: user_id.borrow_mut().deref().unwrap(), password: password});
+        let operation = DeleteUser::build(DeleteUserInput {
+            user_id: user_id.borrow_mut().deref().unwrap(),
+            password: password,
+        });
         use_async(async move {
             let data = surf::post(format!("{}/api/graphql", crate::app::LOCALHOST))
                 .run_graphql(operation)
@@ -72,14 +89,14 @@ pub fn account_info() -> Html {
             Err("Could not delete user.")
         })
     };
-    
+
     let onclick_delete = {
         let delete_user = delete_user.clone();
         Callback::from(move |_: MouseEvent| {
             delete_user.run();
         })
     };
-    
+
     let oninput = {
         let current_password = password.clone();
         let incorrect_password = incorrect_password.clone();
@@ -102,8 +119,12 @@ pub fn account_info() -> Html {
                 first_render.set(false);
             }
             if *delete_ready {
-                node_ref.cast::<HtmlInputElement>().unwrap().focus().unwrap();
-            } 
+                node_ref
+                    .cast::<HtmlInputElement>()
+                    .unwrap()
+                    .focus()
+                    .unwrap();
+            }
             if *incorrect_password {
                 node_ref.cast::<HtmlInputElement>().unwrap().set_value("");
             }
@@ -114,7 +135,7 @@ pub fn account_info() -> Html {
     html! {
         <>
             <h2>{"Account Information"}</h2>
-            <div> 
+            <div>
                 {
                     if let Some(data) = &user_info.data {
                         html! {

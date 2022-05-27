@@ -11,13 +11,12 @@ use super::gql::query::*;
 pub struct Props {
     pub current_timeline: Callback<i32>,
     pub added_timeline: Callback<String>,
+    pub get_id_delete: Callback<i32>,
 }
 
 #[function_component(ListSelector)]
 pub fn list_selector(props: &Props) -> Html {
     let timelines_context = use_context::<Rc<RefCell<Vec<UserTimeline>>>>();
-    let timelines = use_state(|| timelines_context.unwrap());
-    // TODO: Read users timelines into timelines.
 
     let onkeypress = {
         let added_timeline = props.added_timeline.clone();
@@ -28,9 +27,7 @@ pub fn list_selector(props: &Props) -> Html {
                     let value = input.value();
                     input.set_value("");
                     added_timeline.emit(value);
-                } else {
                 }
-            } else {
             }
         })
     };
@@ -45,6 +42,16 @@ pub fn list_selector(props: &Props) -> Html {
         })
     };
 
+    let delete_timeline = {
+        let get_id_delete = props.get_id_delete.clone();
+        Callback::from(move |e: MouseEvent| {
+            let target = e.target().unwrap();
+            let input = target.unchecked_into::<HtmlButtonElement>();
+            let value = input.id();
+            get_id_delete.emit(value.trim().parse::<i32>().unwrap());
+        })
+    };
+
     html! {
         <div class="list_selector">
             <input
@@ -55,15 +62,24 @@ pub fn list_selector(props: &Props) -> Html {
 
             <div class="available_timelines">
                 {
-                    for timelines
+                    for timelines_context
+                        .unwrap()
                         .borrow()
                         .iter()
                         .map(|timeline| html! {
-                            <button
-                                onclick={onclick.clone()}
-                                id={timeline.timeline_id.clone().to_string()}
-                                name={timeline.title.clone()}>{timeline.title.clone()}
-                            </button>
+                            <>
+                                <button
+                                    class={"timelinebody"}
+                                    onclick={onclick.clone()}
+                                    id={timeline.timeline_id.clone().to_string()}
+                                </button>
+                                <button
+                                    class={"timelinedelete"}
+                                    onclick={delete_timeline.clone()}
+                                    id={timeline.props_id.clone().to_string()}
+                                >{"delete"}
+                                </button>
+                            </>
                         })
                 }
             </div>

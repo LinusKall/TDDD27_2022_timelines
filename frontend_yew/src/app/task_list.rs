@@ -22,6 +22,8 @@ pub fn task_list(props: &Props) -> Html {
     let rf_first = use_state(|| true);
     let rf_new_task = use_state(|| false);
     let task_title = use_state(|| "".to_owned());
+    let tlid = use_state_eq(|| -1);
+    let task_id = use_state(|| 0);
 
     let tasks = {
         let id = timeline_context.as_ref().unwrap().clone().timeline_id;
@@ -59,20 +61,36 @@ pub fn task_list(props: &Props) -> Html {
 
             if let Some(t) = data {
                 rf_new_task.set(true);
-                return Ok(t.create_task);
+                return Ok(Some(t.create_task));
             }
             Err("Could not create User Timeline.")
         })
     };
 
-    // TODO: Read from context into tasks here.
+    let remove_task = {
+        let rf_first = rf_first.clone();
+        let task_id = task_id.deref().clone();
+        let operation = DeleteTask::build(DeleteTaskArguments { task_id });
+        use_async(async move {
+            let data = surf::post(format!("{}/api/graphql", crate::app::LOCALHOST))
+                .run_graphql(operation)
+                .await
+                .expect("Could not create User Timeline")
+                .data;
+
+            if let Some(t) = data {
+                rf_first.set(true);
+                return Ok(t.delete_task);
+            }
+            Err("Could not create User Timeline.")
+        })
+    };
 
     let onkeypress = {
         let new_task = new_task.clone();
         let task_title = task_title.clone();
         Callback::from(move |e: KeyboardEvent| {
             if e.key() == "Enter" {
-                let new_task = new_task.clone();
                 let input: InputElement = e.target_unchecked_into();
                 if input.value() != "" {
                     let value = input.value();
@@ -106,19 +124,29 @@ pub fn task_list(props: &Props) -> Html {
         })
     };
 
+    let delete_task = {
+        let remove_task = remove_task.clone();
+        let task_id = task_id.clone();
+        Callback::from(move |taskid: i32| {
+            task_id.set(taskid);
+            remove_task.run();
+        })
+    };
+
     {
         let tasks = tasks.clone();
+        let timeline_id = timeline_context.as_ref().unwrap().clone().timeline_id;
         use_effect(move || {
-            if *rf_first {
+            if *rf_first || *tlid != timeline_id {
                 tasks.run();
                 rf_first.set(false);
+                tlid.set(timeline_id);
             }
             if *rf_new_task {
-                console_log!("after new task render flag");
-                if let Some(new_task) = new_task.data.clone() {
-                    console_log!("making new task");
+                if let Some(Some(task)) = new_task.data.clone() {
                     let t = tasks.data.as_ref().unwrap().clone();
-                    t.borrow_mut().push(new_task);
+                    t.borrow_mut().push(task);
+                    new_task.update(None);
                     rf_new_task.set(false);
                 }
             }
@@ -146,6 +174,7 @@ pub fn task_list(props: &Props) -> Html {
                                         id={task.id.to_string()}
                                         title={task.title.clone()}
                                         get_task_name={task_switch.clone()}
+                                        get_id_delete={delete_task.clone()}
                                     />
                                 }
                             )
