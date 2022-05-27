@@ -1,5 +1,6 @@
-use cynic::{http::SurfExt, /*MutationBuilder,*/ QueryBuilder};
+use cynic::{http::SurfExt, MutationBuilder, QueryBuilder};
 use std::cell::RefCell;
+use std::ops::Deref;
 use std::rc::Rc;
 use web_sys::HtmlInputElement as InputElement;
 use weblog::*;
@@ -19,13 +20,14 @@ pub struct Props {
 pub fn task_list(props: &Props) -> Html {
     let timeline_context = use_context::<UserTimeline>();
     let rf_first = use_state(|| true);
+    let rf_new_task = use_state(|| false);
     let task_title = use_state(|| "".to_owned());
 
     let tasks = {
         let id = timeline_context.as_ref().unwrap().clone().timeline_id;
         let operation = GetTasksById::build(GetTasksByIdArguments { timeline_id: id });
         use_async(async move {
-            let data = surf::post("http://localhost/api/graphql")
+            let data = surf::post(format!("{}/api/graphql", crate::app::LOCALHOST))
                 .run_graphql(operation)
                 .await
                 .expect("Could not get tasks")
@@ -38,19 +40,45 @@ pub fn task_list(props: &Props) -> Html {
         })
     };
 
+    let new_task = {
+        let rf_new_task = rf_new_task.clone();
+        let timeline_id = timeline_context.as_ref().unwrap().clone().timeline_id;
+        let task_title = task_title.deref().clone();
+        let operation = CreateTask::build(CreateTaskArguments {
+            timeline_id,
+            title: task_title,
+            body: None,
+            end_time: None,
+        });
+        use_async(async move {
+            let data = surf::post(format!("{}/api/graphql", crate::app::LOCALHOST))
+                .run_graphql(operation)
+                .await
+                .expect("Could not create User Timeline")
+                .data;
+
+            if let Some(t) = data {
+                rf_new_task.set(true);
+                return Ok(t.create_task);
+            }
+            Err("Could not create User Timeline.")
+        })
+    };
+
     // TODO: Read from context into tasks here.
 
     let onkeypress = {
-        let tasks = tasks.clone();
+        let new_task = new_task.clone();
         let task_title = task_title.clone();
         Callback::from(move |e: KeyboardEvent| {
             if e.key() == "Enter" {
-                let _tasklist = tasks.data.as_ref().unwrap().clone();
+                let new_task = new_task.clone();
                 let input: InputElement = e.target_unchecked_into();
                 if input.value() != "" {
                     let value = input.value();
                     input.set_value("");
                     task_title.set(value);
+                    new_task.run();
                 } else {
                 }
             } else {
@@ -81,9 +109,19 @@ pub fn task_list(props: &Props) -> Html {
     {
         let tasks = tasks.clone();
         use_effect(move || {
+            console_warn!(format!("{}, {}", *rf_first, *rf_new_task));
             if *rf_first {
                 tasks.run();
                 rf_first.set(false);
+            }
+            if *rf_new_task {
+                console_log!("after new task render flag");
+                if let Some(new_task) = new_task.data.clone() {
+                    console_log!("making new task");
+                    let t = tasks.data.as_ref().unwrap().clone();
+                    t.borrow_mut().push(new_task);
+                    rf_new_task.set(false);
+                }
             }
             || {}
         });

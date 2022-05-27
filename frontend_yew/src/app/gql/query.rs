@@ -7,6 +7,18 @@ mod schema {
     cynic::use_schema!("graphql/schema.graphql");
 }
 
+#[derive(Debug, cynic::Enum, Clone, Copy, PartialEq)]
+#[cynic(
+    schema_path = "graphql/schema.graphql",
+    graphql_type = "ClearanceMapping"
+)]
+pub enum ClearanceMapping {
+    Moderator,
+    Owner,
+    Subscriber,
+}
+
+// GetUserTimeline
 #[derive(cynic::FragmentArguments)]
 pub struct GetUserTimelinesArguments {
     pub user_id: i32,
@@ -23,6 +35,7 @@ pub struct GetUserTimelinesById {
     pub get_user_timelines_by_id: Vec<UserTimeline>,
 }
 
+// CreateUserTimeline
 #[derive(cynic::InputObject, cynic::FragmentArguments)]
 #[cynic(
     schema_path = "graphql/schema.graphql",
@@ -45,6 +58,31 @@ pub struct CreateUserTimeline {
     pub create_user_timeline: UserTimeline,
 }
 
+// CreateTask
+#[derive(cynic::InputObject, cynic::FragmentArguments)]
+#[cynic(
+    schema_path = "graphql/schema.graphql",
+    graphql_type = "CreateTaskInput"
+)]
+pub struct CreateTaskArguments {
+    pub timeline_id: i32,
+    pub title: String,
+    pub body: Option<String>,
+    pub end_time: Option<DateTimeUtc>,
+}
+
+#[derive(QueryFragment, Debug)]
+#[cynic(
+    schema_path = "graphql/schema.graphql",
+    graphql_type = "Mutation",
+    argument_struct = "CreateTaskArguments"
+)]
+pub struct CreateTask {
+    #[arguments(input = &args)]
+    pub create_task: Task,
+}
+
+// GetTasks
 #[derive(cynic::FragmentArguments)]
 pub struct GetTasksByIdArguments {
     pub timeline_id: i32,
@@ -69,6 +107,7 @@ pub struct UserTimeline {
     pub timeline_id: i32,
     pub title: String,
     pub color: String,
+    pub relation: ClearanceMapping,
     pub props_created_at: DateTimeUtc,
     pub props_updated_at: DateTimeUtc,
     pub timeline_created_at: DateTimeUtc,
@@ -83,7 +122,7 @@ pub struct Task {
     pub title: String,
     pub body: Option<String>,
     pub done: bool,
-    pub end_time: DateTimeUtc,
+    pub end_time: Option<DateTimeUtc>,
     pub created_at: DateTimeUtc,
     pub updated_at: DateTimeUtc,
 }
@@ -96,6 +135,7 @@ impl UserTimeline {
             timeline_id: 0,
             title: "".to_owned(),
             color: "".to_owned(),
+            relation: ClearanceMapping::Owner,
             props_created_at: chrono::offset::Utc::now(),
             props_updated_at: chrono::offset::Utc::now(),
             timeline_created_at: chrono::offset::Utc::now(),
@@ -112,14 +152,14 @@ impl Task {
             title: "".to_owned(),
             body: None,
             done: false,
-            end_time: chrono::offset::Utc::now(),
+            end_time: None,
             created_at: chrono::offset::Utc::now(),
             updated_at: chrono::offset::Utc::now(),
         }
     }
 }
 
-// Login component 
+// Login component
 // ---------------------------------
 #[derive(cynic::FragmentArguments)]
 pub struct GetUserIdArguments {
@@ -139,7 +179,7 @@ pub struct GetUserId {
 }
 // ---------------------------------
 
-// Signup component 
+// Signup component
 // ---------------------------------
 #[derive(cynic::FragmentArguments, cynic::InputObject)]
 #[cynic(schema_path = "graphql/schema.graphql")]
@@ -167,13 +207,10 @@ pub struct User {
 }
 // ---------------------------------
 
-// Account_info component 
+// Account_info component
 // ---------------------------------
 #[derive(cynic::QueryFragment, Clone, Debug)]
-#[cynic(
-    schema_path = "graphql/schema.graphql",
-    graphql_type = "UserInfo",
-)]
+#[cynic(schema_path = "graphql/schema.graphql", graphql_type = "UserInfo")]
 pub struct UserInfo {
     pub id: i32,
     pub username: String,
@@ -216,7 +253,7 @@ pub struct DeleteUser {
 #[derive(cynic::QueryFragment, Debug, Clone)]
 #[cynic(
     schema_path = "graphql/schema.graphql",
-    graphql_type = "DeleteUserResult",
+    graphql_type = "DeleteUserResult"
 )]
 pub struct DeleteUserResult {
     pub success: bool,

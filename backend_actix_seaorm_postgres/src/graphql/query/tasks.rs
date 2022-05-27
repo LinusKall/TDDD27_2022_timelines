@@ -1,7 +1,7 @@
 use async_graphql::{Context, Object, Result};
 use entity::{async_graphql, tasks};
 use sea_orm::entity::prelude::*;
-use sea_orm::{query::*, EntityTrait};
+use sea_orm::EntityTrait;
 
 use crate::db::Database;
 
@@ -18,7 +18,7 @@ impl TasksQuery {
         let db = ctx.data::<Database>().unwrap();
 
         Ok(tasks::Entity::find()
-            .having(tasks::Column::TimelineId.eq(timeline_id))
+            .filter(tasks::Column::TimelineId.eq(timeline_id))
             .all(db.get_connection())
             .await?)
     }
