@@ -1,0 +1,22 @@
+@use "list_view/list_selector" as ls;
+@use "list_view/task_list" as tl;
+@use "list_view/task_info" as ti;
+
+.list_view {
+    display: grid;
+    grid-template-areas: "#{ls.$area_name} #{tl.$area_name} #{ti.$area_name}";
+    grid-template-columns: 1fr 2fr 1fr;
+    grid-template-rows: 1fr;
+
+    .list_selector {
+        @include ls.list_selector;
+    }
+
+    .task_list {
+        @include tl.task_list;
+    }
+
+    .task_info {
+        @include ti.task_info;
+    }
+}
