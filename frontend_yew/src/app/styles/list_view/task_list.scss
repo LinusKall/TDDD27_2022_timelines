@@ -1,3 +1,5 @@
+@use "task_list/checkbox" as cb;
+
 $area_name: "task_list";
 
 @mixin task_list {
@@ -24,14 +26,33 @@ $area_name: "task_list";
         grid-area: input;
     }
 
-    .task {
+    .task_item {
         font-size: 20px;
+        display: grid;
+        grid-template-areas: "#{cb.$area_name} task_body task_delete";
+        grid-template-columns: 3em auto 4em;
+        grid-template-rows: 1fr;
+        background-color: rgb(220, 220, 220);
 
-        button {
+        .checkbox {
+            @include cb.checkbox;
+        }
+
+        .task_body {
+            grid-area: task_body;
             border: none;
             font-size: 20px;
-            width: 90%;
             padding: 15px 15px;
+            background-color: rgb(220, 220, 220);
+            cursor: pointer;
+        }
+
+        .task_delete {
+            grid-area: task_delete;
+            border: none;
+            font-size: 16px;
+            padding: 15px 15px;
+            background-color: rgb(255, 86, 35);
             cursor: pointer;
         }
 

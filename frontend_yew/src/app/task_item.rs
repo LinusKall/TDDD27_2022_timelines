@@ -6,6 +6,7 @@ use yew::prelude::*;
 pub struct Props {
     pub title: String,
     pub id: String,
+    pub done: bool,
     pub get_task_name: Callback<i32>,
     pub get_id_delete: Callback<i32>,
 }
@@ -33,22 +34,26 @@ pub fn task_item(props: &Props) -> Html {
     };
 
     html! {
-        <div class="task" styles="display: block;">
-            <input
-                type="checkbox"
-                class={"checkbox"}
-                id={props.title.clone()}
-                name={props.title.clone()}
-            />
-            <label for={props.title.clone()}></label>
+        <div class="task_item" styles="display: block;">
+
+            <label class={"checkbox"} for={format!("{}_{}", props.id, &props.title)}>
+                <input
+                    type="checkbox"
+                    class={"checkbox_input"}
+                    id={format!("{}_{}", props.id.clone(), &props.title)}
+                    name={props.title.clone()}
+                    checked={props.done}
+                />
+                <div class="checkbox_box"></div>
+            </label>
             <button
-                class={"taskbody"}
+                class={"task_body"}
                 id={props.id.clone()}
                 onclick={onclick.clone()}>
                 {props.title.clone()}
             </button>
             <button
-                class={"taskdelete"}
+                class={"task_delete"}
                 id={props.id.clone()}
                 onclick={delete_task.clone()}>
                 {"delete"}

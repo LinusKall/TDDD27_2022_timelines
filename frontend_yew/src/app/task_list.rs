@@ -173,6 +173,7 @@ pub fn task_list(props: &Props) -> Html {
                                     <TaskItem
                                         id={task.id.to_string()}
                                         title={task.title.clone()}
+                                        done={task.done}
                                         get_task_name={task_switch.clone()}
                                         get_id_delete={delete_task.clone()}
                                     />
