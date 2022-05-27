@@ -10,6 +10,7 @@ use super::Route;
 use super::UserId;
 use super::USER_ID_KEY;
 
+#[rustfmt::skip]
 #[function_component(NavigationBar)]
 pub fn navigation_bar() -> Html {
     let user_id = use_context::<UserId>().expect("No context found.");
@@ -21,7 +22,7 @@ pub fn navigation_bar() -> Html {
     let account_info_button;
     let listview_button;
 
-    #[rustfmt::skip]
+    
     match current_route {
         Route::Login       => { login_button = false; signup_button = true;  logout_button = false; account_info_button = false; listview_button = false; },
         Route::Signup      => { login_button = true;  signup_button = false; logout_button = false; account_info_button = false; listview_button = false; },
