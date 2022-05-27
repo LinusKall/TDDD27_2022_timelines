@@ -4,11 +4,13 @@ use gloo_storage::Storage;
 use std::cell::RefCell;
 use std::ops::Deref;
 use std::rc::Rc;
-use weblog::*;
 use yew::prelude::*;
 use yew::ContextProvider;
 use yew_hooks::prelude::*;
 use yew_router::prelude::*;
+
+#[allow(unused)]
+use weblog::*;
 
 use super::gql::query::*;
 use super::list_selector::*;
