@@ -1,96 +1,148 @@
 body {
     margin: 1em;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
 
-    .list_view {
+.navbar {
+    display: flex;
+    flex-direction: row-reverse;
+
+    button {
+        padding: 0.2em;
+    }
+}
+
+.login {
+    margin: auto;
+    width: fit-content;
+    display: grid;
+    justify-content: center;
+    row-gap: 0.1em;
+    grid-template-columns: 15em;
+    grid-template-rows: 1fr 1fr 1fr;
+    grid-template-areas:
+        "password"
+        "username"
+        "login-button";
+
+    input {
+        padding: 0.5em;
+
+        #username-input {
+            grid-area: username;
+        }
+
+        #password-input {
+            grid-area: password;
+        }
+    }
+
+    button {
+        padding: 0.5em;
+
+        #login-button {
+            grid-area: login-button;
+        }
+    }
+
+    p {
+        .error {
+            color: Tomato;
+        }
+    }
+}
+
+.list_view {
+    display: grid;
+    grid-template-areas:
+        "list_selector list info";
+    grid-template-columns: 1fr 2fr 1fr;
+    grid-template-rows: 1fr;
+
+    .list_selector {
+        grid-area: list_selector;
+        font-size: 20px;
         display: grid;
         grid-template-areas:
-            "list_selector list info";
-        grid-template-columns: 1fr 2fr 1fr;
-        grid-template-rows: 1fr;
+            "timeline_creator"
+            "available_timelines";
+        grid-template-columns: 1fr;
+        grid-template-rows: 30px auto;
 
-        .list_selector {
-            grid-area: list_selector;
+        input {
             font-size: 20px;
-            display: grid;
-            grid-template-areas:
-                "timeline_creator"
-                "available_timelines";
-            grid-template-columns: 1fr;
-            grid-template-rows: 30px auto;
-
-            input {
-                font-size: 20px;
-                text-align: center;
-                grid-area: timeline_creator;
-            }
-
-            .available_timelines {
-                grid-area: available_timelines;
-
-                button {
-                    display: block;
-                    border: none;
-                    font-size: 20px;
-                    width: 100%;
-                    padding: 15px 32px;
-                    cursor: pointer;
-                }
-            }
+            text-align: center;
+            grid-area: timeline_creator;
         }
 
-        .task_list {
-            grid-area: list;
-            font-size: 20px;
-            display: grid;
-            grid-template-areas:
-                "title"
-                "input"
-                "list";
-            grid-template-columns: 1fr;
-            grid-template-rows: 50px 30px auto;
+        .available_timelines {
+            grid-area: available_timelines;
 
-            h2 {
-                margin-top: 0.5rem;
-                text-align: center;
-                grid-area: title;
-                cursor: default;
+            button {
+                display: block;
+                border: none;
+                font-size: 20px;
+                width: 100%;
+                padding: 15px 32px;
+                cursor: pointer;
+            }
+        }
+    }
+
+    .task_list {
+        grid-area: list;
+        font-size: 20px;
+        display: grid;
+        grid-template-areas:
+            "title"
+            "input"
+            "list";
+        grid-template-columns: 1fr;
+        grid-template-rows: 50px 30px auto;
+
+        h2 {
+            margin-top: 0.5rem;
+            text-align: center;
+            grid-area: title;
+            cursor: default;
+        }
+
+        input {
+            font-size: 20px;
+            text-align: center;
+            grid-area: input;
+        }
+
+        .task {
+            font-size: 20px;
+
+            button {
+                border: none;
+                font-size: 20px;
+                width: 90%;
+                padding: 15px 15px;
+                cursor: pointer;
             }
 
             input {
-                font-size: 20px;
-                text-align: center;
-                grid-area: input;
-            }
-
-            .task {
-                font-size: 20px;
-
-                button {
-                    border: none;
-                    font-size: 20px;
-                    width: 90%;
-                    padding: 15px 15px;
-                    cursor: pointer;
-                }
-
-                input {
-                    cursor: pointer;
-                }
+                cursor: pointer;
             }
         }
+    }
 
-        .task_info {
-            grid-area: info;
-            grid-template-areas:
-                "title";
-            grid-template-columns: 1fr;
-            grid-template-rows: 50px;
+    .task_info {
+        grid-area: info;
+        grid-template-areas:
+            "title";
+        grid-template-columns: 1fr;
+        grid-template-rows: 50px;
 
-            h2 {
-                grid-area: title;
-                text-align: center;
-                cursor: default;
-            }
+        h2 {
+            grid-area: title;
+            text-align: center;
+            cursor: default;
         }
     }
 }
