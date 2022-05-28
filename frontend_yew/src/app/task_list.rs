@@ -23,7 +23,13 @@ pub fn task_list(props: &Props) -> Html {
     let rf_new_task = use_state(|| false);
     let task_title = use_state(|| "".to_owned());
     let tlid = use_state_eq(|| -1);
-    let task_id = use_state(|| 0);
+    let task_id = use_state(|| -1);
+    let input = use_state(|| UpdateTaskInput {
+        title: None,
+        body: None,
+        done: None,
+        end_time: None,
+    });
 
     let tasks = {
         let id = timeline_context.as_ref().unwrap().clone().timeline_id;
@@ -86,6 +92,26 @@ pub fn task_list(props: &Props) -> Html {
         })
     };
 
+    let update_task = {
+        let task_id = task_id.clone();
+        let input = input.clone();
+        let rf_first = rf_first.clone();
+        use_async(async move {
+            let operation = UpdateTask::build(UpdateTaskArguments { task_id: *task_id, input: input.deref().clone() });
+            let data = surf::post(format!("{}/api/graphql", crate::app::LOCALHOST))
+                .run_graphql(operation)
+                .await
+                .expect("Could not create User Timeline")
+                .data;
+
+            if let Some(t) = data {
+                rf_first.set(true);
+                return Ok(t.update_task);
+            }
+            Err("Could not create User Timeline.")
+        })
+    };
+
     let onkeypress = {
         let new_task = new_task.clone();
         let task_title = task_title.clone();
@@ -133,6 +159,22 @@ pub fn task_list(props: &Props) -> Html {
         })
     };
 
+    let task_done = {
+        let input = input.clone();
+        let task_id = task_id.clone();
+        let update_task = update_task.clone();
+        Callback::from(move |(id, done): (i32, bool)| {
+            task_id.set(id);
+            let update = UpdateTaskInput { 
+                title: None, 
+                body: None, 
+                done:Some(done), 
+                end_time: None };
+            input.set(update);
+            update_task.run();
+        })
+    };
+
     {
         let tasks = tasks.clone();
         let timeline_id = timeline_context.as_ref().unwrap().clone().timeline_id;
@@ -171,11 +213,12 @@ pub fn task_list(props: &Props) -> Html {
                             for tasks.borrow().iter().map(|task|
                                 html! {
                                     <TaskItem
-                                        id={task.id.to_string()}
+                                        id={task.id}
                                         title={task.title.clone()}
                                         done={task.done}
                                         get_task_name={task_switch.clone()}
                                         get_id_delete={delete_task.clone()}
+                                        get_task_done={task_done.clone()}
                                     />
                                 }
                             )

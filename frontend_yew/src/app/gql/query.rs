@@ -154,6 +154,37 @@ pub struct DeleteUserTimelineResult {
     pub timeline_rows_affected: Option<i32>,
 }
 
+//UpdateTask
+#[derive(cynic::InputObject, cynic::FragmentArguments, Clone)]
+#[cynic(
+    schema_path = "graphql/schema.graphql",
+    graphql_type = "UpdateTaskInput"
+)]
+pub struct UpdateTaskInput {
+    pub title: Option<String>,
+    pub body: Option<String>,
+    pub done: Option<bool>,
+    pub end_time: Option<DateTimeUtc>,
+}
+
+#[derive(cynic::FragmentArguments)]
+pub struct UpdateTaskArguments {
+    pub task_id: i32,
+    pub input: UpdateTaskInput,
+}
+
+#[derive(QueryFragment, Debug)]
+#[cynic(
+    schema_path = "graphql/schema.graphql",
+    graphql_type = "Mutation",
+    argument_struct = "UpdateTaskArguments"
+)]
+pub struct UpdateTask {
+    #[arguments(task_id = &args.task_id, input = &args.input)]
+    pub update_task: Task,
+}
+
+// UserTimeline
 #[derive(Debug, QueryFragment, Clone, PartialEq)]
 #[cynic(schema_path = "graphql/schema.graphql", graphql_type = "UserTimeline")]
 pub struct UserTimeline {
