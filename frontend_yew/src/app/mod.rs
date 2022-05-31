@@ -51,10 +51,12 @@ pub fn app() -> Html {
 
     let set_user_id = {
         let context = ctx.clone();
-        Callback::from(move |id: i32| {
+        Callback::from(move |(id, remain_signed_in): (i32, bool)| {
             let user_id = (*context).clone();
             *user_id.borrow_mut() = Some(id);
-            LocalStorage::set(USER_ID_KEY, id).unwrap();
+            if remain_signed_in {
+                LocalStorage::set(USER_ID_KEY, id).unwrap();
+            }
             context.set(user_id);
         })
     };
