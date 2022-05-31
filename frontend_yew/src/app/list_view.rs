@@ -30,14 +30,16 @@ pub fn list_view() -> Html {
     let props_id = use_state(|| -1);
     // LocalStorage::delete("timelines_user_id");
 
-    *user_id.borrow_mut() = match LocalStorage::get("timelines_user_id") {
-        Ok(uid) => uid,
-        _ => {
-            return html! {
-                <Redirect<Route> to={Route::Login} />
+    if user_id.borrow().is_none() {
+        *user_id.borrow_mut() = match LocalStorage::get("timelines_user_id") {
+            Ok(uid) => uid,
+            _ => {
+                return html! {
+                    <Redirect<Route> to={Route::Login} />
+                }
             }
-        }
-    };
+        };
+    }
 
     let usertimelines = {
         let user_id = user_id.clone();
