@@ -61,6 +61,7 @@ type Mutation {
   deleteTimeline(id: Int!): DeleteTimelineResult!
   createUserTimeline(input: CreateUserTimelineInput!): UserTimeline!
   deleteUserTimeline(propsId: Int!): DeleteUserTimelineResult!
+  updateUserTimeline(input: UpdateUserTimelineInput!): UserTimeline!
   createTask(input: CreateTaskInput!): Task!
   deleteTask(taskId: Int!): DeleteTaskResult!
   updateTask(taskId: Int!, input: UpdateTaskInput!): Task!
@@ -116,6 +117,14 @@ input UpdateTaskInput {
   body: String
   done: Boolean
   endTime: DateTime
+}
+
+input UpdateUserTimelineInput {
+  propsId: Int!
+  timelineId: Int!
+  title: String
+  color: String
+  relation: ClearanceMapping
 }
 
 type User {
