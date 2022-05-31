@@ -54,7 +54,7 @@ pub fn signup(props: &Properties) -> Html {
                 set_user_id.emit((create_user.id, *remain_signed_in));
                 return Ok(create_user.id);
             }
-            Err("The username or email is already in use.")
+            Err("The username or email is taken.")
         })
     };
 
@@ -116,25 +116,22 @@ pub fn signup(props: &Properties) -> Html {
     }
 
     html! {
-        <>
-            <div>
-                <input oninput={username_input} placeholder="Username" ref={node_ref}/>
-            </div>
-            <div>
-                <input oninput={password_input} type="password" placeholder="Password"/>
-            </div>
-            <div>
-                <input oninput={email_input} type="email" id="email" placeholder="Email"/>
-            </div>
+        <div class="signup">
+            <input id="username-input" oninput={username_input} placeholder="Username" ref={node_ref}/>
+            <input id="password-input" oninput={password_input} type="password" placeholder="Password"/>
+            <input id="email-input" oninput={email_input} type="email" placeholder="Email"/>
             <form>
                 <input type="checkbox" checked={*remain_signed_in} onchange={checkbox_input}/>
-                <label>{"Remain signed in (will use a cookie)"}</label>
+                <label>
+                    <p>{"Remain signed in"}</p>
+                    <p>{"(will use a cookie)"}</p>
+                </label>
             </form>
             {
                 if username.len()<4 || password.len()<8 || !*valid_email {
-                    html! {<button disabled=true>{"Create account"}</button>}
+                    html! {<button id="create-account-button" disabled=true>{"Create account"}</button>}
                 } else {
-                    html! {<button onclick={signup_button}>{"Create account"}</button>}
+                    html! {<button id="create-account-button" onclick={signup_button}>{"Create account"}</button>}
                 }
             }
 
@@ -145,6 +142,6 @@ pub fn signup(props: &Properties) -> Html {
                     html! {}
                 }
             }
-        </>
+        </div>
     }
 }
