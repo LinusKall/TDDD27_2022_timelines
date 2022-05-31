@@ -1,0 +1,62 @@
+.signup {
+    margin: auto;
+    width: fit-content;
+    display: grid;
+    justify-content: center;
+    row-gap: 0.2em;
+    grid-template-columns: 15em;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-areas:
+        "password"
+        "username"
+        "email"
+        "remain-signed-in"
+        "create-account-button";
+
+    input {
+        padding: 0.5em;
+
+        #username-input {
+            grid-area: username;
+        }
+
+        #password-input {
+            grid-area: password;
+        }
+
+        #email-input {
+            grid-area: email;
+        }
+    }
+
+    button {
+        padding: 0.5em;
+
+        #login-button {
+            grid-area: login-button;
+        }
+    }
+
+    form {
+        display: flex;
+        justify-content: left;
+        align-items: center;
+        flex-direction: row;    
+
+        input {
+            margin: auto 1em;
+        }
+
+        label {
+            p {
+                margin: 0;
+            }
+        }
+    }
+
+    .error {
+        color: Tomato;
+        margin-top: 0.1em;
+        margin-bottom: 0.1em;
+    }
+}
