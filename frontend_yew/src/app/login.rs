@@ -127,7 +127,10 @@ pub fn login(props: &Properties) -> Html {
             <input id="password-input" oninput={password_input} onkeypress={enter_input} ref={password_ref} type="password" placeholder="Password"/>
             <form>
                 <input type="checkbox" checked={*remain_signed_in} onchange={checkbox_input}/>
-                <label>{" Remain signed in (will use cookie)"}</label>
+                <label>
+                    <p>{"Remain signed in"}</p>
+                    <p>{"(will use a cookie)"}</p>
+                </label>
             </form>
             <button id="login-button" onclick={
                 login_click
@@ -137,7 +140,12 @@ pub fn login(props: &Properties) -> Html {
             }>{"Log in"}</button>
             {
                 if user_id_request.error.is_some() {
-                    html! {<p class="error">{"Wrong username or password. Try again."}</p>}
+                    html! {
+                        <>
+                            <p class="error">{"Wrong username or password."}</p>
+                            <p class="error">{"Try again."}</p>
+                        </>
+                    }
                 } else {
                     html! {}
                 }

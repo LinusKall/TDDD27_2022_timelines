@@ -128,7 +128,7 @@ pub fn signup(props: &Properties) -> Html {
             </div>
             <form>
                 <input type="checkbox" checked={*remain_signed_in} onchange={checkbox_input}/>
-                <label>{" Remain signed in (will use cookie)"}</label>
+                <label>{"Remain signed in (will use a cookie)"}</label>
             </form>
             {
                 if username.len()<4 || password.len()<8 || !*valid_email {
