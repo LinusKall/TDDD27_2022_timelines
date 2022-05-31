@@ -128,8 +128,8 @@ pub fn account_info() -> Html {
                     if let Some(data) = &user_info.data {
                         html! {
                             <>
-                                <p>{format!("Username: {}", data.username)}</p>
-                                <p>{format!("Email: {}", data.email)}</p>
+                                <p><b>{"Username: "}</b>{format!("{}", data.username)}</p>
+                                <p><b>{"Email: "}</b>{format!("{}", data.email)}</p>
                             </>
                         }
                     } else {
