@@ -6,6 +6,7 @@ use yew::functional::*;
 use yew::prelude::*;
 use yew_hooks::prelude::*;
 use yew_router::prelude::*;
+use wasm_bindgen::JsCast;
 
 use super::Route;
 use super::UserId;
@@ -13,7 +14,7 @@ use super::gql::query::*;
 
 #[derive(Properties, PartialEq, Clone)]
 pub struct Properties {
-    pub set_user_id: Callback<i32>,
+    pub set_user_id: Callback<(i32, bool)>,
 }
 
 #[function_component(Signup)]
@@ -24,6 +25,7 @@ pub fn signup(props: &Properties) -> Html {
     let valid_email = use_state(bool::default);
     let validate = Regex::new(r"^[^ ]+@[^ ]+\.[a-ö]{2,6}$").unwrap();
     let user_id = use_context::<UserId>().expect("No context found.");
+    let remain_signed_in = use_state(bool::default);
     let node_ref = use_node_ref();
 
     if let Some(_) = *user_id.borrow() {
@@ -35,6 +37,7 @@ pub fn signup(props: &Properties) -> Html {
         let username = (*username).to_owned();
         let email = (*email).to_owned();
         let hashed_password = (*password).to_owned();
+        let remain_signed_in = remain_signed_in.clone();
         let operation = CreateUser::build(CreateUserInput {
             username,
             email,
@@ -48,7 +51,7 @@ pub fn signup(props: &Properties) -> Html {
             .data;
 
             if let Some(CreateUser { create_user }) = data {
-                set_user_id.emit(create_user.id);
+                set_user_id.emit((create_user.id, *remain_signed_in));
                 return Ok(create_user.id);
             }
             Err("The username or email is already in use.")
@@ -92,6 +95,18 @@ pub fn signup(props: &Properties) -> Html {
         })
     };
 
+    let checkbox_input = {
+        let remain_signed_in = remain_signed_in.clone();
+        Callback::from(move |event: Event| {
+            let checked = event
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .checked();
+            remain_signed_in.set(checked);
+        })
+    };
+
     {
         let node_ref = node_ref.clone();     
         use_effect_once(move || {
@@ -111,6 +126,10 @@ pub fn signup(props: &Properties) -> Html {
             <div>
                 <input oninput={email_input} type="email" id="email" placeholder="Email"/>
             </div>
+            <form>
+                <input type="checkbox" checked={*remain_signed_in} onchange={checkbox_input}/>
+                <label>{" Remain signed in (will use cookie)"}</label>
+            </form>
             {
                 if username.len()<4 || password.len()<8 || !*valid_email {
                     html! {<button disabled=true>{"Create account"}</button>}
