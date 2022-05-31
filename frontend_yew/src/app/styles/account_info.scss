@@ -1,0 +1,43 @@
+.account-info {
+    margin: auto;
+    width: fit-content;
+    display: grid;
+    justify-content: center;
+    row-gap: 0.2em;
+    grid-template-columns: 40em;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-areas:
+        "title"
+        "user-info"
+        "button"
+        "password";
+        
+    h2 {
+        padding: 0.5em;
+        text-align: center;
+        grid-area: title;
+    }
+
+    .user_info {
+        padding: 0.5em;
+        grid-area: user-info;
+    }
+    
+    button {
+        padding: 0.5em;
+        font-size: 16px;
+        grid-area: button;
+    }
+    
+    input {
+        padding: 0.5em;
+        width: 97.5%;
+        grid-area: password;
+    }
+
+    .error {
+        color: Tomato;
+        margin-top: 0.1em;
+        margin-bottom: 0.1em;
+    }
+}
