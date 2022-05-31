@@ -1,8 +1,27 @@
 .navbar {
-    display: flex;
-    flex-direction: row-reverse;
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: 1fr;
+    grid-template-areas:
+        "page-name buttons";
 
-    button {
-        padding: 0.2em;
+    .page-name {
+        display: flex;
+        align-items: center;
+        justify-items: left;
+        width: fit-content;
+        grid-area: page-name;
+    }
+
+    .buttons {
+        display: flex;
+        flex-direction: row-reverse;
+        align-items: center;
+        grid-area: buttons;
+
+        button {
+            padding: 0.2em;
+            flex: 1;
+        }
     }
 }
