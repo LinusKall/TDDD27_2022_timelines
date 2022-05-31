@@ -5,6 +5,7 @@ use yew::functional::*;
 use yew::prelude::*;
 use yew_hooks::prelude::*;
 use yew_router::prelude::*;
+use wasm_bindgen::JsCast;
 use weblog::*;
 
 use super::Route;
@@ -13,7 +14,7 @@ use super::gql::query::*;
 
 #[derive(Properties, PartialEq)]
 pub struct Properties {
-    pub set_user_id: Callback<i32>,
+    pub set_user_id: Callback<(i32, bool)>,
 }
 
 #[function_component(Login)]
@@ -22,6 +23,7 @@ pub fn login(props: &Properties) -> Html {
     let password = use_state(|| String::new());
     let user_id = use_context::<UserId>().expect("No context found.");
     let clear_input = use_state(|| bool::default());
+    let remain_signed_in = use_state(bool::default);
     let username_ref = use_node_ref();
     let password_ref = use_node_ref();
     
@@ -33,6 +35,7 @@ pub fn login(props: &Properties) -> Html {
         let set_user_id = props.set_user_id.clone();
         let username = (*username).to_owned();
         let password = (*password).to_owned();
+        let remain_signed_in = remain_signed_in.clone();
         let operation = GetUserId::build(GetUserIdArguments { username, password });
         use_async(async move {
             let data = surf::post(format!("{}/api/graphql", crate::app::LOCALHOST))
@@ -42,7 +45,7 @@ pub fn login(props: &Properties) -> Html {
                 .data
                 .unwrap();
             if let Some(id) = data.get_user_id {
-                set_user_id.emit(id);
+                set_user_id.emit((id, *remain_signed_in));
                 return Ok(id);
             }
             Err("Could not fetch user ID.")
@@ -87,6 +90,18 @@ pub fn login(props: &Properties) -> Html {
         })
     };
 
+    let checkbox_input = {
+        let remain_signed_in = remain_signed_in.clone();
+        Callback::from(move |event: Event| {
+            let checked = event
+                .target()
+                .unwrap()
+                .unchecked_into::<HtmlInputElement>()
+                .checked();
+            remain_signed_in.set(checked);
+        })
+    };
+
     let first_render = use_state(|| true);
     {
         let first_render = first_render.clone();
@@ -110,6 +125,10 @@ pub fn login(props: &Properties) -> Html {
         <div class="login">
             <input id="username-input" oninput={username_input} onkeypress={enter_input.clone()} ref={username_ref} placeholder="Username"/>
             <input id="password-input" oninput={password_input} onkeypress={enter_input} ref={password_ref} type="password" placeholder="Password"/>
+            <form>
+                <input type="checkbox" checked={*remain_signed_in} onchange={checkbox_input}/>
+                <label>{" Remain signed in (will use cookie)"}</label>
+            </form>
             <button id="login-button" onclick={
                 login_click
             } disabled={
