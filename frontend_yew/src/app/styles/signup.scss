@@ -45,6 +45,10 @@
 
         input {
             margin: auto 1em;
+
+            #remain-signed-in {
+                grid-area: remain-signed-in;
+            }
         }
 
         label {
