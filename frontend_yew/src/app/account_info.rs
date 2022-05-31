@@ -44,18 +44,6 @@ pub fn account_info() -> Html {
         })
     };
 
-    // {
-    //     let user_info = user_info.clone();
-    //     let first_render = first_render.clone();
-    //     use_effect(move || {
-    //         if *first_render {
-    //             user_info.run();
-    //             first_render.set(false);
-    //         }
-    //         || {}
-    //     });
-    // }
-
     let delete_ready = use_state(bool::default);
     let onclick_delete_ready = {
         let delete_ready = delete_ready.clone();
@@ -133,9 +121,9 @@ pub fn account_info() -> Html {
     }
 
     html! {
-        <>
+        <div class="account-info">
             <h2>{"Account Information"}</h2>
-            <div>
+            <div class="user-info">
                 {
                     if let Some(data) = &user_info.data {
                         html! {
@@ -164,9 +152,9 @@ pub fn account_info() -> Html {
                     <input {oninput} type="password" placeholder="Password" ref={node_ref}/>
                 }
                 if *incorrect_password {
-                    <p style={"color:Tomato;"}>{"Wrong password. Try again."}</p>
+                    <p class="error">{"Wrong password. Try again."}</p>
                 }
             </div>
-        </>
+        </div>
     }
 }
