@@ -2,7 +2,6 @@ use cynic::{impl_scalar, QueryFragment};
 
 type DateTimeUtc = chrono::DateTime<chrono::Utc>;
 impl_scalar!(DateTimeUtc, schema::DateTime);
-
 mod schema {
     cynic::use_schema!("graphql/schema.graphql");
 }
