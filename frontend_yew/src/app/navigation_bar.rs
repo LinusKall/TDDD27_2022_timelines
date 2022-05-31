@@ -49,6 +49,10 @@ pub fn navigation_bar() -> Html {
 
     html! {
         <div class="navbar">
+            <div class="page-name">
+                <h1>{"TIMELINES"}</h1>
+            </div>
+            <div class="buttons">
             {
                 match login_button {
                     true => html! {
@@ -99,6 +103,7 @@ pub fn navigation_bar() -> Html {
                     false => html! {},
                 }
             }
+            </div>
         </div>
     }
 }
