@@ -126,7 +126,7 @@ pub fn login(props: &Properties) -> Html {
             <input id="username-input" oninput={username_input} onkeypress={enter_input.clone()} ref={username_ref} placeholder="Username"/>
             <input id="password-input" oninput={password_input} onkeypress={enter_input} ref={password_ref} type="password" placeholder="Password"/>
             <form>
-                <input type="checkbox" checked={*remain_signed_in} onchange={checkbox_input}/>
+                <input id="remain-signed-in" type="checkbox" checked={*remain_signed_in} onchange={checkbox_input}/>
                 <label>
                     <p>{"Remain signed in"}</p>
                     <p>{"(will use a cookie)"}</p>

@@ -121,7 +121,7 @@ pub fn signup(props: &Properties) -> Html {
             <input id="password-input" oninput={password_input} type="password" placeholder="Password"/>
             <input id="email-input" oninput={email_input} type="email" placeholder="Email"/>
             <form>
-                <input type="checkbox" checked={*remain_signed_in} onchange={checkbox_input}/>
+                <input id="remain-signed-in" type="checkbox" checked={*remain_signed_in} onchange={checkbox_input}/>
                 <label>
                     <p>{"Remain signed in"}</p>
                     <p>{"(will use a cookie)"}</p>
