@@ -22,14 +22,6 @@ pub fn task_info() -> Html {
         done: None,
         end_time: None,
     });
-    console_log!(format!(
-        "{}",
-        task_context
-            .clone()
-            .unwrap_or(Task::default())
-            .body
-            .unwrap_or("".to_owned())
-    ));
     let body_input = use_state(|| {
         task_context
             .clone()
