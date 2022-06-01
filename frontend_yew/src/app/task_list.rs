@@ -97,7 +97,10 @@ pub fn task_list(props: &Props) -> Html {
         let input = input.clone();
         let rf_first = rf_first.clone();
         use_async(async move {
-            let operation = UpdateTask::build(UpdateTaskArguments { task_id: *task_id, input: input.deref().clone() });
+            let operation = UpdateTask::build(UpdateTaskArguments {
+                task_id: *task_id,
+                input: input.deref().clone(),
+            });
             let data = surf::post(format!("{}/api/graphql", crate::app::LOCALHOST))
                 .run_graphql(operation)
                 .await
@@ -123,9 +126,7 @@ pub fn task_list(props: &Props) -> Html {
                     input.set_value("");
                     task_title.set(value);
                     new_task.run();
-                } else {
                 }
-            } else {
             }
         })
     };
@@ -165,11 +166,12 @@ pub fn task_list(props: &Props) -> Html {
         let update_task = update_task.clone();
         Callback::from(move |(id, done): (i32, bool)| {
             task_id.set(id);
-            let update = UpdateTaskInput { 
-                title: None, 
-                body: None, 
-                done:Some(done), 
-                end_time: None };
+            let update = UpdateTaskInput {
+                title: None,
+                body: None,
+                done: Some(done),
+                end_time: None,
+            };
             input.set(update);
             update_task.run();
         })
