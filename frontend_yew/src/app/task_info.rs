@@ -22,6 +22,22 @@ pub fn task_info() -> Html {
         done: None,
         end_time: None,
     });
+    console_log!(format!(
+        "{}",
+        task_context
+            .clone()
+            .unwrap_or(Task::default())
+            .body
+            .unwrap_or("".to_owned())
+    ));
+    let body_input = use_state(|| {
+        task_context
+            .clone()
+            .unwrap_or(Task::default())
+            .body
+            .unwrap_or("".to_owned())
+            .is_empty()
+    });
 
     let update_task = {
         let task_id = task_context.clone().unwrap_or(Task::default()).id;
@@ -69,29 +85,86 @@ pub fn task_info() -> Html {
         })
     };
 
+    let update_body = {
+        let body_input = body_input.clone();
+        let input = input.clone();
+        let update_task = update_task.clone();
+        Callback::from(move |k: KeyboardEvent| {
+            if k.key() == "Enter" {
+                let target: HtmlInputElement = k.target_unchecked_into();
+                if target.value() != "" {
+                    let value = target.value();
+                    let update = UpdateTaskInput {
+                        title: None,
+                        body: Some(value),
+                        done: None,
+                        end_time: None,
+                    };
+                    input.set(update);
+                    update_task.run();
+                    body_input.set(false);
+                }
+            }
+        })
+    };
+
+    let ondblclick = {
+        let body_input = body_input.clone();
+        Callback::from(move |_: MouseEvent| {
+            body_input.set(true);
+        })
+    };
+
     {
         let switched = switched.clone();
         let datetime = datetime.clone();
         let task_context = task_context.clone();
+        let body_input = body_input.clone();
         use_effect(move || {
             if *switched != task_context.clone().unwrap_or(Task::default()).id {
                 datetime.set(task_context.clone().unwrap_or(Task::default()).end_time);
                 switched.set(task_context.clone().unwrap_or(Task::default()).id);
+                body_input.set(
+                    task_context
+                        .clone()
+                        .unwrap_or(Task::default())
+                        .body
+                        .unwrap_or("".to_owned())
+                        .is_empty(),
+                )
             }
             || {}
         })
     }
 
-    let ondblclick = { Callback::from(|_: MouseEvent| {}) };
     html! {
         <div class="task-info">
             {
                 if task_context.clone().unwrap_or(Task::default()).id != 0 {
                     html! {
                         <>
-                            <h2 {ondblclick}>{task_context.clone().unwrap_or(Task::default()).title}</h2>
-                            <p>{"Description: "}</p>
-                            <input name={"body"} value={task_context.clone().unwrap_or(Task::default()).body.unwrap_or("".to_owned())}/>
+                            <h2>{task_context.clone().unwrap_or(Task::default()).title}</h2>
+                            {
+                                if *body_input {
+                                    html! {
+                                        <>
+                                            <p>{"Description: "}</p>
+                                            <input
+                                                name={"body"}
+                                                placeholder="Enter a description"
+                                                onkeypress={update_body}
+                                            />
+                                        </>
+                                    }
+                                } else {
+                                    html! {
+                                        <>
+                                            <p>{"Description: "}</p>
+                                            <p {ondblclick}>{task_context.clone().unwrap_or(Task::default()).body.unwrap_or("".to_owned())}</p>
+                                        </>
+                                    }
+                                }
+                            }
                         {
                             if let Some(datetime) = datetime.deref().clone() {
                                 let datetime = datetime + *timezone;

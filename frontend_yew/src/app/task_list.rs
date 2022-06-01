@@ -126,9 +126,7 @@ pub fn task_list(props: &Props) -> Html {
                     input.set_value("");
                     task_title.set(value);
                     new_task.run();
-                } else {
                 }
-            } else {
             }
         })
     };
