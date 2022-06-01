@@ -6,16 +6,18 @@ use web_sys::HtmlInputElement as InputElement;
 use yew::prelude::*;
 
 use super::gql::query::*;
+use super::timeline_item::TimelineItem;
 
 #[derive(Debug, Clone, Properties, PartialEq)]
 pub struct Props {
     pub current_timeline: Callback<i32>,
     pub added_timeline: Callback<String>,
     pub get_id_delete: Callback<i32>,
+    pub get_timeline_color: Callback<(i32, i32, String)>,
 }
 
-#[function_component(ListSelector)]
-pub fn list_selector(props: &Props) -> Html {
+#[function_component(TimelineList)]
+pub fn timeline_list(props: &Props) -> Html {
     let timelines_context = use_context::<Rc<RefCell<Vec<UserTimeline>>>>();
 
     let onkeypress = {
@@ -32,23 +34,17 @@ pub fn list_selector(props: &Props) -> Html {
         })
     };
 
-    let onclick = {
+    let update_current_timeline = {
         let current_timeline = props.current_timeline.clone();
-        Callback::from(move |e: MouseEvent| {
-            let target = e.target().unwrap();
-            let input = target.unchecked_into::<HtmlButtonElement>();
-            let value = input.id();
-            current_timeline.emit(value.trim().parse::<i32>().unwrap());
+        Callback::from(move |timeline_id| {
+            current_timeline.emit(timeline_id);
         })
     };
 
     let delete_timeline = {
-        let get_id_delete = props.get_id_delete.clone();
-        Callback::from(move |e: MouseEvent| {
-            let target = e.target().unwrap();
-            let input = target.unchecked_into::<HtmlButtonElement>();
-            let value = input.id();
-            get_id_delete.emit(value.trim().parse::<i32>().unwrap());
+        let delete_timeline = props.get_id_delete.clone();
+        Callback::from(move |timeline_id| {
+            delete_timeline.emit(timeline_id);
         })
     };
 
@@ -67,20 +63,14 @@ pub fn list_selector(props: &Props) -> Html {
                         .borrow()
                         .iter()
                         .map(|timeline| html! {
-                            <>
-                                <button
-                                    class={"timelinebody"}
-                                    onclick={onclick.clone()}
-                                    id={timeline.timeline_id.clone().to_string()}>
-                                    {&timeline.title}
-                                </button>
-                                <button
-                                    class={"timelinedelete"}
-                                    onclick={delete_timeline.clone()}
-                                    id={timeline.props_id.clone().to_string()}
-                                >{"delete"}
-                                </button>
-                            </>
+                            <TimelineItem
+                                props_id={timeline.props_id}
+                                timeline_id={timeline.timeline_id} 
+                                title={timeline.title.to_owned()}
+                                color={timeline.color.to_owned()}
+                                get_current_timeline={update_current_timeline.clone()}
+                                get_id_delete={delete_timeline.clone()}
+                                get_timeline_color={props.get_timeline_color.clone()}/>
                         })
                 }
             </div>
