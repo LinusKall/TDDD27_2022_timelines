@@ -12,4 +12,20 @@ $area_name: "task_info";
         text-align: center;
         cursor: default;
     }
+
+    .task_body_input {
+        width: 100%;
+        overflow-wrap: anywhere;
+        overflow: hidden;
+        resize: none;
+        padding: 0.2em;
+    }
+
+    .task_body {
+        width: 100%;
+        overflow-wrap: anywhere;
+        white-space: break-spaces;
+        padding: 0.2em;
+        cursor: pointer;
+    }
 }

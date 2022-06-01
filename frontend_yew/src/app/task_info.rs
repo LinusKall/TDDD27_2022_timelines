@@ -5,6 +5,7 @@ use std::cell::RefCell;
 use std::ops::Deref;
 use std::rc::Rc;
 use wasm_bindgen::JsCast;
+use web_sys::HtmlElement;
 use web_sys::HtmlInputElement;
 use weblog::*;
 use yew::prelude::*;
@@ -24,6 +25,7 @@ pub fn task_info(props: &Properties) -> Html {
     let timezone = use_state(|| *Local::now().offset());
     let switched_task = use_state(|| 0);
     let switched_timeline = use_state(|| 0);
+    let body_ref = use_node_ref();
     let updated = use_state(|| false);
     let input = use_state(|| UpdateTaskInput {
         title: None,
@@ -46,6 +48,7 @@ pub fn task_info(props: &Properties) -> Html {
         let task_id = task_context.clone().unwrap().borrow().id;
         let input = input.clone();
         let updated = updated.clone();
+        let current_task = task_context.clone();
         use_async(async move {
             let operation = UpdateTask::build(UpdateTaskArguments {
                 task_id,
@@ -58,6 +61,7 @@ pub fn task_info(props: &Properties) -> Html {
                 .data;
 
             if let Some(t) = data {
+                *current_task.unwrap().borrow_mut() = t.update_task.clone();
                 updated.set(true);
                 return Ok(Rc::new(RefCell::new(t.update_task)));
             }
@@ -95,20 +99,17 @@ pub fn task_info(props: &Properties) -> Html {
         let input = input.clone();
         let update_task = update_task.clone();
         Callback::from(move |k: KeyboardEvent| {
-            if k.key() == "Enter" {
-                let target: HtmlInputElement = k.target_unchecked_into();
-                if target.value() != "" {
-                    let value = target.value();
-                    let update = UpdateTaskInput {
-                        title: None,
-                        body: Some(value),
-                        done: None,
-                        end_time: None,
-                    };
-                    input.set(update);
-                    update_task.run();
-                    body_input.set(false);
-                }
+            let value = k.target_unchecked_into::<HtmlInputElement>().value();
+            if k.shift_key() && k.key() == "Enter" && !value.is_empty() {
+                let update = UpdateTaskInput {
+                    title: None,
+                    body: Some(value),
+                    done: None,
+                    end_time: None,
+                };
+                input.set(update);
+                update_task.run();
+                body_input.set(false);
             }
         })
     };
@@ -120,6 +121,18 @@ pub fn task_info(props: &Properties) -> Html {
         })
     };
 
+    let resize = {
+        let body_ref = body_ref.clone();
+        Callback::from(move |_e: InputEvent| {
+            // let elem = e.target_unchecked_into::<HtmlInputElement>();
+            let elem = body_ref.cast::<HtmlInputElement>().unwrap();
+            elem.style().set_property("height", "0").unwrap();
+            elem.style()
+                .set_property("height", &format!("{}px", elem.scroll_height()))
+                .unwrap();
+        })
+    };
+
     {
         let switched_task = switched_task.clone();
         let updated = updated.clone();
@@ -128,8 +141,11 @@ pub fn task_info(props: &Properties) -> Html {
         let task_context = task_context.clone();
         let body_input = body_input.clone();
         let highlighted_task_update = props.highlighted_task_update.clone();
+        let body_ref = body_ref.clone();
         use_effect(move || {
-            if *switched_task != task_context.clone().unwrap().borrow().id || *switched_timeline != task_context.clone().unwrap().borrow().timeline_id {
+            if *switched_task != task_context.clone().unwrap().borrow().id
+                || *switched_timeline != task_context.clone().unwrap().borrow().timeline_id
+            {
                 datetime.set(task_context.clone().unwrap().borrow().end_time);
                 switched_task.set(task_context.clone().unwrap().borrow().id);
                 switched_timeline.set(task_context.clone().unwrap().borrow().timeline_id);
@@ -145,18 +161,27 @@ pub fn task_info(props: &Properties) -> Html {
                         .is_empty(),
                 )
             }
+
             if *updated {
                 if let Some(task) = &update_task.data {
                     highlighted_task_update.emit((*task).clone());
                     updated.set(false);
                 }
             }
+
+            if let Some(elem) = body_ref.cast::<HtmlInputElement>() {
+                elem.style().set_property("height", "0").unwrap();
+                elem.style()
+                    .set_property("height", &format!("{}px", elem.scroll_height()))
+                    .unwrap();
+            }
+
             || {}
         })
     }
 
     html! {
-        <div class="task-info">
+        <div class="task_info">
             {
                 if task_context.clone().unwrap().borrow().id != 0 {
                     html! {
@@ -166,10 +191,14 @@ pub fn task_info(props: &Properties) -> Html {
                                 if *body_input {
                                     html! {
                                         <>
-                                            <p>{"Description: "}</p>
-                                            <input
+                                            <p><b>{"Description: "}</b></p>
+                                            <textarea
                                                 name={"body"}
-                                                placeholder="Enter a description"
+                                                class="task_body_input"
+                                                ref={body_ref.clone()}
+                                                oninput={resize.clone()}
+                                                value={task_context.clone().unwrap().borrow().body.clone().unwrap_or("".to_owned())}
+                                                placeholder="Describe your task! (Shift+Enter to finish)"
                                                 onkeypress={update_body}
                                             />
                                         </>
@@ -177,8 +206,12 @@ pub fn task_info(props: &Properties) -> Html {
                                 } else {
                                     html! {
                                         <>
-                                            <p>{"Description: "}</p>
-                                            <p {ondblclick}>{task_context.clone().unwrap().borrow().body.as_ref().unwrap_or(&"".to_owned())}</p>
+                                            <p><b>{"Description (Double click to edit): "}</b></p>
+                                            <p
+                                                class="task_body"
+                                                {ondblclick}>
+                                                {task_context.clone().unwrap().borrow().body.clone().unwrap_or("".to_owned())}
+                                            </p>
                                         </>
                                     }
                                 }
@@ -190,14 +223,14 @@ pub fn task_info(props: &Properties) -> Html {
                                 let datetime = &datetime[0..datetime.len()-6];
                                 html! {
                                         <>
-                                            <p>{"Deadline: "}</p>
+                                            <p><b>{"Deadline: "}</b></p>
                                             <input name={"endtime"} type="datetime-local" value={datetime.to_owned()} onchange={task_datetime}/>
                                         </>
                                     }
                             } else {
                                 html! {
                                     <>
-                                        <p>{"Deadline: "}</p>
+                                        <p><b>{"Deadline: "}</b></p>
                                         <input name={"endtime"} type="datetime-local" onchange={task_datetime}/>
                                     </>
                                 }

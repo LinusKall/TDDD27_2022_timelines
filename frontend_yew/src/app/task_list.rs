@@ -142,12 +142,19 @@ pub fn task_list(props: &Props) -> Html {
         let tasks = tasks.clone();
         Callback::from(move |taskid: i32| {
             let tasks = tasks.data.as_ref().unwrap().clone();
-            for t in tasks.borrow().iter() {
-                if t.id == taskid {
-                    message.emit(Rc::new(RefCell::new(t.clone())));
-                    break;
-                }
-            }
+            let task = tasks
+                .borrow()
+                .iter()
+                .find_map(|t| {
+                    if t.id == taskid {
+                        Some(t.deref().clone())
+                    } else {
+                        None
+                    }
+                })
+                .unwrap();
+
+            message.emit(Rc::new(RefCell::new(task)));
         })
     };
 

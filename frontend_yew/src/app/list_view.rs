@@ -12,11 +12,11 @@ use yew_router::prelude::*;
 #[allow(unused)]
 use weblog::*;
 
-use super::gql::query::*;
 use super::gql::mutation::*;
-use super::timeline_list::*;
+use super::gql::query::*;
 use super::task_info::*;
 use super::task_list::*;
+use super::timeline_list::*;
 use super::Route;
 use super::UserId;
 
@@ -159,11 +159,12 @@ pub fn list_view() -> Html {
                 relation: update_timeline_relation.deref().clone(),
             });
 
-            let data: Option<UpdateUserTimeline> = surf::post(format!("{}/api/graphql", crate::app::LOCALHOST))
-                .run_graphql(operation)
-                .await
-                .expect("Could not update User Timeline")
-                .data;
+            let data: Option<UpdateUserTimeline> =
+                surf::post(format!("{}/api/graphql", crate::app::LOCALHOST))
+                    .run_graphql(operation)
+                    .await
+                    .expect("Could not update User Timeline")
+                    .data;
 
             if let Some(tl) = data {
                 rf_first.set(true);
@@ -184,7 +185,6 @@ pub fn list_view() -> Html {
             timeline_id.set(t_id);
             update_timeline_color.set(Some(c));
             update_timeline.run();
-
         })
     };
 
