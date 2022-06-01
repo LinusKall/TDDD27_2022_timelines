@@ -1,0 +1,32 @@
+
+@mixin timeline_item {
+    display: grid;
+    grid-template-areas:
+        "timeline_color timeline_body timeline_delete";
+    grid-template-columns: 3em auto 3em;
+    grid-template-rows: 1fr;
+    background-color: rgb(220, 220, 220);
+    font-size: 20px;
+
+
+    .timeline_color {
+        grid-area: timeline_color;
+        border: none;
+        background-color: rgb(220, 220, 220);
+        cursor: pointer;
+    }
+
+    .timeline_body {
+        grid-area: timeline_body;
+        border: none;
+        background-color: rgb(220, 220, 220);
+        cursor: pointer;
+    }
+
+    .timeline_delete {
+        grid-area: timeline_delete;
+        border: none;
+        cursor: pointer;
+        background-color: rgb(255, 86, 35);
+    }
+}
