@@ -1,12 +1,15 @@
 use wasm_bindgen::JsCast;
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
+#[allow(unused)]
+use weblog::*;
 
 #[derive(Debug, Properties, PartialEq)]
 pub struct Props {
     pub title: String,
     pub id: i32,
     pub done: bool,
+    pub color: String,
     pub get_task_name: Callback<i32>,
     pub get_id_delete: Callback<i32>,
     pub get_task_done: Callback<(i32, bool)>,
@@ -42,18 +45,19 @@ pub fn task_item(props: &Props) -> Html {
     };
 
     html! {
-        <div class="task_item" styles="display: block;">
-
+        <div class="task_item">
             <label class={"checkbox"} for={format!("{}_{}", props.id, &props.title)}>
                 <input
                     type="checkbox"
                     class={"checkbox_input"}
                     id={format!("{}_{}", props.id, &props.title)}
-                    name={props.title.clone()}
+                    name={props.title.to_owned()}
                     checked={props.done}
-                    onchange={task_done}
-                />
-                <div class="checkbox_box"></div>
+                    onchange={task_done}/>
+                <div 
+                    class="checkbox_box"
+                    style={format!("--checked-color: {};", &props.color)}>
+                </div>
             </label>
             <button
                 class={"task_body"}

@@ -13,7 +13,8 @@ use yew_router::prelude::*;
 use weblog::*;
 
 use super::gql::query::*;
-use super::list_selector::*;
+use super::gql::mutation::*;
+use super::timeline_list::*;
 use super::task_info::*;
 use super::task_list::*;
 use super::Route;
@@ -28,7 +29,10 @@ pub fn list_view() -> Html {
     let timeline_title = use_state_eq(|| "".to_owned());
     let rf_new_timeline = use_state(|| false);
     let props_id = use_state(|| -1);
-    // LocalStorage::delete("timelines_user_id");
+    let timeline_id = use_state(|| -1);
+    let update_timeline_color = use_state(|| None);
+    let update_timeline_title = use_state(|| None);
+    let update_timeline_relation = use_state(|| None);
 
     if user_id.borrow().is_none() {
         *user_id.borrow_mut() = match LocalStorage::get("timelines_user_id") {
@@ -107,13 +111,10 @@ pub fn list_view() -> Html {
         let timeline_state = timeline_state.clone();
         let usertimelines = usertimelines.clone();
         Callback::from(move |id: i32| {
-            let mut timeline = timeline_state.deref().clone();
             let timelines = usertimelines.data.as_ref().unwrap();
             for t in timelines.borrow().iter() {
                 if t.timeline_id == id {
-                    timeline.title = t.title.to_owned();
-                    timeline.timeline_id = id;
-                    timeline_state.set(timeline);
+                    timeline_state.set(t.clone());
                     break;
                 }
             }
@@ -137,6 +138,51 @@ pub fn list_view() -> Html {
             props_id.set(id);
             remove_timeline.run();
             timeline_state.set(UserTimeline::default());
+        })
+    };
+
+    let update_timeline = {
+        let props_id = props_id.clone();
+        let timeline_id = timeline_id.clone();
+        let update_timeline_title = update_timeline_title.clone();
+        let update_timeline_color = update_timeline_color.clone();
+        let update_timeline_relation = update_timeline_relation.clone();
+        let rf_first = rf_first.clone();
+        use_async(async move {
+            let operation = UpdateUserTimeline::build(UpdateUserTimelineInput {
+                props_id: *props_id,
+                timeline_id: *timeline_id,
+                title: update_timeline_title.deref().clone(),
+                color: update_timeline_color.deref().clone(),
+                relation: update_timeline_relation.deref().clone(),
+            });
+
+            let data: Option<UpdateUserTimeline> = surf::post(format!("{}/api/graphql", crate::app::LOCALHOST))
+                .run_graphql(operation)
+                .await
+                .expect("Could not update User Timeline")
+                .data;
+
+            if let Some(tl) = data {
+                rf_first.set(true);
+                return Ok(tl.update_user_timeline);
+            }
+            Err("Could not delete User Timeline.")
+        })
+    };
+
+    let change_timeline_color = {
+        //let timelines = usertimelines.data.clone();
+        let props_id = props_id.clone();
+        let timeline_id = timeline_id.clone();
+        let update_timeline = update_timeline.clone();
+        let update_timeline_color = update_timeline_color.clone();
+        Callback::from(move |(p_id, t_id, c): (i32, i32, String)| {
+            props_id.set(p_id);
+            timeline_id.set(t_id);
+            update_timeline_color.set(Some(c));
+            update_timeline.run();
+
         })
     };
 
@@ -172,10 +218,11 @@ pub fn list_view() -> Html {
                 html! {
                     <div class="list_view">
                         <ContextProvider<Rc<RefCell<Vec<UserTimeline>>>> context={usertimelines.clone()}>
-                            <ListSelector
+                            <TimelineList
                                 current_timeline={timeline_switch}
                                 added_timeline={timeline_add}
-                                get_id_delete={delete_timeline}/>
+                                get_id_delete={delete_timeline}
+                                get_timeline_color={change_timeline_color}/>
                         </ContextProvider<Rc<RefCell<Vec<UserTimeline>>>>>
 
                         <ContextProvider<UserTimeline> context={timeline_state.deref().clone()}>

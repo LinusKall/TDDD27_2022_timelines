@@ -200,7 +200,7 @@ pub fn task_list(props: &Props) -> Html {
 
     html! {
         <div class="task_list">
-            <h2 {ondblclick}>{timeline_context.unwrap_or(UserTimeline::default()).title}</h2>
+            <h2 {ondblclick}>{timeline_context.clone().unwrap_or(UserTimeline::default()).title}</h2>
 
             <input
                 type="new_todo"
@@ -218,6 +218,7 @@ pub fn task_list(props: &Props) -> Html {
                                         id={task.id}
                                         title={task.title.clone()}
                                         done={task.done}
+                                        color={timeline_context.clone().unwrap().color.to_owned()}
                                         get_task_name={task_switch.clone()}
                                         get_id_delete={delete_task.clone()}
                                         get_task_done={task_done.clone()}
