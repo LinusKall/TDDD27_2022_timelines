@@ -14,7 +14,7 @@ use super::gql::query::*;
 
 #[derive(Debug, Properties, PartialEq)]
 pub struct Properties {
-    pub highlited_task_update: Callback<Rc<RefCell<Task>>>,
+    pub highlighted_task_update: Callback<Rc<RefCell<Task>>>,
 }
 
 #[function_component(TaskInfo)]
@@ -22,7 +22,8 @@ pub fn task_info(props: &Properties) -> Html {
     let task_context = use_context::<Rc<RefCell<Task>>>();
     let datetime = use_state(|| task_context.clone().unwrap().borrow().end_time);
     let timezone = use_state(|| *Local::now().offset());
-    let switched = use_state(|| 0);
+    let switched_task = use_state(|| 0);
+    let switched_timeline = use_state(|| 0);
     let updated = use_state(|| false);
     let input = use_state(|| UpdateTaskInput {
         title: None,
@@ -120,17 +121,19 @@ pub fn task_info(props: &Properties) -> Html {
     };
 
     {
-        let switched = switched.clone();
+        let switched_task = switched_task.clone();
         let updated = updated.clone();
         let update_task = update_task.clone();
         let datetime = datetime.clone();
         let task_context = task_context.clone();
         let body_input = body_input.clone();
-        let highlited_task_update = props.highlited_task_update.clone();
+        let highlighted_task_update = props.highlighted_task_update.clone();
         use_effect(move || {
-            if *switched != task_context.clone().unwrap().borrow().id {
+            if *switched_task != task_context.clone().unwrap().borrow().id || *switched_timeline != task_context.clone().unwrap().borrow().timeline_id {
                 datetime.set(task_context.clone().unwrap().borrow().end_time);
-                switched.set(task_context.clone().unwrap().borrow().id);
+                switched_task.set(task_context.clone().unwrap().borrow().id);
+                switched_timeline.set(task_context.clone().unwrap().borrow().timeline_id);
+                updated.set(false);
                 body_input.set(
                     task_context
                         .clone()
@@ -144,7 +147,7 @@ pub fn task_info(props: &Properties) -> Html {
             }
             if *updated {
                 if let Some(task) = &update_task.data {
-                    highlited_task_update.emit((*task).clone());
+                    highlighted_task_update.emit((*task).clone());
                     updated.set(false);
                 }
             }

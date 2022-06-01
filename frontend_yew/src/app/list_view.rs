@@ -23,7 +23,7 @@ use super::UserId;
 #[function_component(ListView)]
 pub fn list_view() -> Html {
     let timeline_state = use_state(UserTimeline::default);
-    let highlited_task = use_state(|| Rc::new(RefCell::new(Task::default())));
+    let highlighted_task = use_state(|| Rc::new(RefCell::new(Task::default())));
     let user_id = use_context::<UserId>().expect("No context found.");
     let rf_first = use_state(|| true);
     let timeline_title = use_state_eq(|| "".to_owned());
@@ -110,11 +110,13 @@ pub fn list_view() -> Html {
     let timeline_switch = {
         let timeline_state = timeline_state.clone();
         let usertimelines = usertimelines.clone();
+        let highlighted_task = highlighted_task.clone();
         Callback::from(move |id: i32| {
             let timelines = usertimelines.data.as_ref().unwrap();
             for t in timelines.borrow().iter() {
                 if t.timeline_id == id {
                     timeline_state.set(t.clone());
+                    highlighted_task.set(Rc::new(RefCell::new(Task::default())));
                     break;
                 }
             }
@@ -187,9 +189,9 @@ pub fn list_view() -> Html {
     };
 
     let task_switch = {
-        let highlited_task = highlited_task.clone();
+        let highlighted_task = highlighted_task.clone();
         Callback::from(move |task: Rc<RefCell<Task>>| {
-            highlited_task.set(task);
+            highlighted_task.set(task);
         })
     };
 
@@ -229,8 +231,8 @@ pub fn list_view() -> Html {
                             <TaskList task_update={task_switch.clone()}/>
                         </ContextProvider<UserTimeline>>
 
-                        <ContextProvider<Rc<RefCell<Task>>> context={highlited_task.deref().clone()}>
-                            <TaskInfo highlited_task_update={task_switch.clone()}/>
+                        <ContextProvider<Rc<RefCell<Task>>> context={highlighted_task.deref().clone()}>
+                            <TaskInfo highlighted_task_update={task_switch.clone()}/>
                         </ContextProvider<Rc<RefCell<Task>>>>
                     </div>
                 }
