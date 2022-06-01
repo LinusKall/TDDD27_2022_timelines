@@ -16,29 +16,20 @@ pub fn task_info() -> Html {
     let datetime = use_state(|| task_context.clone().unwrap_or(Task::default()).end_time);
     let timezone = use_state(|| *Local::now().offset());
     let switched = use_state(|| 0);
-    console_log!(format!(
-        "{}",
-        task_context.clone().unwrap_or(Task::default()).created_at
-    ));
-    console_log!(format!(
-        "{:?}",
-        task_context.clone().unwrap_or(Task::default()).created_at
-    ));
-    console_log!(format!("{:?}", Utc::now()));
+    let input = use_state(|| UpdateTaskInput {
+        title: None,
+        body: None,
+        done: None,
+        end_time: None,
+    });
 
     let update_task = {
         let task_id = task_context.clone().unwrap_or(Task::default()).id;
-        let input = datetime.clone();
-        console_log!(format!("{:?}", *input));
+        let input = input.clone();
         use_async(async move {
             let operation = UpdateTask::build(UpdateTaskArguments {
                 task_id,
-                input: UpdateTaskInput {
-                    title: None,
-                    body: None,
-                    done: None,
-                    end_time: input.deref().clone(),
-                },
+                input: input.deref().clone(),
             });
             let data = surf::post(format!("{}/api/graphql", crate::app::LOCALHOST))
                 .run_graphql(operation)
@@ -54,7 +45,8 @@ pub fn task_info() -> Html {
     };
 
     let task_datetime = {
-        let input = datetime.clone();
+        let datetime = datetime.clone();
+        let input = input.clone();
         let update_task = update_task.clone();
         let timezone = timezone.clone();
         Callback::from(move |e: Event| {
@@ -64,9 +56,15 @@ pub fn task_info() -> Html {
                 .unchecked_into::<HtmlInputElement>()
                 .value();
             let value = format!("{}:00{}", value, &*timezone);
-            console_log!(format!("{:?}", &value));
-            let datetime = DateTime::parse_from_rfc3339(&value);
-            input.set(Some(datetime.unwrap().with_timezone(&Utc)));
+            let newtime = DateTime::parse_from_rfc3339(&value);
+            datetime.set(Some(newtime.unwrap().with_timezone(&Utc)));
+            let update = UpdateTaskInput {
+                title: None,
+                body: None,
+                done: None,
+                end_time: Some(newtime.unwrap().with_timezone(&Utc)),
+            };
+            input.set(update);
             update_task.run();
         })
     };
@@ -87,16 +85,45 @@ pub fn task_info() -> Html {
     let ondblclick = { Callback::from(|_: MouseEvent| {}) };
     html! {
         <div class="task-info">
-            <h2 {ondblclick}>{task_context.clone().unwrap_or(Task::default()).title}</h2>
-            <h2>{task_context.unwrap_or(Task::default()).body.unwrap_or("".to_owned())}</h2>
             {
-                if let Some(datetime) = datetime.deref().clone() {
-                    let datetime = datetime.to_rfc3339();
-                    let datetime = &datetime[0..datetime.len()-6];
-                    html! {<input type="datetime-local" value={datetime.to_owned()} onchange={task_datetime}/>}
-                }
-                else {
-                    html! {<input type="datetime-local" onchange={task_datetime}/>}
+                if task_context.clone().unwrap_or(Task::default()).id != 0 {
+                    html! {
+                        <>
+                            <h2 {ondblclick}>{task_context.clone().unwrap_or(Task::default()).title}</h2>
+                            <p>{"Description: "}</p>
+                            <input name={"body"} value={task_context.clone().unwrap_or(Task::default()).body.unwrap_or("".to_owned())}/>
+                        {
+                            if let Some(datetime) = datetime.deref().clone() {
+                                let datetime = datetime + *timezone;
+                                let datetime = datetime.to_rfc3339();
+                                let datetime = &datetime[0..datetime.len()-6];
+                                html! {
+                                        <>
+                                            <p>{"Deadline: "}</p>
+                                            <input name={"endtime"} type="datetime-local" value={datetime.to_owned()} onchange={task_datetime}/>
+                                        </>
+                                    }
+                            } else {
+                                html! {
+                                    <>
+                                        <p>{"Deadline: "}</p>
+                                        <input name={"endtime"} type="datetime-local" onchange={task_datetime}/>
+                                    </>
+                                }
+                            }
+                        }
+                        {
+                            if task_context.clone().unwrap_or(Task::default()).done == true {
+                                html! {<h3>{"Completed"}</h3>}
+                            }
+                            else {
+                                html! {}
+                            }
+                        }
+                        </>
+                    }
+                } else {
+                    html! {}
                 }
             }
         </div>
