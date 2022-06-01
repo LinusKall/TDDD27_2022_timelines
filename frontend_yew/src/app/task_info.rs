@@ -1,7 +1,9 @@
 use chrono::{offset::Local, DateTime, Utc};
 use cynic::http::SurfExt;
 use cynic::MutationBuilder;
+use std::cell::RefCell;
 use std::ops::Deref;
+use std::rc::Rc;
 use wasm_bindgen::JsCast;
 use web_sys::HtmlInputElement;
 use weblog::*;
@@ -10,12 +12,18 @@ use yew_hooks::use_async;
 
 use super::gql::query::*;
 
+#[derive(Debug, Properties, PartialEq)]
+pub struct Properties {
+    pub highlited_task_update: Callback<Rc<RefCell<Task>>>,
+}
+
 #[function_component(TaskInfo)]
-pub fn task_info() -> Html {
-    let task_context = use_context::<Task>();
-    let datetime = use_state(|| task_context.clone().unwrap_or(Task::default()).end_time);
+pub fn task_info(props: &Properties) -> Html {
+    let task_context = use_context::<Rc<RefCell<Task>>>();
+    let datetime = use_state(|| task_context.clone().unwrap().borrow().end_time);
     let timezone = use_state(|| *Local::now().offset());
     let switched = use_state(|| 0);
+    let updated = use_state(|| false);
     let input = use_state(|| UpdateTaskInput {
         title: None,
         body: None,
@@ -25,15 +33,18 @@ pub fn task_info() -> Html {
     let body_input = use_state(|| {
         task_context
             .clone()
-            .unwrap_or(Task::default())
+            .unwrap()
+            .borrow()
             .body
-            .unwrap_or("".to_owned())
+            .as_ref()
+            .unwrap_or(&"".to_owned())
             .is_empty()
     });
 
     let update_task = {
-        let task_id = task_context.clone().unwrap_or(Task::default()).id;
+        let task_id = task_context.clone().unwrap().borrow().id;
         let input = input.clone();
+        let updated = updated.clone();
         use_async(async move {
             let operation = UpdateTask::build(UpdateTaskArguments {
                 task_id,
@@ -46,7 +57,8 @@ pub fn task_info() -> Html {
                 .data;
 
             if let Some(t) = data {
-                return Ok(t.update_task);
+                updated.set(true);
+                return Ok(Rc::new(RefCell::new(t.update_task)));
             }
             Err("Could not create User Timeline.")
         })
@@ -109,21 +121,32 @@ pub fn task_info() -> Html {
 
     {
         let switched = switched.clone();
+        let updated = updated.clone();
+        let update_task = update_task.clone();
         let datetime = datetime.clone();
         let task_context = task_context.clone();
         let body_input = body_input.clone();
+        let highlited_task_update = props.highlited_task_update.clone();
         use_effect(move || {
-            if *switched != task_context.clone().unwrap_or(Task::default()).id {
-                datetime.set(task_context.clone().unwrap_or(Task::default()).end_time);
-                switched.set(task_context.clone().unwrap_or(Task::default()).id);
+            if *switched != task_context.clone().unwrap().borrow().id {
+                datetime.set(task_context.clone().unwrap().borrow().end_time);
+                switched.set(task_context.clone().unwrap().borrow().id);
                 body_input.set(
                     task_context
                         .clone()
-                        .unwrap_or(Task::default())
+                        .unwrap()
+                        .borrow()
                         .body
-                        .unwrap_or("".to_owned())
+                        .as_ref()
+                        .unwrap_or(&"".to_owned())
                         .is_empty(),
                 )
+            }
+            if *updated {
+                if let Some(task) = &update_task.data {
+                    highlited_task_update.emit((*task).clone());
+                    updated.set(false);
+                }
             }
             || {}
         })
@@ -132,10 +155,10 @@ pub fn task_info() -> Html {
     html! {
         <div class="task-info">
             {
-                if task_context.clone().unwrap_or(Task::default()).id != 0 {
+                if task_context.clone().unwrap().borrow().id != 0 {
                     html! {
                         <>
-                            <h2>{task_context.clone().unwrap_or(Task::default()).title}</h2>
+                            <h2>{&task_context.clone().unwrap().borrow().title}</h2>
                             {
                                 if *body_input {
                                     html! {
@@ -152,7 +175,7 @@ pub fn task_info() -> Html {
                                     html! {
                                         <>
                                             <p>{"Description: "}</p>
-                                            <p {ondblclick}>{task_context.clone().unwrap_or(Task::default()).body.unwrap_or("".to_owned())}</p>
+                                            <p {ondblclick}>{task_context.clone().unwrap().borrow().body.as_ref().unwrap_or(&"".to_owned())}</p>
                                         </>
                                     }
                                 }
@@ -178,7 +201,7 @@ pub fn task_info() -> Html {
                             }
                         }
                         {
-                            if task_context.clone().unwrap_or(Task::default()).done == true {
+                            if task_context.clone().unwrap().borrow().done == true {
                                 html! {<h3>{"Completed"}</h3>}
                             }
                             else {

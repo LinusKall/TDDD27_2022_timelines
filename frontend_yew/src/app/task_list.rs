@@ -13,7 +13,7 @@ use super::task_item::*;
 
 #[derive(Debug, Properties, PartialEq)]
 pub struct Props {
-    pub task_update: Callback<Task>,
+    pub task_update: Callback<Rc<RefCell<Task>>>,
 }
 
 #[function_component(TaskList)]
@@ -144,7 +144,7 @@ pub fn task_list(props: &Props) -> Html {
             let tasks = tasks.data.as_ref().unwrap().clone();
             for t in tasks.borrow().iter() {
                 if t.id == taskid {
-                    message.emit(t.clone());
+                    message.emit(Rc::new(RefCell::new(t.clone())));
                     break;
                 }
             }

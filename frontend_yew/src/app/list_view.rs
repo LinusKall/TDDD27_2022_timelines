@@ -22,7 +22,7 @@ use super::UserId;
 #[function_component(ListView)]
 pub fn list_view() -> Html {
     let timeline_state = use_state(UserTimeline::default);
-    let highlited_task = use_state(Task::default);
+    let highlited_task = use_state(|| Rc::new(RefCell::new(Task::default())));
     let user_id = use_context::<UserId>().expect("No context found.");
     let rf_first = use_state(|| true);
     let timeline_title = use_state_eq(|| "".to_owned());
@@ -142,7 +142,7 @@ pub fn list_view() -> Html {
 
     let task_switch = {
         let highlited_task = highlited_task.clone();
-        Callback::from(move |task: Task| {
+        Callback::from(move |task: Rc<RefCell<Task>>| {
             highlited_task.set(task);
         })
     };
@@ -179,12 +179,12 @@ pub fn list_view() -> Html {
                         </ContextProvider<Rc<RefCell<Vec<UserTimeline>>>>>
 
                         <ContextProvider<UserTimeline> context={timeline_state.deref().clone()}>
-                            <TaskList task_update={task_switch}/>
+                            <TaskList task_update={task_switch.clone()}/>
                         </ContextProvider<UserTimeline>>
 
-                        <ContextProvider<Task> context={highlited_task.deref().clone()}>
-                            <TaskInfo/>
-                        </ContextProvider<Task>>
+                        <ContextProvider<Rc<RefCell<Task>>> context={highlited_task.deref().clone()}>
+                            <TaskInfo highlited_task_update={task_switch.clone()}/>
+                        </ContextProvider<Rc<RefCell<Task>>>>
                     </div>
                 }
             } else {
