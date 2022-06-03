@@ -137,7 +137,11 @@ pub fn task_list(props: &Props) -> Html {
                     .collect::<Vec<Task>>();
                 tasks.update(new_tasks);
                 task_to_update.set(None);
-                current_task.set(Some(new.clone()));
+                if let Some(ct) = current_timeline.deref().as_ref() {
+                    if ct.id == new.id {
+                        current_task.set(Some(new.clone()));
+                    }
+                }
                 return Ok(new);
             }
             Err("Could not create User Timeline.")

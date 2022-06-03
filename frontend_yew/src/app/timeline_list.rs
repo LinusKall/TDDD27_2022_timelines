@@ -131,7 +131,11 @@ pub fn timeline_list(props: &Props) -> Html {
                 user_timelines.update(new_timelines);
                 timeline_to_update.set(None);
                 rf_update_timeline.set(true);
-                current_timeline.set(Some(new.clone()));
+                if let Some(ct) = current_timeline.deref().as_ref() {
+                    if ct.timeline_id == new.timeline_id {
+                        current_timeline.set(Some(new.clone()));
+                    }
+                }
                 return Ok(new);
             }
             Err("Could not delete User Timeline.")
