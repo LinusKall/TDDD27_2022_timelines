@@ -22,6 +22,7 @@ pub struct DeleteTaskResult {
 
 #[derive(InputObject)]
 pub struct UpdateTaskInput {
+    pub task_id: i32,
     pub title: Option<String>,
     pub body: Option<String>,
     pub done: Option<bool>,
@@ -75,12 +76,11 @@ impl TasksMutation {
     pub async fn update_task(
         &self,
         ctx: &Context<'_>,
-        task_id: i32,
         input: UpdateTaskInput,
     ) -> Result<tasks::Model> {
         let db = ctx.data::<Database>().unwrap();
 
-        let task = tasks::Entity::find_by_id(task_id)
+        let task = tasks::Entity::find_by_id(input.task_id)
             .one(db.get_connection())
             .await?;
 
