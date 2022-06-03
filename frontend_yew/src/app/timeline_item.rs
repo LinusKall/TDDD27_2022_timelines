@@ -1,49 +1,55 @@
 use std::ops::Deref;
 use web_sys::HtmlInputElement;
+use yew::prelude::*;
+
 #[allow(unused)]
 use weblog::*;
-use yew::prelude::*;
+
+use super::gql::mutation::*;
+use super::gql::query::*;
 
 #[derive(Debug, Properties, PartialEq)]
 pub struct Props {
-    pub props_id: i32,
-    pub timeline_id: i32,
-    pub title: String,
-    pub color: String,
-    pub get_current_timeline: Callback<i32>,
-    pub get_id_delete: Callback<i32>,
-    pub get_timeline_color: Callback<(i32, i32, String)>,
+    pub user_timeline: UserTimeline,
+    pub update: Callback<UpdateUserTimelineInput>,
+    pub delete: Callback<UserTimeline>,
+    pub switch: Callback<UserTimeline>,
 }
 
 #[function_component(TimelineItem)]
 pub fn timeline_item(props: &Props) -> Html {
-    let color = use_state(|| props.color.to_owned());
+    let color = use_state(|| props.user_timeline.color.to_owned());
 
-    let onclick = {
-        let get_current_timeline = props.get_current_timeline.clone();
-        let id = props.timeline_id;
+    let select = {
+        let timeline = props.user_timeline.clone();
+        let switch = props.switch.clone();
         Callback::from(move |_: MouseEvent| {
-            get_current_timeline.emit(id);
+            switch.emit(timeline.clone());
         })
     };
 
     let delete_timeline = {
-        let get_id_delete = props.get_id_delete.clone();
-        let id = props.timeline_id;
+        let timeline = props.user_timeline.clone();
+        let delete = props.delete.clone();
         Callback::from(move |_: MouseEvent| {
-            get_id_delete.emit(id);
+            delete.emit(timeline.clone());
         })
     };
 
     let change_color = {
-        let props_id = props.props_id;
-        let timeline_id = props.timeline_id;
+        let timeline = props.user_timeline.clone();
+        let update = props.update.clone();
         let color = color.clone();
-        let get_timeline_color = props.get_timeline_color.clone();
         Callback::from(move |e: Event| {
             let input = e.target_unchecked_into::<HtmlInputElement>();
             color.set(input.value());
-            get_timeline_color.emit((props_id, timeline_id, input.value()));
+            update.emit(UpdateUserTimelineInput {
+                props_id: timeline.props_id,
+                timeline_id: timeline.timeline_id,
+                title: None,
+                color: Some(input.value()),
+                relation: None,
+            });
         })
     };
 
@@ -56,8 +62,8 @@ pub fn timeline_item(props: &Props) -> Html {
                 type={"color"}/>
             <button
                 class={"timeline_body"}
-                onclick={onclick}>
-                {&props.title}
+                onclick={select}>
+                {&props.user_timeline.title}
             </button>
             <button
                 class={"timeline_delete"}
