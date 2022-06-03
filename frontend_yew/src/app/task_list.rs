@@ -103,6 +103,7 @@ pub fn task_list(props: &Props) -> Html {
         })
     };
 
+    // Updated task
     let update_task_async = {
         let task_to_update = task_to_update.clone();
         let tasks = tasks.clone();
