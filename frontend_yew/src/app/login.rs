@@ -1,16 +1,16 @@
 use cynic::{http::SurfExt, QueryBuilder};
 // use wasm_bindgen_futures::spawn_local;
+use wasm_bindgen::JsCast;
 use web_sys::HtmlInputElement;
+use weblog::*;
 use yew::functional::*;
 use yew::prelude::*;
 use yew_hooks::prelude::*;
 use yew_router::prelude::*;
-use wasm_bindgen::JsCast;
-use weblog::*;
 
+use super::gql::query::*;
 use super::Route;
 use super::UserId;
-use super::gql::query::*;
 
 #[derive(Properties, PartialEq)]
 pub struct Properties {
@@ -26,7 +26,7 @@ pub fn login(props: &Properties) -> Html {
     let remain_signed_in = use_state(bool::default);
     let username_ref = use_node_ref();
     let password_ref = use_node_ref();
-    
+
     if let Some(_) = *user_id.borrow() {
         return html! { <Redirect<Route> to={Route::ListView} /> };
     }
@@ -105,16 +105,27 @@ pub fn login(props: &Properties) -> Html {
     let first_render = use_state(|| true);
     {
         let first_render = first_render.clone();
-        let username_ref = username_ref.clone(); 
+        let username_ref = username_ref.clone();
         let password_ref = password_ref.clone();
         use_effect(move || {
             if *first_render {
-                username_ref.cast::<HtmlInputElement>().unwrap().focus().unwrap();
+                username_ref
+                    .cast::<HtmlInputElement>()
+                    .unwrap()
+                    .focus()
+                    .unwrap();
                 first_render.set(false);
             }
             if *clear_input {
-                password_ref.cast::<HtmlInputElement>().unwrap().focus().unwrap();
-                password_ref.cast::<HtmlInputElement>().unwrap().set_value("");
+                password_ref
+                    .cast::<HtmlInputElement>()
+                    .unwrap()
+                    .focus()
+                    .unwrap();
+                password_ref
+                    .cast::<HtmlInputElement>()
+                    .unwrap()
+                    .set_value("");
                 clear_input.set(false);
             }
             || {}

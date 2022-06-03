@@ -1,16 +1,16 @@
 use cynic::{http::SurfExt, MutationBuilder};
 use regex::Regex;
+use wasm_bindgen::JsCast;
 use web_sys::HtmlInputElement;
 use weblog::*;
 use yew::functional::*;
 use yew::prelude::*;
 use yew_hooks::prelude::*;
 use yew_router::prelude::*;
-use wasm_bindgen::JsCast;
 
+use super::gql::query::*;
 use super::Route;
 use super::UserId;
-use super::gql::query::*;
 
 #[derive(Properties, PartialEq, Clone)]
 pub struct Properties {
@@ -45,10 +45,10 @@ pub fn signup(props: &Properties) -> Html {
         });
         use_async(async move {
             let data = surf::post(format!("{}/api/graphql", crate::app::LOCALHOST))
-            .run_graphql(operation)
-            .await
-            .expect("Could not send request")
-            .data;
+                .run_graphql(operation)
+                .await
+                .expect("Could not send request")
+                .data;
 
             if let Some(CreateUser { create_user }) = data {
                 set_user_id.emit((create_user.id, *remain_signed_in));
@@ -108,9 +108,13 @@ pub fn signup(props: &Properties) -> Html {
     };
 
     {
-        let node_ref = node_ref.clone();     
+        let node_ref = node_ref.clone();
         use_effect_once(move || {
-            node_ref.cast::<HtmlInputElement>().unwrap().focus().unwrap();
+            node_ref
+                .cast::<HtmlInputElement>()
+                .unwrap()
+                .focus()
+                .unwrap();
             || {}
         });
     }

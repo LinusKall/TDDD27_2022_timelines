@@ -17,7 +17,9 @@ pub fn task_info(props: &Props) -> Html {
     let timezone = use_state(|| *Local::now().offset());
     let body_ref = use_node_ref();
     let end_time_ref = use_node_ref();
-    let body_input = use_state(|| props.current_task.is_some() && props.current_task.as_ref().unwrap().body.is_none());
+    let body_input = use_state(|| {
+        props.current_task.is_some() && props.current_task.as_ref().unwrap().body.is_none()
+    });
     let current_task_id = use_state(|| -1);
     let rf_set_body = use_state(|| false);
     let rf_set_end_time = use_state(|| true);
@@ -46,7 +48,7 @@ pub fn task_info(props: &Props) -> Html {
                 let datetime = newtime.unwrap().with_timezone(&Utc);
                 let datetime = datetime + *timezone;
                 let datetime = datetime.to_rfc3339();
-                let datetime = &datetime[0..datetime.len()-6];
+                let datetime = &datetime[0..datetime.len() - 6];
                 elem.set_value(datetime);
             }
         })
@@ -58,7 +60,7 @@ pub fn task_info(props: &Props) -> Html {
         let body_input = body_input.clone();
         Callback::from(move |k: KeyboardEvent| {
             let value = k.target_unchecked_into::<HtmlInputElement>().value();
-            if k.shift_key() && k.key() == "Enter"{
+            if k.shift_key() && k.key() == "Enter" {
                 if value.is_empty() {
                     update.emit(UpdateTaskInput {
                         task_id: current_task.clone().unwrap().id,
@@ -113,7 +115,7 @@ pub fn task_info(props: &Props) -> Html {
         let rf_set_end_time = rf_set_end_time.clone();
         use_effect(move || {
             if let Some(current_task) = current_task.as_ref() {
-                if  *current_task_id != current_task.id {
+                if *current_task_id != current_task.id {
                     body_input.set(current_task.body.is_none());
                     current_task_id.set(current_task.id);
                     rf_set_end_time.set(true);
@@ -121,7 +123,14 @@ pub fn task_info(props: &Props) -> Html {
             }
             if let Some(elem) = body_ref.cast::<HtmlInputElement>() {
                 if *rf_set_body {
-                    elem.set_value(current_task.as_ref().unwrap().body.as_ref().unwrap_or(&"".to_owned()));
+                    elem.set_value(
+                        current_task
+                            .as_ref()
+                            .unwrap()
+                            .body
+                            .as_ref()
+                            .unwrap_or(&"".to_owned()),
+                    );
                     rf_set_body.set(false);
                 }
                 elem.style().set_property("height", "0").unwrap();
@@ -134,9 +143,11 @@ pub fn task_info(props: &Props) -> Html {
                     if let Some(datetime) = current_task.as_ref().unwrap().end_time.clone() {
                         let datetime = datetime + *timezone;
                         let datetime = datetime.to_rfc3339();
-                        let datetime = &datetime[0..datetime.len()-6];
+                        let datetime = &datetime[0..datetime.len() - 6];
                         elem.set_value(datetime);
                         rf_set_end_time.set(false);
+                    } else {
+                        elem.set_value("");
                     }
                 }
             }
