@@ -8,8 +8,8 @@
     grid-template-columns: 1fr 2fr 1fr;
     grid-template-rows: 1fr;
 
-    .list_selector {
-        @include ls.list_selector;
+    .timeline_list {
+        @include ls.timeline_list;
     }
 
     .task_list {

@@ -1,9 +1,9 @@
 @use "timeline_list/timeline_item" as ti;
 
-$area_name: "list_selector";
+$area_name: "timeline_list";
 
-@mixin list_selector {
-    grid-area: list_selector;
+@mixin timeline_list {
+    grid-area: timeline_list;
     font-size: 20px;
     display: grid;
     grid-template-areas:
