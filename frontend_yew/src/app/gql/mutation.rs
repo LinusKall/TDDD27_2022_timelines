@@ -1,6 +1,7 @@
+use cynic::QueryFragment;
+
 use super::query::schema;
 use super::query::UserTimeline;
-use cynic::QueryFragment;
 
 #[derive(Debug, cynic::Enum, Clone, Copy, PartialEq)]
 #[cynic(
@@ -13,7 +14,7 @@ pub enum ClearanceMapping {
     Subscriber,
 }
 
-#[derive(cynic::FragmentArguments, cynic::InputObject)]
+#[derive(cynic::FragmentArguments, cynic::InputObject, Clone, Debug)]
 #[cynic(
     schema_path = "graphql/schema.graphql",
     graphql_type = "UpdateUserTimelineInput"
