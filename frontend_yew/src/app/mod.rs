@@ -1,14 +1,14 @@
 pub mod account_info;
 pub mod gql;
-pub mod timeline_list;
 pub mod list_view;
 pub mod login;
 pub mod navigation_bar;
 pub mod signup;
-pub mod task_info;
+// pub mod task_info;
 pub mod task_item;
 pub mod task_list;
 pub mod timeline_item;
+pub mod timeline_list;
 
 use gloo::storage::LocalStorage;
 use gloo_storage::Storage;
