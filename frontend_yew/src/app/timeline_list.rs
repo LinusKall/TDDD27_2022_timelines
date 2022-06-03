@@ -1,7 +1,5 @@
 use std::cell::RefCell;
 use std::rc::Rc;
-use wasm_bindgen::JsCast;
-use web_sys::HtmlButtonElement;
 use web_sys::HtmlInputElement as InputElement;
 use yew::prelude::*;
 
@@ -65,7 +63,7 @@ pub fn timeline_list(props: &Props) -> Html {
                         .map(|timeline| html! {
                             <TimelineItem
                                 props_id={timeline.props_id}
-                                timeline_id={timeline.timeline_id} 
+                                timeline_id={timeline.timeline_id}
                                 title={timeline.title.to_owned()}
                                 color={timeline.color.to_owned()}
                                 get_current_timeline={update_current_timeline.clone()}

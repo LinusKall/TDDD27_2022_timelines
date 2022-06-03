@@ -1,14 +1,13 @@
-use wasm_bindgen::JsCast;
-use web_sys::HtmlInputElement;
 use std::ops::Deref;
-use yew::prelude::*;
+use web_sys::HtmlInputElement;
 #[allow(unused)]
 use weblog::*;
+use yew::prelude::*;
 
 #[derive(Debug, Properties, PartialEq)]
 pub struct Props {
     pub props_id: i32,
-    pub timeline_id: i32, 
+    pub timeline_id: i32,
     pub title: String,
     pub color: String,
     pub get_current_timeline: Callback<i32>,
@@ -50,8 +49,8 @@ pub fn timeline_item(props: &Props) -> Html {
 
     html! {
         <div class="timeline_item">
-            <input 
-                class={"timeline_color"} 
+            <input
+                class={"timeline_color"}
                 value={color.deref().to_owned()}
                 onchange={change_color}
                 type={"color"}/>

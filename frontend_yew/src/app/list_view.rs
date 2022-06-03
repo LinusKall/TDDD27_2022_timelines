@@ -23,7 +23,7 @@ use super::UserId;
 #[function_component(ListView)]
 pub fn list_view() -> Html {
     let timeline_state = use_state(UserTimeline::default);
-    let highlighted_task = use_state(|| Rc::new(RefCell::new(Task::default())));
+    let highlighted_task = use_state(Task::default);
     let user_id = use_context::<UserId>().expect("No context found.");
     let rf_first = use_state(|| true);
     let timeline_title = use_state_eq(|| "".to_owned());
@@ -116,7 +116,7 @@ pub fn list_view() -> Html {
             for t in timelines.borrow().iter() {
                 if t.timeline_id == id {
                     timeline_state.set(t.clone());
-                    highlighted_task.set(Rc::new(RefCell::new(Task::default())));
+                    highlighted_task.set(Task::default());
                     break;
                 }
             }
@@ -190,7 +190,7 @@ pub fn list_view() -> Html {
 
     let task_switch = {
         let highlighted_task = highlighted_task.clone();
-        Callback::from(move |task: Rc<RefCell<Task>>| {
+        Callback::from(move |task: Task| {
             highlighted_task.set(task);
         })
     };
@@ -228,12 +228,12 @@ pub fn list_view() -> Html {
                         </ContextProvider<Rc<RefCell<Vec<UserTimeline>>>>>
 
                         <ContextProvider<UserTimeline> context={timeline_state.deref().clone()}>
-                            <TaskList task_update={task_switch.clone()}/>
+                            <TaskList task_update={task_switch}/>
                         </ContextProvider<UserTimeline>>
 
-                        <ContextProvider<Rc<RefCell<Task>>> context={highlighted_task.deref().clone()}>
-                            <TaskInfo highlighted_task_update={task_switch.clone()}/>
-                        </ContextProvider<Rc<RefCell<Task>>>>
+                        <ContextProvider<Task> context={highlighted_task.deref().clone()}>
+                            <TaskInfo/>
+                        </ContextProvider<Task>>
                     </div>
                 }
             } else {

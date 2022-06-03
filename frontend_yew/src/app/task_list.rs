@@ -13,7 +13,7 @@ use super::task_item::*;
 
 #[derive(Debug, Properties, PartialEq)]
 pub struct Props {
-    pub task_update: Callback<Rc<RefCell<Task>>>,
+    pub task_update: Callback<Task>,
 }
 
 #[function_component(TaskList)]
@@ -154,7 +154,7 @@ pub fn task_list(props: &Props) -> Html {
                 })
                 .unwrap();
 
-            message.emit(Rc::new(RefCell::new(task)));
+            message.emit(task);
         })
     };
 
