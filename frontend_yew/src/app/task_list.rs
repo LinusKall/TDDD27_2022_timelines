@@ -1,8 +1,5 @@
 use cynic::{http::SurfExt, MutationBuilder, QueryBuilder};
-use std::cell::RefCell;
 use std::ops::Deref;
-use std::rc::Rc;
-use std::thread::current;
 use web_sys::HtmlInputElement;
 use weblog::*;
 use yew::prelude::*;
@@ -29,6 +26,7 @@ pub fn task_list(props: &Props) -> Html {
 
     // Render flags
     let rf_fetch_tasks = use_state(|| true);
+    let rf_timeline_switch = use_state(|| -1);
 
     // Fetch tasks
     let tasks = {
@@ -109,7 +107,6 @@ pub fn task_list(props: &Props) -> Html {
         let tasks = tasks.clone();
         use_async(async move {
             let update_input = task_to_update.deref().clone().unwrap();
-            console_log!(format!("{:?}", &update_input));
             let operation = UpdateTask::build(update_input);
 
             let data = surf::post(format!("{}/api/graphql", crate::app::LOCALHOST))
@@ -117,8 +114,6 @@ pub fn task_list(props: &Props) -> Html {
                 .await
                 .expect("Could not create User Timeline")
                 .data;
-
-            console_log!(format!("{:?}", &data));
 
             if let Some(t) = data {
                 let new = t.update_task;
@@ -137,7 +132,7 @@ pub fn task_list(props: &Props) -> Html {
                     .collect::<Vec<Task>>();
                 tasks.update(new_tasks);
                 task_to_update.set(None);
-                if let Some(ct) = current_timeline.deref().as_ref() {
+                if let Some(ct) = current_task.deref().as_ref() {
                     if ct.id == new.id {
                         current_task.set(Some(new.clone()));
                     }
@@ -224,9 +219,18 @@ pub fn task_list(props: &Props) -> Html {
     {
         let tasks = tasks.clone();
         let rf_fetch_tasks = rf_fetch_tasks.clone();
+        let rf_timeline_switch = rf_timeline_switch.clone();
+        let current_timeline = props.current_timeline.clone();
+        let current_task = current_task.clone();
         use_effect(move || {
             if *rf_fetch_tasks && !tasks.loading {
                 tasks.run();
+            }
+            if let Some(current_timeline) = current_timeline.as_ref() {
+                if *rf_timeline_switch != current_timeline.timeline_id {
+                    current_task.set(None);
+                    rf_timeline_switch.set(current_timeline.timeline_id);
+                }
             }
             || {}
         });
@@ -268,7 +272,7 @@ pub fn task_list(props: &Props) -> Html {
 
             </div>
 
-            <TaskInfo current_task={current_task.clone()} update={update_task.clone()}/>
+            <TaskInfo current_task={current_task.deref().clone()} update={update_task.clone()}/>
         </>
     }
 }

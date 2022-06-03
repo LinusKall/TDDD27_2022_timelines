@@ -35,7 +35,6 @@ pub fn task_item(props: &Props) -> Html {
     };
 
     let task_done = {
-        let task = props.task.clone();
         let update = props.update.clone();
         let task_id = props.clone().task.id;
         Callback::from(move |e: Event| {

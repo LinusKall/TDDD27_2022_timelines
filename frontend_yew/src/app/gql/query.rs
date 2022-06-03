@@ -225,21 +225,6 @@ impl UserTimeline {
     }
 }
 
-impl Task {
-    pub fn default() -> Self {
-        Self {
-            id: 0,
-            timeline_id: 0,
-            title: "".to_owned(),
-            body: None,
-            done: false,
-            end_time: None,
-            created_at: chrono::offset::Utc::now(),
-            updated_at: chrono::offset::Utc::now(),
-        }
-    }
-}
-
 // Login component
 // ---------------------------------
 #[derive(cynic::FragmentArguments)]

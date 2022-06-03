@@ -99,7 +99,6 @@ pub fn timeline_list(props: &Props) -> Html {
     // Update current timeline
     let update_timeline_async = {
         let current_timeline = current_timeline.clone();
-        let rf_update_timeline = rf_update_timeline.clone();
         let timeline_to_update = timeline_to_update.clone();
         let user_timelines = user_timelines.clone();
         use_async(async move {
@@ -130,7 +129,6 @@ pub fn timeline_list(props: &Props) -> Html {
                     .collect::<Vec<UserTimeline>>();
                 user_timelines.update(new_timelines);
                 timeline_to_update.set(None);
-                rf_update_timeline.set(true);
                 if let Some(ct) = current_timeline.deref().as_ref() {
                     if ct.timeline_id == new.timeline_id {
                         current_timeline.set(Some(new.clone()));
@@ -209,7 +207,6 @@ pub fn timeline_list(props: &Props) -> Html {
     {
         let user_timelines = user_timelines.clone();
         let rf_fetch_timelines = rf_fetch_timelines.clone();
-        let rf_update_timeline = rf_update_timeline.clone();
         use_effect(move || {
             if *rf_fetch_timelines && !user_timelines.loading {
                 user_timelines.run();
