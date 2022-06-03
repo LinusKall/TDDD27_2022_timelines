@@ -30,11 +30,6 @@ $area_name: "checkbox";
             background-color: var(--checked-color);
             border-color: var(--checked-color);
         }
-
-        &:checked+.checkbox_box:after {
-            background-color: var(--checked-color);
-            border-color: var(--checked-color);
-        }
     }
 
     .checkbox_box {
@@ -47,7 +42,7 @@ $area_name: "checkbox";
         align-items: center;
         justify-items: center;
         flex-shrink: 0;
-        transition: background-color 0.15s, border-color 0.15s;        
+        transition: background-color 0.15s, border-color 0.15s;
 
         /* &:after {
             margin-left: 0.2em;
