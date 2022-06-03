@@ -175,7 +175,7 @@ pub fn task_list(props: &Props) -> Html {
                     .unwrap()
                     .iter()
                     .filter_map(|task| {
-                        if task.timeline_id == task_to_delete.as_ref().unwrap().timeline_id {
+                        if task.id == task_to_delete.as_ref().unwrap().id {
                             None
                         } else {
                             Some(task.clone())
@@ -184,7 +184,6 @@ pub fn task_list(props: &Props) -> Html {
                     .collect::<Vec<Task>>();
                 tasks.update(new_tasks);
                 task_to_update.set(None);
-                // rf_delete_timeline.set(true);
                 return Ok(new);
             }
             Err("Could not create User Timeline.")
@@ -233,6 +232,10 @@ pub fn task_list(props: &Props) -> Html {
                     rf_timeline_switch.set(current_timeline.timeline_id);
                     rf_fetch_tasks.set(true);
                 }
+            } else if *rf_timeline_switch != -1 {
+                current_task.set(None);
+                rf_fetch_tasks.set(true);
+                rf_timeline_switch.set(-1);
             }
             || {}
         });
@@ -260,7 +263,7 @@ pub fn task_list(props: &Props) -> Html {
                                 .map(|task| html! {
                                     <TaskItem
                                         task={task.clone()}
-                                        color={props.current_timeline.as_ref().unwrap().color.to_owned()}
+                                        color={props.current_timeline.as_ref().unwrap_or(&UserTimeline::default()).color.to_owned()}
                                         update={update_task.clone()}
                                         delete={delete_task.clone()}
                                         switch={switch_task.clone()}/>
