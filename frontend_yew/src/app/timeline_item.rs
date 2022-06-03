@@ -1,4 +1,3 @@
-use std::ops::Deref;
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
 
@@ -18,8 +17,6 @@ pub struct Props {
 
 #[function_component(TimelineItem)]
 pub fn timeline_item(props: &Props) -> Html {
-    let color = use_state(|| props.user_timeline.color.to_owned());
-
     let select = {
         let timeline = props.user_timeline.clone();
         let switch = props.switch.clone();
@@ -39,10 +36,8 @@ pub fn timeline_item(props: &Props) -> Html {
     let change_color = {
         let timeline = props.user_timeline.clone();
         let update = props.update.clone();
-        let color = color.clone();
         Callback::from(move |e: Event| {
             let input = e.target_unchecked_into::<HtmlInputElement>();
-            color.set(input.value());
             update.emit(UpdateUserTimelineInput {
                 props_id: timeline.props_id,
                 timeline_id: timeline.timeline_id,
@@ -57,7 +52,7 @@ pub fn timeline_item(props: &Props) -> Html {
         <div class="timeline_item">
             <input
                 class={"timeline_color"}
-                value={color.deref().to_owned()}
+                value={props.user_timeline.color.to_owned()}
                 onchange={change_color}
                 type={"color"}/>
             <button
