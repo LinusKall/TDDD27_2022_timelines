@@ -189,8 +189,14 @@ pub fn timeline_list(props: &Props) -> Html {
     let delete_timeline = {
         let timeline_to_delete = timeline_to_delete.clone();
         let delete_timeline_async = delete_timeline_async.clone();
+        let current_timeline = current_timeline.clone();
         Callback::from(move |timeline: UserTimeline| {
-            timeline_to_delete.set(Some(timeline));
+            if current_timeline.is_some()
+                && current_timeline.as_ref().unwrap().timeline_id == timeline.timeline_id
+            {
+                current_timeline.set(None);
+            }
+            timeline_to_delete.set(Some(timeline.clone()));
             delete_timeline_async.run();
         })
     };
