@@ -47,6 +47,15 @@ impl UsersMutation {
     ) -> Result<DeleteUserResult> {
         let db = ctx.data::<Database>().unwrap();
 
+        let tu_query = super::super::query::TimelinesUsersQuery;
+
+        let props = tu_query.get_timelines_users(ctx, user_id).await.unwrap();
+
+        for prop in props.iter() {
+            let ut_mut = super::UserTimelinesMutation;
+            ut_mut.delete_user_timeline(ctx, prop.id).await.unwrap();
+        }
+
         let res = users::Entity::delete_by_id(user_id)
             .filter(users::Column::HashedPassword.eq(password))
             .exec(db.get_connection())

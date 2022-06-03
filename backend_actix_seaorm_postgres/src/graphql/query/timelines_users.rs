@@ -10,7 +10,7 @@ pub struct TimelinesUsersQuery;
 
 #[Object]
 impl TimelinesUsersQuery {
-    async fn get_timelines_users(
+    pub async fn get_timelines_users(
         &self,
         ctx: &Context<'_>,
         user_id: i32,
