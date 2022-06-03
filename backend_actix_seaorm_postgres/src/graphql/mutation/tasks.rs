@@ -96,7 +96,6 @@ impl TasksMutation {
             task.done = Set(done);
         }
         if let Some(end_time) = input.end_time {
-            println!("{:?}", &end_time);
             task.end_time = Set(Some(end_time));
         }
 
