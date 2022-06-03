@@ -1,6 +1,7 @@
 use async_graphql::{Context, Object, Result};
 use entity::async_graphql::{self, InputObject, SimpleObject};
 use entity::{sea_orm_active_enums::ClearanceMapping, tasks, timelines, timelines_users, users};
+use sea_orm::entity::prelude::*;
 use sea_orm::{ActiveModelTrait, EntityTrait, Set};
 
 use crate::db::Database;
@@ -99,6 +100,7 @@ impl UserTimelinesMutation {
 
         let timeline_res = if props.relation == ClearanceMapping::Owner {
             tasks::Entity::delete_many()
+                .filter(tasks::Column::TimelineId.eq(props.timeline_id))
                 .exec(db.get_connection())
                 .await?;
             Some(
