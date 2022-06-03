@@ -16,14 +16,17 @@ pub struct Props {
 pub fn task_info(props: &Props) -> Html {
     let timezone = use_state(|| *Local::now().offset());
     let body_ref = use_node_ref();
+    let end_time_ref = use_node_ref();
     let body_input = use_state(|| props.current_task.is_some() && props.current_task.as_ref().unwrap().body.is_none());
     let current_task_id = use_state(|| -1);
     let rf_set_body = use_state(|| false);
+    let rf_set_end_time = use_state(|| true);
 
     let update_end_time = {
         let timezone = timezone.clone();
         let update = props.update.clone();
         let current_task = props.current_task.clone();
+        let end_time_ref = end_time_ref.clone();
         Callback::from(move |e: Event| {
             let value = e
                 .target()
@@ -37,8 +40,15 @@ pub fn task_info(props: &Props) -> Html {
                 title: None,
                 body: None,
                 done: None,
-                end_time: Some(newtime.unwrap().with_timezone(&Utc)),
+                end_time: Some(newtime.clone().unwrap().with_timezone(&Utc)),
             });
+            if let Some(elem) = end_time_ref.cast::<HtmlInputElement>() {
+                let datetime = newtime.unwrap().with_timezone(&Utc);
+                let datetime = datetime + *timezone;
+                let datetime = datetime.to_rfc3339();
+                let datetime = &datetime[0..datetime.len()-6];
+                elem.set_value(datetime);
+            }
         })
     };
 
@@ -84,7 +94,6 @@ pub fn task_info(props: &Props) -> Html {
     let resize = {
         let body_ref = body_ref.clone();
         Callback::from(move |_e: InputEvent| {
-            // let elem = e.target_unchecked_into::<HtmlInputElement>();
             let elem = body_ref.cast::<HtmlInputElement>().unwrap();
             elem.style().set_property("height", "0").unwrap();
             elem.style()
@@ -95,27 +104,40 @@ pub fn task_info(props: &Props) -> Html {
 
     {
         let body_ref = body_ref.clone();
+        let end_time_ref = end_time_ref.clone();
         let body_input = body_input.clone();
         let current_task_id = current_task_id.clone();
         let current_task = props.current_task.clone();
+        let timezone = timezone.clone();
         let rf_set_body = rf_set_body.clone();
+        let rf_set_end_time = rf_set_end_time.clone();
         use_effect(move || {
+            if let Some(current_task) = current_task.as_ref() {
+                if  *current_task_id != current_task.id {
+                    body_input.set(current_task.body.is_none());
+                    current_task_id.set(current_task.id);
+                    rf_set_end_time.set(true);
+                }
+            }
             if let Some(elem) = body_ref.cast::<HtmlInputElement>() {
+                if *rf_set_body {
+                    elem.set_value(current_task.as_ref().unwrap().body.as_ref().unwrap_or(&"".to_owned()));
+                    rf_set_body.set(false);
+                }
                 elem.style().set_property("height", "0").unwrap();
                 elem.style()
                     .set_property("height", &format!("{}px", elem.scroll_height()))
                     .unwrap();
             }
-            if *rf_set_body {
-                if let Some(elem) = body_ref.cast::<HtmlInputElement>() {
-                    elem.set_value(current_task.as_ref().unwrap().body.as_ref().unwrap_or(&"".to_owned()));
-                    rf_set_body.set(false);
-                }
-            }
-            if let Some(current_task) = current_task.as_ref() {
-                if  *current_task_id != current_task.id {
-                    body_input.set(current_task.body.is_none());
-                    current_task_id.set(current_task.id);
+            if *rf_set_end_time {
+                if let Some(elem) = end_time_ref.cast::<HtmlInputElement>() {
+                    if let Some(datetime) = current_task.as_ref().unwrap().end_time.clone() {
+                        let datetime = datetime + *timezone;
+                        let datetime = datetime.to_rfc3339();
+                        let datetime = &datetime[0..datetime.len()-6];
+                        elem.set_value(datetime);
+                        rf_set_end_time.set(false);
+                    }
                 }
             }
             || {}
@@ -158,34 +180,16 @@ pub fn task_info(props: &Props) -> Html {
                                     }
                                 }
                             }
-                        {
-                            if let Some(datetime) = props.current_task.as_ref().unwrap().end_time.clone() {
-                                let datetime = datetime + *timezone;
-                                let datetime = datetime.to_rfc3339();
-                                let datetime = &datetime[0..datetime.len()-6];
-                                html! {
-                                        <>
-                                            <p><b>{"Deadline: "}</b></p>
-                                            <input name={"endtime"} type="datetime-local" value={datetime.to_owned()} onchange={update_end_time}/>
-                                        </>
-                                    }
-                            } else {
-                                html! {
-                                    <>
-                                        <p><b>{"Deadline: "}</b></p>
-                                        <input name={"endtime"} type="datetime-local" onchange={update_end_time}/>
-                                    </>
+                            <p><b>{"Deadline: "}</b></p>
+                            <input name={"endtime"} type="datetime-local" ref={end_time_ref.clone()} onchange={update_end_time}/>
+                            {
+                                if props.current_task.as_ref().unwrap().done {
+                                    html! {<h3>{"Completed"}</h3>}
+                                }
+                                else {
+                                    html! {}
                                 }
                             }
-                        }
-                        {
-                            if props.current_task.as_ref().unwrap().done {
-                                html! {<h3>{"Completed"}</h3>}
-                            }
-                            else {
-                                html! {}
-                            }
-                        }
                         </>
                     }
                 } else {
