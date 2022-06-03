@@ -10,6 +10,7 @@ use yew::Callback;
 use yew_hooks::prelude::*;
 
 use super::gql::query::*;
+use super::task_info::*;
 use super::task_item::*;
 
 #[derive(Debug, Properties, PartialEq)]
@@ -261,5 +262,7 @@ pub fn task_list(props: &Props) -> Html {
             </div>
 
         </div>
+
+        <TaskInfo/>
     }
 }

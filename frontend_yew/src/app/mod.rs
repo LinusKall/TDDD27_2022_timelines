@@ -4,7 +4,7 @@ pub mod list_view;
 pub mod login;
 pub mod navigation_bar;
 pub mod signup;
-// pub mod task_info;
+pub mod task_info;
 pub mod task_item;
 pub mod task_list;
 pub mod timeline_item;
