@@ -29,8 +29,6 @@ pub fn task_list(props: &Props) -> Html {
 
     // Render flags
     let rf_fetch_tasks = use_state(|| true);
-    // let rf_create_task = use_state(|| false);
-    // let rf_delete_task = use_state(|| false);
 
     // Fetch tasks
     let tasks = {
