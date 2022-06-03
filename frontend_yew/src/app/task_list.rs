@@ -104,6 +104,7 @@ pub fn task_list(props: &Props) -> Html {
 
     // Updated task
     let update_task_async = {
+        let current_task = current_task.clone();
         let task_to_update = task_to_update.clone();
         let tasks = tasks.clone();
         use_async(async move {
@@ -136,6 +137,7 @@ pub fn task_list(props: &Props) -> Html {
                     .collect::<Vec<Task>>();
                 tasks.update(new_tasks);
                 task_to_update.set(None);
+                current_task.set(Some(new.clone()));
                 return Ok(new);
             }
             Err("Could not create User Timeline.")
