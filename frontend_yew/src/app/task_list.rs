@@ -225,11 +225,13 @@ pub fn task_list(props: &Props) -> Html {
         use_effect(move || {
             if *rf_fetch_tasks && !tasks.loading {
                 tasks.run();
+                rf_fetch_tasks.set(false);
             }
             if let Some(current_timeline) = current_timeline.as_ref() {
                 if *rf_timeline_switch != current_timeline.timeline_id {
                     current_task.set(None);
                     rf_timeline_switch.set(current_timeline.timeline_id);
+                    rf_fetch_tasks.set(true);
                 }
             }
             || {}
