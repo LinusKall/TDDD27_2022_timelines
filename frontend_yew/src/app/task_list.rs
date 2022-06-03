@@ -229,40 +229,42 @@ pub fn task_list(props: &Props) -> Html {
     }
 
     html! {
-        <div class="task_list">
-            <h2 {ondblclick}>{props.current_timeline.clone().unwrap_or(UserTimeline::default()).title}</h2>
+        <>
+            <div class="task_list">
+                <h2 {ondblclick}>{props.current_timeline.clone().unwrap_or(UserTimeline::default()).title}</h2>
 
-            <input
-                type="new_todo"
-                placeholder="Add a new task"
-                onkeypress={create_task}
-            />
-            <div class="item_list">
-            {
-                if tasks.data.is_some() {
-                    html! {
-                        for tasks
-                            .data
-                            .as_ref()
-                            .unwrap()
-                            .iter()
-                            .map(|task| html! {
-                                <TaskItem
-                                    task={task.clone()}
-                                    color={props.current_timeline.as_ref().unwrap().color.to_owned()}
-                                    update={update_task.clone()}
-                                    delete={delete_task.clone()}
-                                    switch={switch_task.clone()}/>
-                            })
+                <input
+                    type="new_todo"
+                    placeholder="Add a new task"
+                    onkeypress={create_task}
+                />
+                <div class="item_list">
+                {
+                    if tasks.data.is_some() {
+                        html! {
+                            for tasks
+                                .data
+                                .as_ref()
+                                .unwrap()
+                                .iter()
+                                .map(|task| html! {
+                                    <TaskItem
+                                        task={task.clone()}
+                                        color={props.current_timeline.as_ref().unwrap().color.to_owned()}
+                                        update={update_task.clone()}
+                                        delete={delete_task.clone()}
+                                        switch={switch_task.clone()}/>
+                                })
+                        }
+                    } else {
+                        html! {"Loading.."}
                     }
-                } else {
-                    html! {"Loading.."}
                 }
-            }
+                </div>
+
             </div>
 
-        </div>
-
-        <TaskInfo/>
+            <TaskInfo current_task={current_task.clone()} update={update_task.clone()}/>
+        </>
     }
 }
