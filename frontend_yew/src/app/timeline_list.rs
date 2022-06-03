@@ -30,9 +30,6 @@ pub fn timeline_list(props: &Props) -> Html {
 
     // Render flags
     let rf_fetch_timelines = use_state(|| true);
-    // let rf_create_timeline = use_state(|| false);
-    // let rf_delete_timeline = use_state(|| false);
-    // let rf_update_timeline = use_state(|| false);
 
     // Fetch Users timelines
     let user_timelines = {
@@ -59,7 +56,6 @@ pub fn timeline_list(props: &Props) -> Html {
     let create_timeline_async = {
         let user_id = props.user_id;
         let timeline_to_create = timeline_to_create.clone();
-        // let rf_create_timeline = rf_create_timeline.clone();
         let user_timelines = user_timelines.clone();
         use_async(async move {
             let title = timeline_to_create.deref().clone().unwrap();
@@ -81,7 +77,6 @@ pub fn timeline_list(props: &Props) -> Html {
                 new_timelines.push(new.clone());
                 user_timelines.update(new_timelines);
                 timeline_to_create.set(None);
-                // rf_create_timeline.set(true);
                 return Ok(new);
             }
             Err("Could not create User Timeline.")
@@ -103,6 +98,8 @@ pub fn timeline_list(props: &Props) -> Html {
 
     // Update current timeline
     let update_timeline_async = {
+        let current_timeline = current_timeline.clone();
+        let rf_update_timeline = rf_update_timeline.clone();
         let timeline_to_update = timeline_to_update.clone();
         let user_timelines = user_timelines.clone();
         use_async(async move {
@@ -133,6 +130,8 @@ pub fn timeline_list(props: &Props) -> Html {
                     .collect::<Vec<UserTimeline>>();
                 user_timelines.update(new_timelines);
                 timeline_to_update.set(None);
+                rf_update_timeline.set(true);
+                current_timeline.set(Some(new.clone()));
                 return Ok(new);
             }
             Err("Could not delete User Timeline.")
@@ -151,7 +150,6 @@ pub fn timeline_list(props: &Props) -> Html {
     // Deletion of timeline
     let delete_timeline_async = {
         let timeline_to_delete = timeline_to_delete.clone();
-        // let rf_delete_timeline = rf_delete_timeline.clone();
         let user_timelines = user_timelines.clone();
         use_async(async move {
             let timeline = timeline_to_delete.deref().clone().unwrap();
@@ -180,7 +178,6 @@ pub fn timeline_list(props: &Props) -> Html {
                     .collect::<Vec<UserTimeline>>();
                 user_timelines.update(new_timelines);
                 timeline_to_update.set(None);
-                // rf_delete_timeline.set(true);
                 return Ok(new);
             }
             Err("Could not delete User Timeline.")
@@ -208,22 +205,11 @@ pub fn timeline_list(props: &Props) -> Html {
     {
         let user_timelines = user_timelines.clone();
         let rf_fetch_timelines = rf_fetch_timelines.clone();
-        // let rf_create_timeline = rf_create_timeline.clone();
-        // let rf_delete_timeline = rf_delete_timeline.clone();
-        // let rf_update_timeline = rf_update_timeline.clone();
+        let rf_update_timeline = rf_update_timeline.clone();
         use_effect(move || {
             if *rf_fetch_timelines && !user_timelines.loading {
                 user_timelines.run();
             }
-            // if *rf_create_timeline {
-            //     rf_create_timeline.set(false);
-            // }
-            // if *rf_delete_timeline {
-            //     rf_delete_timeline.set(false);
-            // }
-            // if *rf_update_timeline {
-            //     rf_update_timeline.set(false);
-            // }
             || {}
         });
     }
