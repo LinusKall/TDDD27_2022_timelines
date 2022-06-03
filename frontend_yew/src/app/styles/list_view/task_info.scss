@@ -6,6 +6,7 @@ $area_name: "task_info";
         "title";
     grid-template-columns: 1fr;
     grid-template-rows: 50px;
+    padding: 0.5em;
 
     h2 {
         grid-area: title;
