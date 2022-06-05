@@ -1,3 +1,17 @@
+# Group and individual presentations
+
+## Group
+
+[2022 TDDD27 LiU Timelines](https://www.youtube.com/watch?v=6h2XQy4MpsE)
+
+## Individual
+
+[2022 TDDD27 LiU Timelines edvkj374](https://www.youtube.com/watch?v=HIPMSMIPJdw)
+
+[2022 TDDD27 LiU Timelines linka231](https://www.youtube.com/watch?v=EPOofzJCSEI)
+
+[2022 TDDD27 LiU Timelines sebfr298](https://www.youtube.com/watch?v=kydb9X3GjEU)
+
 # Timelines
 
 A simple calendar application
