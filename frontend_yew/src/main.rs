@@ -1,10 +1,7 @@
 mod app;
-mod backend_graphql;
-mod backend_graphql_userdata;
-mod backend_test;
-mod yew_tutorial;
+mod test_apps;
 
-//use backend_graphql_userdata::App;
+// use test_apps::backend_graphql_userdata::App;
 use app::App;
 
 fn main() {

@@ -1,8 +1,0 @@
--- Your SQL goes here
-CREATE TABLE timelines (
-    id SERIAL PRIMARY KEY,
-    title TEXT NOT NULL,
-    public BOOLEAN NOT NULL DEFAULT false,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
